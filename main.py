@@ -1,30 +1,23 @@
 from nltk import *
+from match_checker import is_matching_cfg
+from timeit import timeit
 
 
-def words_of_depth(depth, alphabet):
-    for letter in alphabet:
-        if depth == 0:
-            yield letter
-        else:
-            for sub_word in words_of_depth(depth - 1, alphabet):
-                yield [letter, *sub_word]
+def graph(results):
+    column_widths = [max([len(str(round(row[column_index], 3))) for row in results.values()]) + 1 for column_index in
+                     range(len(results['normal']))]
+    print('name'.ljust(10), end='')
+    for key, value in enumerate(range_of_depths):
+        print('|', str(value).ljust(column_widths[key]), end='')
+    print()
+    for name, row in zip(results.keys(), results.values()):
+        print(name.ljust(10), end='')
+        for key, result in enumerate(row):
+            print('|', str(round(result, 3)).ljust(column_widths[key]), end='')
+        print()
 
 
-def is_matching_cfg(a, b, alphabet, max_depth: int):
-    parser_a = RecursiveDescentParser(a)
-
-    parser_b = RecursiveDescentParser(b)
-    for depth in range(max_depth):
-        print(depth)
-        for word in words_of_depth(depth, alphabet):
-
-            if (len(list(parser_a.parse(word))) == 0) != (len(list(parser_b.parse(word))) == 0):
-                print("CFG's don't for word", ''.join(word))
-                return False
-    return True
-
-
-letters = ['0', '1']
+alphabet = ['0', '1']
 
 grammar1 = """
 S -> X S X | Y S Y | X | Y
@@ -42,4 +35,15 @@ cfg1 = CFG.fromstring(grammar1)
 
 cfg2 = CFG.fromstring(grammar2)
 
-print(is_matching_cfg(cfg1, cfg2, letters, 10))
+cfg1_cnf = cfg1.chomsky_normal_form()
+cfg2_cnf = cfg2.chomsky_normal_form()
+
+range_of_depths = range(4)
+
+tests = {
+    'normal': [timeit(lambda: is_matching_cfg(cfg1, cfg2, alphabet, i), number=1) for i in range_of_depths],
+    'cnf_form': [timeit(lambda: is_matching_cfg(cfg1_cnf, cfg2_cnf, alphabet, i), number=1) for i in range_of_depths],
+}
+
+graph(tests)
+print(is_matching_cfg(cfg1, cfg2, alphabet, 5))
