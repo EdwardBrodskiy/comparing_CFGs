@@ -18,6 +18,6 @@ def is_matching_cfg(a, b, alphabet, max_depth: int, parser=RecursiveDescentParse
         for word in words_of_depth(depth, alphabet):
 
             if (len(list(parser_a.parse(word))) == 0) != (len(list(parser_b.parse(word))) == 0):
-                print("CFG's don't for word", ''.join(word))
+                print("CFG's don't for word_to_parse", ''.join(word))
                 return False
     return True
