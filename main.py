@@ -1,6 +1,7 @@
 from nltk import *
 from match_checker import is_matching_cfg as nltk_is_matching_cfg
 import lark_testing as lark
+import my_cyk
 from timeit import timeit
 
 
@@ -39,21 +40,23 @@ cfg2 = CFG.fromstring(grammar2)
 cfg1_cnf = cfg1.chomsky_normal_form()
 cfg2_cnf = cfg2.chomsky_normal_form()
 
-range_of_depths = range(12)
+range_of_depths = range(7)
 
 tests = {
     'nltk_normal': [timeit(lambda: nltk_is_matching_cfg(cfg1, cfg2, alphabet, i), number=1) for i in range_of_depths],
     'nltk_cnf_form': [timeit(lambda: nltk_is_matching_cfg(cfg1_cnf, cfg2_cnf, alphabet, i), number=1) for i in range_of_depths],
     'lark_normal': [timeit(lambda: lark.is_matching_cfg(lark.cfg, lark.cfg, alphabet, i), number=1) for i in range_of_depths],
     'lark_cyk_parser': [timeit(lambda: lark.is_matching_cfg(lark.cnf, lark.cnf, alphabet, i), number=1) for i in range_of_depths],
+    'my_cyk_parser': [timeit(lambda: my_cyk.is_matching_cfg(my_cyk.cnf, my_cyk.cnf, alphabet, i), number=1) for i in range_of_depths],
 
 }
 
 graph(tests)
 '''
-name           | 0   | 1     | 2     | 3     | 4     | 5     | 6     | 7     | 8     | 9      | 10     | 11      
-nltk_normal    | 0.0 | 0.002 | 0.008 | 0.028 | 0.087 | 0.254 | 0.727 | 2.178 | 4.676 | 12.806 | 28.031 | 67.357  
-nltk_cnf_form  | 0.0 | 0.002 | 0.008 | 0.033 | 0.133 | 0.391 | 1.125 | 3.013 | 7.923 | 20.349 | 51.167 | 127.663 
-lark_normal    | 0.0 | 0.001 | 0.002 | 0.009 | 0.02  | 0.06  | 0.145 | 0.319 | 0.752 | 1.748  | 3.932  | 8.762   
-lark_cyk_parser| 0.0 | 0.001 | 0.001 | 0.003 | 0.008 | 0.021 | 0.069 | 0.159 | 0.383 | 0.99   | 2.435  | 5.408 
+name           | 0   | 1     | 2     | 3     | 4     | 5     | 6     | 7     | 8     | 9      | 10     | 11      | 12     | 13     | 14    
+nltk_normal    | 0.0 | 0.002 | 0.007 | 0.023 | 0.07  | 0.247 | 0.577 | 1.533 | 4.152 | 10.413 | 26.23  | 64.567  
+nltk_cnf_form  | 0.0 | 0.002 | 0.011 | 0.045 | 0.133 | 0.357 | 0.995 | 3.031 | 7.601 | 20.09  | 50.647 | 126.634 
+lark_normal    | 0.0 | 0.001 | 0.003 | 0.01  | 0.02  | 0.055 | 0.131 | 0.317 | 0.757 | 1.644  | 3.795  | 8.821   
+lark_cyk_parser| 0.0 | 0.0 | 0.001   | 0.002 | 0.007 | 0.02  | 0.052 | 0.155 | 0.386 | 0.904  | 2.635  | 6.224   | 13.747 | 30.524 | 68.066 
+my_cyk_parser  | 0.0 | 0.0 | 0.0     | 0.001 | 0.002 | 0.013 | 0.046 | 0.134 | 0.294 | 0.879  | 2.365  | 6.332   | 20.883 | 44.617 | 92.237
 '''

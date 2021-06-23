@@ -1,3 +1,4 @@
+from match_checker import words_of_depth
 
 
 def parse(chars, rules, start='S'):
@@ -30,32 +31,32 @@ def parse(chars, rules, start='S'):
     return start in table[-1][0]
 
 
+def is_matching_cfg(a, b, alphabet, max_depth: int):
+    for depth in range(max_depth):
+        for word in words_of_depth(depth, alphabet):
+            if parse(word, a) != parse(word, b):
+                return False
+    return True
+
+
+cnf = {
+    # start
+    'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
+    # base
+    'D': [('X', 'A'), ('Y', 'B'), '1', '0'],
+    # alterone
+    'A': [('D', 'X')],
+    # alterzero
+    'B': [('D', 'Y')],
+    # one
+    'X': ['1'],
+    # zero
+    'Y': ['0']
+}
+
 if __name__ == '__main__':
     from lark_testing import is_accepted, cnf as lark_cnf
-    from match_checker import words_of_depth
 
-    chomsky_grammar = '''
-    start: one alterone | zero alterzero | one | zero 
-    base: one alterone | zero alterzero | one | zero 
-    alterone: base one
-    alterzero: base zero
-    one: "1"
-    zero: "0"
-    '''
-    cnf = {
-        # start
-        'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
-        # base
-        'D': [('X', 'A'), ('Y', 'B'), '1', '0'],
-        # alterone
-        'A': [('D', 'X')],
-        # alterzero
-        'B': [('D', 'Y')],
-        # one
-        'X': ['1'],
-        # zero
-        'Y': ['0']
-    }
     for length in range(20):
 
         for word in words_of_depth(length, ['1', '0']):
