@@ -1,32 +1,39 @@
-from typing import List
 
 
-def parse(chars, symbols):
+def parse(chars, rules, start='S'):
+    """
+    CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
+    """
     n = len(chars)
-    table = [[[False for _ in range(len(symbols))] for _ in range(n)] for _ in range(n)]
+    table = [[[] for _ in range(n)] for _ in range(n)]
 
+    # Identify terminal rules
     for char_index, char in enumerate(chars):
-        for symbol_index, symbol in enumerate(symbols):
-            for rhs in symbol:
+        for symbol_key, rule in rules.items():
+            for rhs in rule:
                 if rhs == char:
-                    table[0][char_index][symbol_index] = True
+                    table[0][char_index].append(symbol_key)
                     break
 
-    for span in range(1, n):
-        for span_start in range(n - span):
-            for partition in range(span):
-                for rule_index, rule in enumerate(symbols):
-
+    # fill the rest of the table
+    for span in range(1, n):  # starting at the row after the terminals
+        for span_start in range(n - span):  # In other words column
+            for partition in range(span):  # Iterator for selecting combinations of squares for the left and right sides
+                # check all the rules Ra -> Rb Rc
+                for key, rule in rules.items():
                     for rhs in rule:
                         if type(rhs) is tuple:
-                            left_side = table[partition][span_start][rhs[0]]
-                            right_side = table[span - partition - 1][span + partition][rhs[1]]
+                            left_side = rhs[0] in table[partition][span_start]
+                            right_side = rhs[1] in table[span - partition - 1][span_start + partition + 1]
                             if left_side and right_side:
-                                table[span][span_start][rule_index] = True
-    return table[-1][0][0]
+                                table[span][span_start].append(key)
+    return start in table[-1][0]
 
 
 if __name__ == '__main__':
+    from lark_testing import is_accepted, cnf as lark_cnf
+    from match_checker import words_of_depth
+
     chomsky_grammar = '''
     start: one alterone | zero alterzero | one | zero 
     base: one alterone | zero alterzero | one | zero 
@@ -35,18 +42,26 @@ if __name__ == '__main__':
     one: "1"
     zero: "0"
     '''
-    cnf = [
+    cnf = {
         # start
-        [(4, 2), (5, 3), '1', '0'],
+        'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
         # base
-        [(4, 2), (5, 3), '1', '0'],
+        'D': [('X', 'A'), ('Y', 'B'), '1', '0'],
         # alterone
-        [(1, 4)],
+        'A': [('D', 'X')],
         # alterzero
-        [(1, 5)],
+        'B': [('D', 'Y')],
         # one
-        ['1'],
+        'X': ['1'],
         # zero
-        ['0']
-    ]
-    print(parse(['1', '0', '1'], cnf))
+        'Y': ['0']
+    }
+    for length in range(20):
+
+        for word in words_of_depth(length, ['1', '0']):
+            joined_word = ''.join(word)
+            is_parsed_by_me = parse(word, cnf)
+            is_parsed_by_lark = is_accepted(lark_cnf, joined_word)
+            if is_parsed_by_me != is_parsed_by_lark:
+                print(f'me: {is_parsed_by_me}\tlark: {is_parsed_by_lark}\t word: {joined_word}')
+        print('Done', length)
