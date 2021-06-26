@@ -1,27 +1,32 @@
 from timeit import timeit
 import csv
 
-from my_cyk import is_matching_cfg_wrapper_10palindrome
+import my_cyk
+import lark_testing as lark
+import nltk_testing as nltk
 
 timeout = 100  # time until a test times out #TODO: implement
-max_depth = 11  # to what depth to run the tests
-re_runs = 2  # how many times to run test
-re_build_table = True  # re use old results or work from scratch
+max_depth = 7  # to what depth to run the tests
+re_runs = 5  # how many times to run test
+re_build_table = False  # re use old results or work from scratch
 
 tests = {
     '10palindrome': {
-        'my_cyk': is_matching_cfg_wrapper_10palindrome
+        'my_cyk': my_cyk.is_matching_cfg_wrapper_10palindrome,
+        'lark_earley': lark.is_matching_cfg_wrapper_10palindrome_earley,
+        'lark_cyk': lark.is_matching_cfg_wrapper_10palindrome_cyk,
+        'nltk_recursive_decent': nltk.is_matching_cfg_wrapper_recursive_decent
     }
 }
 
 for test_name, test in tests.items():
     past_results = {}
-
+    past_header = []
     if not re_build_table:
         try:
             with open(f'{test_name}_results.csv', 'r') as file:
                 csv_reader = csv.reader(file)
-                header = next(csv_reader)
+                past_header = next(csv_reader)
                 for name, *results in csv_reader:
                     past_results[name] = results
         except FileNotFoundError:
@@ -43,6 +48,7 @@ for test_name, test in tests.items():
     else:
         results = {name: [0 for _ in range(max_depth)] for name in test}
 
+    print(f'Test cycle for {test_name}\n' + ''.join(list(map(lambda x: str(x).rjust(4), range(1, re_runs + 1)))))
     for run_index in range(re_runs):  # this is done instead of changing the number on timeit to spread out the tests
         for depth in range(1, max_depth + 1):
             for name, approach in test.items():
@@ -51,13 +57,20 @@ for test_name, test in tests.items():
                     results[name][depth - 1] += result
                     if run_index + 1 == re_runs:
                         results[name][depth - 1] = round(results[name][depth - 1] / re_runs, 3)
+        print('---|', end='')
 
     combined_results = results.copy()
 
-    with open(f'{test_name}_results.csv', 'w', newline='') as file:
-        csv_writer = csv.writer(file)
+    saved = False
+    while not saved:
+        try:
+            with open(f'{test_name}_results.csv', 'w', newline='') as file:
+                csv_writer = csv.writer(file)
 
-        csv_writer.writerow(['name', *list(range(1, max_depth + 1))])
+                csv_writer.writerow(max(['name', *list(range(1, max_depth + 1))], past_header, key=lambda x: len(x)))
 
-        for name, results in combined_results.items():
-            csv_writer.writerow([name, *results])
+                for name, results in combined_results.items():
+                    csv_writer.writerow([name, *results])
+            saved = True
+        except PermissionError:
+            input('Permission Denied PRESS ENTER TO TRY AGAIN')

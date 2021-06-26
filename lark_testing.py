@@ -19,6 +19,16 @@ def is_matching_cfg(a: Lark, b: Lark, alphabet, max_depth: int):
     return True
 
 
+def is_matching_cfg_wrapper_10palindrome_earley(max_depth):
+    return is_matching_cfg(cfg, cfg, alph, max_depth)
+
+
+def is_matching_cfg_wrapper_10palindrome_cyk(max_depth):
+    return is_matching_cfg(cnf, cnf, alph, max_depth)
+
+
+alph = ['1', '0']
+
 grammar = '''
 start: one start one | zero start zero | one | zero
 one: "1"
