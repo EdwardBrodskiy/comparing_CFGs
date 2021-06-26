@@ -39,6 +39,12 @@ def is_matching_cfg(a, b, alphabet, max_depth: int):
     return True
 
 
+def is_matching_cfg_wrapper_10palindrome(max_depth):
+    return is_matching_cfg(cnf, cnf, alph, max_depth)
+
+
+alph = ['1', '0']
+
 cnf = {
     # start
     'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
