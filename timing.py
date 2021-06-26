@@ -5,10 +5,14 @@ import my_cyk
 import lark_testing as lark
 import nltk_testing as nltk
 
-timeout = 100  # time until a test times out #TODO: implement
-max_depth = 7  # to what depth to run the tests
+timeout = 60  # time until a given test times out
+timeout_key = ''
+
+max_depth = 15  # to what depth to run the tests
+
 re_runs = 5  # how many times to run test
-re_build_table = False  # re use old results or work from scratch
+
+re_build_table = True  # re use old results or work from scratch
 
 tests = {
     '10palindrome': {
@@ -53,10 +57,17 @@ for test_name, test in tests.items():
         for depth in range(1, max_depth + 1):
             for name, approach in test.items():
                 if re_build_table or len(past_results[name]) < depth:
-                    result = timeit(lambda: approach(depth), number=1)
-                    results[name][depth - 1] += result
-                    if run_index + 1 == re_runs:
-                        results[name][depth - 1] = round(results[name][depth - 1] / re_runs, 3)
+                    if results[name][depth - 1] == timeout_key:
+                        continue
+
+                    if timeout and depth > 1 and (results[name][depth - 2] == timeout_key or results[name][depth - 2] / (
+                            run_index + 1) > timeout):
+                        results[name][depth - 1] = timeout_key
+                    else:
+                        result = timeit(lambda: approach(depth), number=1)
+                        results[name][depth - 1] += result
+                        if run_index + 1 == re_runs:
+                            results[name][depth - 1] = round(results[name][depth - 1] / re_runs, 3)
         print('---|', end='')
 
     combined_results = results.copy()
