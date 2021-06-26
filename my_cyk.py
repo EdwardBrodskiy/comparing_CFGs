@@ -6,14 +6,14 @@ def parse(chars, rules, start='S'):
     CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
     """
     n = len(chars)
-    table = [[[] for _ in range(n)] for _ in range(n)]
+    table = [[set() for _ in range(n - depth)] for depth in range(n)]
 
     # Identify terminal rules
     for char_index, char in enumerate(chars):
         for symbol_key, rule in rules.items():
             for rhs in rule:
                 if rhs == char:
-                    table[0][char_index].append(symbol_key)
+                    table[0][char_index].add(symbol_key)
                     break
 
     # fill the rest of the table
@@ -27,7 +27,7 @@ def parse(chars, rules, start='S'):
                             left_side = rhs[0] in table[partition][span_start]
                             right_side = rhs[1] in table[span - partition - 1][span_start + partition + 1]
                             if left_side and right_side:
-                                table[span][span_start].append(key)
+                                table[span][span_start].add(key)
     return start in table[-1][0]
 
 
