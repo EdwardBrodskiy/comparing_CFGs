@@ -1,5 +1,5 @@
 from lark import Lark, ParseError
-from match_checker import words_of_depth
+from tools import words_of_depth
 
 
 def is_accepted(lark_cfg: Lark, word_to_parse):

@@ -1,4 +1,4 @@
-from match_checker import words_of_depth
+from tools import words_of_depth
 
 
 def parse(chars, rules, start='S'):
@@ -61,7 +61,7 @@ cnf = {
 }
 
 if __name__ == '__main__':
-    from lark_testing import is_accepted, cnf as lark_cnf
+    from implementations.lark_testing import is_accepted, cnf as lark_cnf
 
     for length in range(20):
 

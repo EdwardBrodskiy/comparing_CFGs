@@ -2,9 +2,7 @@ from timeit import timeit
 import csv
 from typing import Dict, Union, List
 
-import my_cyk
-import lark_testing as lark
-import nltk_testing as nltk
+from implementations import my_cyk, nltk_testing as nltk, lark_testing as lark
 
 timeout: float = 60  # time until a given test times out
 timeout_key: str = ''
