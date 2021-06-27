@@ -52,6 +52,10 @@ for test_name, test in tests.items():
             else:
                 results[name] = [0 for _ in range(max_depth)]
                 for i, past_result in enumerate(past_results[name]):
+                    try:
+                        past_result = float(past_result)
+                    except ValueError:
+                        pass
                     results[name][i] = past_result
     else:
         results = {name: [0 for _ in range(max_depth)] for name in test}
