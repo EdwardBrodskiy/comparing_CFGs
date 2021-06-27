@@ -1,18 +1,19 @@
 from timeit import timeit
 import csv
+from typing import Dict, Union, List
 
 import my_cyk
 import lark_testing as lark
 import nltk_testing as nltk
 
-timeout = 60  # time until a given test times out
-timeout_key = ''
+timeout: float = 60  # time until a given test times out
+timeout_key: str = ''
 
-max_depth = 15  # to what depth to run the tests
+max_depth: int = 5  # to what depth to run the tests
 
-re_runs = 5  # how many times to run test
+re_runs: int = 5  # how many times to run test
 
-re_build_table = True  # re use old results or work from scratch
+re_build_table: bool = False  # re use old results or work from scratch
 
 tests = {
     '10palindrome': {
@@ -24,8 +25,11 @@ tests = {
 }
 
 for test_name, test in tests.items():
-    past_results = {}
-    past_header = []
+
+    # Load past results
+
+    past_results: Dict[str, List[str]] = {}
+    past_header: List[str] = []
     if not re_build_table:
         try:
             with open(f'{test_name}_results.csv', 'r') as file:
@@ -36,7 +40,9 @@ for test_name, test in tests.items():
         except FileNotFoundError:
             re_build_table = True
 
-    results = {}
+    results: Dict[str, List[Union[float, str]]] = {}
+
+    # Merge past results into new table
 
     if not re_build_table:
         for name in test:
@@ -52,25 +58,28 @@ for test_name, test in tests.items():
     else:
         results = {name: [0 for _ in range(max_depth)] for name in test}
 
+    # run the tests
+
     print(f'Test cycle for {test_name}\n' + ''.join(list(map(lambda x: str(x).rjust(4), range(1, re_runs + 1)))))
     for run_index in range(re_runs):  # this is done instead of changing the number on timeit to spread out the tests
         for depth in range(1, max_depth + 1):
             for name, approach in test.items():
-                if re_build_table or len(past_results[name]) < depth:
-                    if results[name][depth - 1] == timeout_key:
+                if re_build_table or len(past_results[name]) < depth:  # do we need this value
+                    if results[name][depth - 1] == timeout_key:  # skip if already timed out on prior runs
                         continue
 
-                    if timeout and depth > 1 and (results[name][depth - 2] == timeout_key or results[name][depth - 2] / (
-                            run_index + 1) > timeout):
+                    # check if the previous depth went over the threshold if so time out
+                    if timeout and depth > 1 and (results[name][depth - 2] == timeout_key
+                                                  or results[name][depth - 2] / (run_index + 1) > timeout):
                         results[name][depth - 1] = timeout_key
-                    else:
+                    else:  # Actually run the test
                         result = timeit(lambda: approach(depth), number=1)
                         results[name][depth - 1] += result
                         if run_index + 1 == re_runs:
                             results[name][depth - 1] = round(results[name][depth - 1] / re_runs, 3)
         print('---|', end='')
 
-    combined_results = results.copy()
+    # Save the new table
 
     saved = False
     while not saved:
@@ -80,7 +89,7 @@ for test_name, test in tests.items():
 
                 csv_writer.writerow(max(['name', *list(range(1, max_depth + 1))], past_header, key=lambda x: len(x)))
 
-                for name, results in combined_results.items():
+                for name, results in results.items():
                     csv_writer.writerow([name, *results])
             saved = True
         except PermissionError:
