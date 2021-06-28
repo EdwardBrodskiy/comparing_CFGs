@@ -1,4 +1,5 @@
 from tools import words_of_depth
+from typing import Dict, List, Union, Tuple
 
 
 def parse(chars, rules, start='S'):
@@ -45,7 +46,7 @@ def is_matching_cfg_wrapper_10palindrome(max_depth):
 
 alph = ['1', '0']
 
-cnf = {
+cnf: Dict[str, List[Union[Tuple, str]]] = {
     # start
     'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
     # base
