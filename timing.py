@@ -2,12 +2,12 @@ from timeit import timeit
 import csv
 from typing import Dict, Union, List
 
-from implementations import my_cyk, nltk_testing as nltk, lark_testing as lark
+from implementations import my_cyk, nltk_testing as nltk, lark_testing as lark, my_cyk_numpy
 
 timeout: float = 60  # time until a given test times out
 timeout_key: str = ''
 
-max_depth: int = 5  # to what length to run the tests
+max_depth: int = 15  # to what length to run the tests
 
 re_runs: int = 5  # how many times to run test
 
@@ -18,7 +18,8 @@ tests = {
         'my_cyk': my_cyk.is_matching_cfg_wrapper_10palindrome,
         'lark_earley': lark.is_matching_cfg_wrapper_10palindrome_earley,
         'lark_cyk': lark.is_matching_cfg_wrapper_10palindrome_cyk,
-        'nltk_recursive_decent': nltk.is_matching_cfg_wrapper_recursive_decent
+        'nltk_recursive_decent': nltk.is_matching_cfg_wrapper_recursive_decent,
+        'my_cyk_numpy': my_cyk_numpy.is_matching_cfg_wrapper_10palindrome
     }
 }
 

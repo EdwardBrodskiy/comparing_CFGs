@@ -1,5 +1,5 @@
 import unittest
-import implementations.my_cyk as my_cyk
+import implementations.my_cyk_numpy as my_cyk
 
 from tests.implementations.tools_for_testing import word_and_result_from_nltk_10palindrome, inject_type_1_errors
 
