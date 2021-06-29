@@ -20,11 +20,11 @@ def is_matching_cfg(a: Lark, b: Lark, alphabet, max_depth: int):
 
 
 def is_matching_cfg_wrapper_10palindrome_earley(max_depth):
-    return is_matching_cfg(cfg, cfg, alph, max_depth)
+    return is_matching_cfg(cfg_10palindrome, cfg_10palindrome, alph, max_depth)
 
 
 def is_matching_cfg_wrapper_10palindrome_cyk(max_depth):
-    return is_matching_cfg(cnf, cnf, alph, max_depth)
+    return is_matching_cfg(cnf_10palindrome, cnf_10palindrome, alph, max_depth)
 
 
 alph = ['1', '0']
@@ -44,5 +44,5 @@ one: "1"
 zero: "0"
 '''
 
-cfg = Lark(grammar, start='start')
-cnf = Lark(chomsky_grammar, parser='cyk', start='start')
+cfg_10palindrome = Lark(grammar, start='start')
+cnf_10palindrome = Lark(chomsky_grammar, parser='cyk', start='start')

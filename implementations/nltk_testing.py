@@ -24,7 +24,7 @@ def is_matching_cfg(a, b, alphabet, max_depth: int, parser=RecursiveDescentParse
 
 
 def is_matching_cfg_wrapper_recursive_decent(max_depth):
-    return is_matching_cfg(cfg, cfg, alph, max_depth)
+    return is_matching_cfg(cfg_10palindrome, cfg_10palindrome, alph, max_depth)
 
 
 alph = ['0', '1']
@@ -35,6 +35,6 @@ X -> '0'
 Y -> '1'
 """
 
-cfg = CFG.fromstring(grammar1)
+cfg_10palindrome = CFG.fromstring(grammar1)
 
-# cnf = cfg.chomsky_normal_form()
+# cnf_10palindrome = cfg_10palindrome.chomsky_normal_form()

@@ -41,12 +41,12 @@ def is_matching_cfg(a, b, alphabet, max_depth: int):
 
 
 def is_matching_cfg_wrapper_10palindrome(max_depth):
-    return is_matching_cfg(cnf, cnf, alph, max_depth)
+    return is_matching_cfg(cnf_10palindrome, cnf_10palindrome, alph, max_depth)
 
 
 alph = ['1', '0']
 
-cnf: Dict[str, List[Union[Tuple, str]]] = {
+cnf_10palindrome: Dict[str, List[Union[Tuple, str]]] = {
     # start
     'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
     # base
@@ -60,16 +60,3 @@ cnf: Dict[str, List[Union[Tuple, str]]] = {
     # zero
     'Y': ['0']
 }
-
-if __name__ == '__main__':
-    from implementations.lark_testing import is_accepted, cnf as lark_cnf
-
-    for length in range(20):
-
-        for word in words_of_length(length, ['1', '0']):
-            joined_word = ''.join(word)
-            is_parsed_by_me = parse(word, cnf)
-            is_parsed_by_lark = is_accepted(lark_cnf, joined_word)
-            if is_parsed_by_me != is_parsed_by_lark:
-                print(f'me: {is_parsed_by_me}\tlark: {is_parsed_by_lark}\t word: {joined_word}')
-        print('Done', length)
