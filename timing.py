@@ -7,7 +7,7 @@ from implementations import my_cyk, nltk_testing as nltk, lark_testing as lark
 timeout: float = 60  # time until a given test times out
 timeout_key: str = ''
 
-max_depth: int = 5  # to what depth to run the tests
+max_depth: int = 5  # to what length to run the tests
 
 re_runs: int = 5  # how many times to run test
 
@@ -70,7 +70,7 @@ for test_name, test in tests.items():
                     if results[name][depth - 1] == timeout_key:  # skip if already timed out on prior runs
                         continue
 
-                    # check if the previous depth went over the threshold if so time out
+                    # check if the previous length went over the threshold if so time out
                     if timeout and depth > 1 and (results[name][depth - 2] == timeout_key
                                                   or results[name][depth - 2] / (run_index + 1) > timeout):
                         results[name][depth - 1] = timeout_key

@@ -2,14 +2,14 @@ import unittest
 from copy import deepcopy
 import implementations.my_cyk as my_cyk
 
-from tools import words_of_depth
+from tools import words_of_length
 from implementations.lark_testing import is_accepted, cnf as lark_cnf
 
 
 class TestMyCyk(unittest.TestCase):
     def test_parser_on_10palindromes_to_depth_10(self):
         for length in range(10):
-            for word in words_of_depth(length, ['1', '0']):
+            for word in words_of_length(length, ['1', '0']):
                 joined_word = ''.join(word)
                 is_parsed_by_me = my_cyk.parse(word, my_cyk.cnf)
                 is_parsed_by_lark = is_accepted(lark_cnf, joined_word)

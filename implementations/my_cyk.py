@@ -1,4 +1,4 @@
-from tools import words_of_depth
+from tools import words_of_length
 from typing import Dict, List, Union, Tuple
 
 
@@ -34,7 +34,7 @@ def parse(chars, rules, start='S'):
 
 def is_matching_cfg(a, b, alphabet, max_depth: int):
     for depth in range(max_depth):
-        for word in words_of_depth(depth, alphabet):
+        for word in words_of_length(depth, alphabet):
             if parse(word, a) != parse(word, b):
                 return False
     return True
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     for length in range(20):
 
-        for word in words_of_depth(length, ['1', '0']):
+        for word in words_of_length(length, ['1', '0']):
             joined_word = ''.join(word)
             is_parsed_by_me = parse(word, cnf)
             is_parsed_by_lark = is_accepted(lark_cnf, joined_word)

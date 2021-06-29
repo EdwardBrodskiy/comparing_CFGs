@@ -1,5 +1,5 @@
 from lark import Lark, ParseError
-from tools import words_of_depth
+from tools import words_of_length
 
 
 def is_accepted(lark_cfg: Lark, word_to_parse):
@@ -12,7 +12,7 @@ def is_accepted(lark_cfg: Lark, word_to_parse):
 
 def is_matching_cfg(a: Lark, b: Lark, alphabet, max_depth: int):
     for depth in range(max_depth):
-        for word in words_of_depth(depth, alphabet):
+        for word in words_of_length(depth, alphabet):
             word = ''.join(word)
             if is_accepted(a, word) != is_accepted(b, word):
                 return False
