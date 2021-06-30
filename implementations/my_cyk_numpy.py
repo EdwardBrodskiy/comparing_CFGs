@@ -1,11 +1,9 @@
 from tools import words_of_length
+from cfg import convert_rules_to_list, cfg_type
 import numpy as np
-from typing import Dict, List, Union, Tuple
-
-cfg_type = Dict[str, List[Union[Tuple, str]]]
 
 
-def parse(chars, rules, start='S'):
+def parse(chars, rules, start='S'):  # TODO: add start to the rule conversion
     """
     CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
     """
@@ -39,28 +37,6 @@ def parse(chars, rules, start='S'):
                                 table[span, span_start, key] = 1
                                 # TODO: check if a break here helps
     return table[-1, 0, 0] == 1
-
-
-def convert_rules_to_list(rules: cfg_type):
-    new_rules = [[] for _ in rules]
-    mapping = {key: index for index, key in enumerate(rules.keys())}
-
-    for key, rule in rules.items():
-        new_rules[mapping[key]] = list(map(lambda rhs_rule: convert_rhs_rule(rhs_rule, mapping), rule))
-
-    return new_rules
-
-
-def convert_rhs_rule(rule, mapping):
-    if type(rule) is tuple:
-        return convert_value(rule[0], mapping), convert_value(rule[1], mapping)
-    return convert_value(rule, mapping)
-
-
-def convert_value(value, mapping):
-    if value in mapping:
-        return mapping[value]
-    return value
 
 
 def is_matching_cfg(a, b, alphabet, max_depth: int):
