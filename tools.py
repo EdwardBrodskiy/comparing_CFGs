@@ -9,4 +9,4 @@ def words_of_length(length, alphabet) -> Iterator[List[str]]:
             yield letter
         else:
             for sub_word in words_of_length(length - 1, alphabet):
-                yield [letter, *sub_word]
+                yield [letter, *sub_word]  # TODO: surely this is not the best way

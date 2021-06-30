@@ -4,6 +4,18 @@ from typing import Dict
 import numpy as np
 
 
+def main():
+    import cProfile
+    import pstats
+
+    with cProfile.Profile() as pr:
+        is_matching_cfg_wrapper_10palindrome(15)
+
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.dump_stats(filename='memo_profiling.prof')
+
+
 def parse(chars, rules, memo: Dict[str, np.array], start='S'):
     """
     CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
@@ -75,4 +87,4 @@ cnf_10palindrome: cfg_type = {
 }
 
 if __name__ == '__main__':
-    is_matching_cfg_wrapper_10palindrome(3)
+    main()
