@@ -7,7 +7,7 @@ from implementations import my_cyk, nltk_testing as nltk, lark_testing as lark, 
 timeout: float = 60  # time until a given test times out
 timeout_key: str = ''
 
-max_depth: int = 30  # to what length to run the tests
+max_depth: int = 8  # to what length to run the tests
 
 re_runs: int = 5  # how many times to run test
 
@@ -64,7 +64,7 @@ for test_name, test in tests.items():
 
     # run the tests
 
-    print(f'Test cycle for {test_name}\n' + ''.join(list(map(lambda x: str(x).rjust(4), range(1, re_runs + 1)))))
+    print(f'Test cycle for {test_name}\n' + ''.join(list(map(lambda x: str(x).rjust(len(test) + 1), range(1, re_runs + 1)))))
     for run_index in range(re_runs):  # this is done instead of changing the number on timeit to spread out the tests
         for depth in range(1, max_depth + 1):
             for name, approach in test.items():
@@ -81,7 +81,9 @@ for test_name, test in tests.items():
                         results[name][depth - 1] += result
                         if run_index + 1 == re_runs:
                             results[name][depth - 1] = round(results[name][depth - 1] / re_runs, 3)
-        print('---|', end='')
+                if depth == max_depth:
+                    print('-', end='')
+        print('|', end='')
 
     # Save the new table
 

@@ -26,7 +26,7 @@ def parse(chars, rules, memo: Dict[str, np.array], start='S'):
     no_rules = len(rules)
     memo_key = ''.join(chars)
 
-    table = [[set() for _ in range(n - depth)] for depth in range(n)]
+    # table = [[set() for _ in range(n - depth)] for depth in range(n)]
     table = np.zeros((n, n, no_rules), dtype=np.uint8)
     if memo_key[:-1] in memo:
         table[:-1, :-1, :] = memo[memo_key[:-1]]
