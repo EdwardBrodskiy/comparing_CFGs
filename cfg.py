@@ -23,3 +23,21 @@ def convert_value(value, mapping):
     if value in mapping:
         return mapping[value]
     return value
+
+
+alphabet10 = ['1', '0']
+
+cnf_10palindrome: Dict[str, List[Union[Tuple, str]]] = {
+    # start
+    'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
+    # base
+    'D': [('X', 'A'), ('Y', 'B'), '1', '0'],
+    # alterone
+    'A': [('D', 'X')],
+    # alterzero
+    'B': [('D', 'Y')],
+    # one
+    'X': ['1'],
+    # zero
+    'Y': ['0']
+}

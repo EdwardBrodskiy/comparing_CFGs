@@ -1,5 +1,5 @@
 from tools import words_of_length
-from cfg import convert_rules_to_list, cfg_type
+from cfg import convert_rules_to_list, cnf_10palindrome, alphabet10
 from typing import Dict
 import numpy as np
 
@@ -66,25 +66,8 @@ def is_matching_cfg(a, b, alphabet, max_depth: int):
 
 
 def is_matching_cfg_wrapper_10palindrome(max_depth):
-    return is_matching_cfg(cnf_10palindrome, cnf_10palindrome, alph, max_depth)
+    return is_matching_cfg(cnf_10palindrome, cnf_10palindrome, alphabet10, max_depth)
 
-
-alph = ['1', '0']
-
-cnf_10palindrome: cfg_type = {
-    # start
-    'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
-    # base
-    'D': [('X', 'A'), ('Y', 'B'), '1', '0'],
-    # alterone
-    'A': [('D', 'X')],
-    # alterzero
-    'B': [('D', 'Y')],
-    # one
-    'X': ['1'],
-    # zero
-    'Y': ['0']
-}
 
 if __name__ == '__main__':
     main()
