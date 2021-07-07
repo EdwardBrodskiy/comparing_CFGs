@@ -1,0 +1,145 @@
+program -> programHeading block DOT
+unsignedInteger -> UNSIGNED_INT
+POINTER -> ^
+star7 -> "" | or3 star7
+opt7 -> "" | PLUS | MINUS
+functionType -> FUNCTION opt2 COLON resultType
+functionDeclaration -> FUNCTION identifier opt6 COLON resultType SEMI block
+block -> star1 compoundStatement
+tag -> identifier COLON typeIdentifier | typeIdentifier
+unsignedNumber -> unsignedInteger | unsignedReal
+functionDesignator -> identifier LPAREN parameterList RPAREN
+star10 -> "" | COMMA identifier star10
+fileType -> SFILE OF type | SFILE
+opt11 -> "" | SEMI ELSE statements
+emptyStatement -> ""
+star13 -> "" | COMMA expression star13
+star4 -> "" | SEMI typeDefinition star4
+or4 -> LBRACK expression star13 RBRACK | DOT identifier | POINTER
+unsignedReal -> UNSIGNED_REAL
+typeDefinition -> identifier EQUAL or2
+finalValue -> expression
+star19 -> "" | SEMI statement star19
+indexType -> simpleType
+variableDeclarationPart -> VAR variableDeclaration star8 SEMI
+procedureDeclaration -> PROCEDURE identifier opt5 SEMI block
+arrayType -> ARRAY LBRACK typeList RBRACK OF componentType
+term -> signedFactor star16
+or1 -> labelDeclarationPart | constantDefinitionPart | typeDefinitionPart | variableDeclarationPart | procedureAndFunctionDeclarationPart
+statements -> statement star19
+star15 -> "" | or6 term star15
+COLON -> :
+unlabelledStatement -> simpleStatement | structuredStatement
+set -> LBRACK elementList RBRACK
+star17 -> "" | COMMA actualParameter star17
+typeList -> indexType star5
+or3 -> SEMI variant | SEMI
+statement -> label COLON unlabelledStatement | unlabelledStatement
+compoundStatement -> SBEGIN statements END
+whileStatement -> WHILE expression DO statement
+RPAREN -> ')'
+simpleExpression -> term star15
+opt9 -> "" | LPAREN parameterList RPAREN
+simpleType -> scalarType | subrangeType | typeIdentifier
+or6 -> PLUS | MINUS | OR
+constant -> unsignedNumber | sign unsignedNumber | identifier | sign identifier | string
+type -> simpleType | structuredType | pointerType
+star1 -> "" | or1 star1
+setType -> SET OF baseType
+caseListElement -> constList COLON statement
+actualParameter -> expression
+EQUAL -> =
+star9 -> "" | SEMI formalParameterSection star9
+subrangeType -> constant DOTDOT constant
+recordVariableList -> variable star21
+labelDeclarationPart -> LABEL label star2 SEMI
+typeIdentifier -> identifier
+star3 -> "" | SEMI constantDefinition star3
+star21 -> "" | COMMA variable star21
+factor -> variable | LPAREN expression RPAREN | functionDesignator | unsignedConstant | set | NOT factor
+star12 -> "" | or4 star12
+opt2 -> "" | formalParameterList
+PLUS -> '+'
+repeatStatement -> REPEAT statements UNTIL expression
+forList -> initialValue or8 finalValue
+recordType -> RECORD fieldList END
+procedureAndFunctionDeclarationPart -> procedureOrFunctionDeclaration SEMI
+structuredType -> PACKED unpackedStructuredType | unpackedStructuredType
+conditionalStatement -> ifStatement | caseStatement
+variable -> identifier star12
+star5 -> "" | COMMA indexType star5
+SEMI -> ;
+identifier -> IDENTIFIER
+formalParameterList -> LPAREN formalParameterSection star9 RPAREN
+LT -> <
+variableDeclaration -> identifierList COLON type
+ifStatement -> IF expression THEN statement opt10
+assignmentStatement -> variable ASSIGN expression
+simpleStatement -> assignmentStatement | procedureStatement | gotoStatement | emptyStatement
+label -> unsignedInteger
+procedureStatement -> identifier opt9
+star2 -> "" | COMMA label star2
+STAR -> '*'
+RBRACK -> ]
+parameterList -> actualParameter star17
+opt5 -> "" | formalParameterList
+fixedPart -> recordSection star6
+identifierList -> identifier star10
+opt1 -> "" | LPAREN identifierList RPAREN
+opt4 -> "" | SEMI variantPart | SEMI
+formalParameterSection -> parameterGroup | VAR parameterGroup | FUNCTION parameterGroup | PROCEDURE parameterGroup
+opt8 -> "" | DOTDOT expression
+repetetiveStatement -> whileStatement | repeatStatement | forStatement
+elementList -> element star18 | ""
+MINUS -> -
+star16 -> "" | or7 signedFactor star16
+structuredStatement -> compoundStatement | conditionalStatement | repetetiveStatement | withStatement
+star20 -> "" | SEMI caseListElement star20
+NOT_EQUAL -> NE
+constantDefinitionPart -> CONST constantDefinition star3 SEMI
+constList -> constant star11
+sign -> PLUS | MINUS
+star14 -> "" | or5 simpleExpression star14
+initialValue -> expression
+element -> expression opt8
+DOT -> .
+opt6 -> "" | formalParameterList
+opt3 -> "" | formalParameterList
+pointerType -> POINTER typeIdentifier
+star18 -> "" | COMMA element star18
+resultType -> typeIdentifier
+or7 -> STAR | SLASH | DIV | MOD | AND
+gotoStatement -> GOTO label
+LBRACK -> [
+GT -> >
+caseStatement -> CASE expression OF caseListElement star20 opt11 END
+COMMA -> ,
+unsignedConstant -> unsignedNumber | string | NIL
+LPAREN -> '('
+or2 -> type | functionType | procedureType
+fieldList -> fixedPart opt4 | variantPart
+procedureType -> PROCEDURE opt3
+star6 -> "" | SEMI recordSection star6
+parameterGroup -> identifierList COLON
+or8 -> TO | DOWNTO
+forStatement -> FOR identifier ASSIGN forList DO statement
+SLASH -> /
+programHeading -> PROGRAM identifier opt1 SEMI
+unpackedStructuredType -> arrayType | recordType | setType | fileType
+procedureOrFunctionDeclaration -> procedureDeclaration | functionDeclaration
+variantPart -> CASE tag OF variant star7
+scalarType -> LPAREN identifierList RPAREN
+withStatement -> WITH recordVariableList DO statement
+recordSection -> identifierList COLON type
+star11 -> "" | COMMA constant star11
+signedFactor -> opt7 factor
+baseType -> simpleType
+typeDefinitionPart -> TYPE typeDefinition star4 SEMI
+or5 -> EQUAL | NOT_EQUAL | LT | LE | GE | GT | IN
+variant -> constList COLON LPAREN fieldList RPAREN
+expression -> simpleExpression star14
+string -> STRING
+componentType -> type
+star8 -> "" | SEMI variableDeclaration star8
+constantDefinition -> identifier EQUAL constant
+opt10 -> "" | ELSE statement

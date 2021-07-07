@@ -1,0 +1,228 @@
+translationUnit -> externalDeclaration | translationUnit externalDeclaration
+star4 -> "" | , logicalOrExpression star4
+opt23 -> "" | abstractDeclarator
+opt10 -> "" | Identifier
+Register -> register
+Const -> const
+staticAssertDeclaration -> _Static_assert '(' constantExpression , plus4 ')' ;
+opt28 -> "" | typeQualifierList
+parameterDeclaration -> declarationSpecifiers declarator | declarationSpecifiers2 opt23
+RightParen -> ')'
+ModAssign -> %=
+enumSpecifier -> enum opt9 { enumeratorList } | enum opt10 { enumeratorList , } | enum Identifier
+Int -> int
+Generic -> _Generic
+genericSelection -> _Generic '(' assignmentExpression , genericAssocList ')'
+equalityExpression -> relationalExpression | equalityExpression == relationalExpression | equalityExpression != relationalExpression
+star1 -> "" | , gccAttribute star1
+designation -> designatorList =
+argumentExpressionList -> assignmentExpression | argumentExpressionList , assignmentExpression
+PlusPlus -> '++'
+Question -> '?'
+Ellipsis -> ...
+Switch -> switch
+opt44 -> "" | expression
+opt20 -> "" | typeQualifierList
+opt33 -> "" | parameterTypeList
+jumpStatement -> goto Identifier ; | continue ; | break ; | return opt46 ; | goto unaryExpression ;
+postfixExpression -> primaryExpression | postfixExpression [ expression ] | postfixExpression '(' opt1 ')' | postfixExpression . Identifier | postfixExpression -> Identifier | postfixExpression '++' | postfixExpression -- | '(' typeName ')' { initializerList } | '(' typeName ')' { initializerList , } | '(' typeName ')' { initializerList } | '(' typeName ')' { initializerList , }
+storageClassSpecifier -> typedef | extern | static | _Thread_local | auto | register
+GreaterEqual -> >=
+plus2 -> declarationSpecifier | declarationSpecifier plus2
+typeQualifierList -> typeQualifier | typeQualifierList typeQualifier
+Minus -> -
+Equal -> ==
+Void -> void
+plus1 -> StringLiteral | StringLiteral plus1
+opt48 -> "" | declarationSpecifiers
+Signed -> signed
+Double -> double
+typedefName -> Identifier
+opt24 -> "" | abstractDeclarator
+declarationSpecifiers -> plus2
+opt29 -> "" | parameterTypeList
+RightBrace -> }
+Mod -> %
+structDeclarator -> declarator | opt8 : constantExpression
+For -> for
+externalDeclaration -> functionDefinition | declaration | ;
+Alignof -> _Alignof
+RightShiftAssign -> >>=
+DivAssign -> /=
+Div -> /
+Char -> char
+Long -> long
+exclusiveOrExpression -> andExpression | exclusiveOrExpression ^ andExpression
+Imaginary -> _Imaginary
+opt38 -> "" | blockItemList
+opt11 -> "" | pointer
+Colon -> :
+Unsigned -> unsigned
+opt25 -> "" | pointer
+gccAttribute -> Identifier opt17 | ""
+OrOr -> '||'
+assignmentOperator -> = | '*=' | /= | %= | '+=' | -= | <<= | >>= | &= | ^= | '|='
+labeledStatement -> Identifier : statement | case constantExpression : statement | default : statement
+LeftParen -> '('
+enumeratorList -> enumerator | enumeratorList , enumerator
+unaryOperator -> & | '*' | '+' | - | ~ | !
+declarationList -> declaration | declarationList declaration
+Short -> short
+opt36 -> "" | logicalOrExpression star2
+logicalOrExpression -> logicalAndExpression | logicalOrExpression '||' logicalAndExpression
+alignmentSpecifier -> _Alignas '(' typeName ')' | _Alignas '(' constantExpression ')'
+opt6 -> "" | specifierQualifierList
+opt3 -> "" | initDeclaratorList
+LeftShift -> <<
+compilationUnit -> opt47
+NotEqual -> !=
+parameterTypeList -> parameterList | parameterList , ...
+designator -> [ constantExpression ] | . Identifier
+opt32 -> "" | typeQualifierList
+opt5 -> "" | structDeclaratorList
+Struct -> struct
+structDeclarationList -> structDeclaration | structDeclarationList structDeclaration
+opt16 -> "" | identifierList
+expressionStatement -> opt39 ;
+functionSpecifier -> inline | _Noreturn
+assignmentExpression -> conditionalExpression | unaryExpression assignmentOperator assignmentExpression
+opt43 -> "" | expression
+specifierQualifierList -> typeSpecifier opt6 | typeQualifier opt7
+opt19 -> "" | typeQualifierList
+Do -> do
+Goto -> goto
+primaryExpression -> Identifier | Constant | plus1 | '(' expression ')' | genericSelection | '(' compoundStatement ')'
+Atomic -> _Atomic
+plus4 -> StringLiteral | StringLiteral plus4
+blockItem -> declaration | statement
+LeftShiftAssign -> <<=
+Caret -> ^
+unaryExpression -> postfixExpression | '++' unaryExpression | -- unaryExpression | unaryOperator castExpression | sizeof unaryExpression | sizeof '(' typeName ')' | _Alignof '(' typeName ')' | && Identifier
+castExpression -> unaryExpression | '(' typeName ')' castExpression | '(' typeName ')' castExpression
+Alignas -> _Alignas
+LeftBrace -> {
+logicalAndExpression -> inclusiveOrExpression | logicalAndExpression && inclusiveOrExpression
+AndAnd -> &&
+typeName -> specifierQualifierList opt24
+pointer -> '*' opt19 | '*' opt20 pointer | ^ opt21 | ^ opt22 pointer
+opt47 -> "" | translationUnit
+statement -> labeledStatement | compoundStatement | expressionStatement | selectionStatement | iterationStatement | jumpStatement | volatile '(' opt36 star3 ')' ;
+multiplicativeExpression -> castExpression | multiplicativeExpression '*' castExpression | multiplicativeExpression / castExpression | multiplicativeExpression % castExpression
+RightShift -> >>
+Star -> '*'
+andExpression -> equalityExpression | andExpression & equalityExpression
+atomicTypeSpecifier -> _Atomic '(' typeName ')'
+Less -> <
+blockItemList -> blockItem | blockItemList blockItem
+Union -> union
+AndAssign -> &=
+opt12 -> "" | typeQualifierList
+Default -> default
+opt26 -> "" | typeQualifierList
+initDeclaratorList -> initDeclarator | initDeclaratorList , initDeclarator
+gccAttributeList -> gccAttribute star1 | ""
+designatorList -> designator | designatorList designator
+abstractDeclarator -> pointer | opt25 directAbstractDeclarator
+ThreadLocal -> _Thread_local
+opt49 -> "" | declarationList
+Auto -> auto
+star2 -> "" | , logicalOrExpression star2
+If -> if
+Arrow -> ->
+initDeclarator -> declarator | declarator = initializer
+Semi -> ;
+opt21 -> "" | typeQualifierList
+opt39 -> "" | expression
+opt2 -> "" | '?' expression : conditionalExpression
+enumerationConstant -> Identifier
+declarationSpecifiers2 -> plus3
+Enum -> enum
+Return -> return
+opt7 -> "" | specifierQualifierList
+structDeclaratorList -> structDeclarator | structDeclaratorList , structDeclarator
+RightBracket -> ]
+StarAssign -> '*='
+Not -> !
+functionDefinition -> opt48 declarator opt49 compoundStatement
+Bool -> _Bool
+Extern -> extern
+opt46 -> "" | expression
+Static -> static
+opt18 -> "" | argumentExpressionList
+opt31 -> "" | assignmentExpression
+selectionStatement -> if '(' expression ')' statement opt40 | switch '(' expression ')' statement
+shiftExpression -> additiveExpression | shiftExpression << additiveExpression | shiftExpression >> additiveExpression
+Or -> '|'
+LessEqual -> <=
+directDeclarator -> Identifier | '(' declarator ')' | directDeclarator [ opt12 opt13 ] | directDeclarator [ static opt14 assignmentExpression ] | directDeclarator [ typeQualifierList static assignmentExpression ] | directDeclarator [ opt15 '*' ] | directDeclarator '(' parameterTypeList ')' | directDeclarator '(' opt16 ')'
+typeQualifier -> const | restrict | volatile | _Atomic
+opt4 -> "" | Identifier
+While -> while
+MinusAssign -> -=
+conditionalExpression -> logicalOrExpression opt2
+opt8 -> "" | declarator
+genericAssociation -> typeName : assignmentExpression | default : assignmentExpression
+opt42 -> "" | expression
+structDeclaration -> specifierQualifierList opt5 ; | staticAssertDeclaration
+opt15 -> "" | typeQualifierList
+opt35 -> "" | designation
+opt13 -> "" | assignmentExpression
+compoundStatement -> { opt38 }
+directAbstractDeclarator -> '(' abstractDeclarator ')' | [ opt26 opt27 ] | [ static opt28 assignmentExpression ] | [ typeQualifierList static assignmentExpression ] | [ '*' ] | '(' opt29 ')' | directAbstractDeclarator [ opt30 opt31 ] | directAbstractDeclarator [ static opt32 assignmentExpression ] | directAbstractDeclarator [ typeQualifierList static assignmentExpression ] | directAbstractDeclarator [ '*' ] | directAbstractDeclarator '(' opt33 ')'
+XorAssign -> ^=
+Restrict -> restrict
+Break -> break
+declarator -> opt11 directDeclarator
+star3 -> "" | : opt37 star3
+opt40 -> "" | else statement
+Dot -> .
+Comma -> ,
+Typedef -> typedef
+identifierList -> Identifier | identifierList , Identifier
+opt27 -> "" | assignmentExpression
+enumerator -> enumerationConstant | enumerationConstant = constantExpression
+expression -> assignmentExpression | expression , assignmentExpression
+MinusMinus -> --
+structOrUnionSpecifier -> structOrUnion opt4 { structDeclarationList } | structOrUnion Identifier
+Continue -> continue
+Inline -> inline
+Noreturn -> _Noreturn
+opt22 -> "" | typeQualifierList
+constantExpression -> conditionalExpression
+Plus -> '+'
+Tilde -> ~
+OrAssign -> '|='
+parameterList -> parameterDeclaration | parameterList , parameterDeclaration
+Volatile -> volatile
+initializerList -> opt34 initializer | initializerList , opt35 initializer
+relationalExpression -> shiftExpression | relationalExpression < shiftExpression | relationalExpression > shiftExpression | relationalExpression <= shiftExpression | relationalExpression >= shiftExpression
+StaticAssert -> _Static_assert
+opt45 -> "" | expression
+Assign -> =
+plus3 -> declarationSpecifier | declarationSpecifier plus3
+Else -> else
+Float -> float
+And -> &
+opt17 -> "" | '(' opt18 ')'
+Complex -> _Complex
+opt34 -> "" | designation
+iterationStatement -> while '(' expression ')' statement | do statement while '(' expression ')' ; | for '(' opt41 ; opt42 ; opt43 ')' statement | for '(' declaration opt44 ; opt45 ')' statement
+typeSpecifier -> void | char | short | int | long | float | double | signed | unsigned | _Bool | _Complex | atomicTypeSpecifier | structOrUnionSpecifier | enumSpecifier | typedefName
+Greater -> >
+opt9 -> "" | Identifier
+additiveExpression -> multiplicativeExpression | additiveExpression '+' multiplicativeExpression | additiveExpression - multiplicativeExpression
+genericAssocList -> genericAssociation | genericAssocList , genericAssociation
+inclusiveOrExpression -> exclusiveOrExpression | inclusiveOrExpression '|' exclusiveOrExpression
+LeftBracket -> [
+opt41 -> "" | expression
+declarationSpecifier -> storageClassSpecifier | typeSpecifier | typeQualifier | functionSpecifier | alignmentSpecifier
+Sizeof -> sizeof
+opt1 -> "" | argumentExpressionList
+opt14 -> "" | typeQualifierList
+structOrUnion -> struct | union
+opt30 -> "" | typeQualifierList
+declaration -> declarationSpecifiers opt3 ; | staticAssertDeclaration
+PlusAssign -> '+='
+opt37 -> "" | logicalOrExpression star4
+Case -> case
+initializer -> assignmentExpression | { initializerList } | { initializerList , }

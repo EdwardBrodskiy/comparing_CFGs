@@ -1,0 +1,118 @@
+Program -> TopStatements
+CallExpressionnormal -> PrimaryExpressionnormal | FullNewExpression | CallExpressionnormal MemberOperator | CallExpressionnormal Arguments
+FormalParameters -> "" | FormalParametersPrefix
+ForInitializer -> "" | ExpressionnormalnoIn | var VariableDeclarationListnoIn
+PrimaryExpressioninitial -> SimpleExpression
+FinallyClause -> finally Block
+TopStatements -> "" | TopStatementsPrefix
+AssignmentExpressionnormalallowIn -> ConditionalExpressionnormalallowIn | LeftSideExpressionnormal = AssignmentExpressionnormalallowIn | LeftSideExpressionnormal CompoundAssignment AssignmentExpressionnormalallowIn
+AnonymousFunction -> function FormalParametersAndBody
+ForStatementnoShortIf -> for '(' ForInitializer ; OptionalExpression ; OptionalExpression ')' StatementnoShortIf | for '(' ForInBinding in ExpressionnormalallowIn ')' StatementnoShortIf
+LabeledStatementnoShortIf -> Identifier : StatementnoShortIf
+BitwiseXorExpressioninitialallowIn -> BitwiseAndExpressioninitialallowIn | BitwiseXorExpressioninitialallowIn ^ BitwiseAndExpressionnormalallowIn
+ShortNewSubexpression -> FullNewSubexpression | ShortNewExpression
+ArrayLiteral -> [ ] | [ ElementList ]
+VariableInitializernoIn -> "" | = AssignmentExpressionnormalnoIn
+EqualityExpressionnormalallowIn -> RelationalExpressionnormalallowIn | EqualityExpressionnormalallowIn == RelationalExpressionnormalallowIn | EqualityExpressionnormalallowIn != RelationalExpressionnormalallowIn | EqualityExpressionnormalallowIn === RelationalExpressionnormalallowIn | EqualityExpressionnormalallowIn !== RelationalExpressionnormalallowIn
+AssignmentExpressioninitialallowIn -> ConditionalExpressioninitialallowIn | LeftSideExpressioninitial = AssignmentExpressionnormalallowIn | LeftSideExpressioninitial CompoundAssignment AssignmentExpressionnormalallowIn
+PrimaryExpressionnormal -> SimpleExpression | FunctionExpression | ObjectLiteral
+VariableDeclarationallowIn -> Identifier VariableInitializerallowIn
+TopStatementsPrefix -> TopStatement | TopStatementsPrefix TopStatement
+FormalParametersAndBody -> '(' FormalParameters ')' { TopStatements }
+EqualityExpressioninitialallowIn -> RelationalExpressioninitialallowIn | EqualityExpressioninitialallowIn == RelationalExpressionnormalallowIn | EqualityExpressioninitialallowIn != RelationalExpressionnormalallowIn | EqualityExpressioninitialallowIn === RelationalExpressionnormalallowIn | EqualityExpressioninitialallowIn !== RelationalExpressionnormalallowIn
+LabeledStatementfull -> Identifier : Statementfull
+VariableDeclarationListnoIn -> VariableDeclarationnoIn | VariableDeclarationListnoIn , VariableDeclarationnoIn
+BitwiseXorExpressionnormalnoIn -> BitwiseAndExpressionnormalnoIn | BitwiseXorExpressionnormalnoIn ^ BitwiseAndExpressionnormalnoIn
+Block -> { BlockStatements }
+BitwiseAndExpressioninitialallowIn -> EqualityExpressioninitialallowIn | BitwiseAndExpressioninitialallowIn & EqualityExpressionnormalallowIn
+ForStatementfull -> for '(' ForInitializer ; OptionalExpression ; OptionalExpression ')' Statementfull | for '(' ForInBinding in ExpressionnormalallowIn ')' Statementfull
+ReturnStatement -> return OptionalExpression
+PostfixExpressionnormal -> LeftSideExpressionnormal | LeftSideExpressionnormal '++' | LeftSideExpressionnormal --
+BitwiseOrExpressionnormalallowIn -> BitwiseXorExpressionnormalallowIn | BitwiseOrExpressionnormalallowIn '|' BitwiseXorExpressionnormalallowIn
+ExpressionStatement -> ExpressioninitialallowIn
+SwitchStatement -> switch ParenthesizedExpression { } | switch ParenthesizedExpression { CaseGroups LastCaseGroup }
+MultiplicativeExpressioninitial -> UnaryExpressioninitial | MultiplicativeExpressioninitial '*' UnaryExpressionnormal | MultiplicativeExpressioninitial / UnaryExpressionnormal | MultiplicativeExpressioninitial % UnaryExpressionnormal
+LastCaseGroup -> CaseGuards BlockStatements
+CallExpressioninitial -> PrimaryExpressioninitial | FullNewExpression | CallExpressioninitial MemberOperator | CallExpressioninitial Arguments
+AssignmentExpressionnormalnoIn -> ConditionalExpressionnormalnoIn | LeftSideExpressionnormal = AssignmentExpressionnormalnoIn | LeftSideExpressionnormal CompoundAssignment AssignmentExpressionnormalnoIn
+ParenthesizedExpression -> '(' ExpressionnormalallowIn ')'
+CaseGuard -> case ExpressionnormalallowIn : | default :
+FullNewSubexpression -> PrimaryExpressionnormal | FullNewExpression | FullNewSubexpression MemberOperator
+FullNewExpression -> new FullNewSubexpression Arguments
+SimpleExpression -> this | null | true | false | Number | String | Identifier | RegularExpression | ParenthesizedExpression | ArrayLiteral
+BlockStatements -> "" | BlockStatementsPrefix
+ShiftExpressionnormal -> AdditiveExpressionnormal | ShiftExpressionnormal << AdditiveExpressionnormal | ShiftExpressionnormal >> AdditiveExpressionnormal | ShiftExpressionnormal >>> AdditiveExpressionnormal
+CatchClause -> catch '(' Identifier ')' Block
+LogicalAndExpressionnormalallowIn -> BitwiseOrExpressionnormalallowIn | LogicalAndExpressionnormalallowIn && BitwiseOrExpressionnormalallowIn
+ElementList -> LiteralElement | ElementList , LiteralElement
+WithStatementnoShortIf -> with ParenthesizedExpression StatementnoShortIf
+RelationalExpressionnormalnoIn -> ShiftExpressionnormal | RelationalExpressionnormalnoIn < ShiftExpressionnormal | RelationalExpressionnormalnoIn > ShiftExpressionnormal | RelationalExpressionnormalnoIn <= ShiftExpressionnormal | RelationalExpressionnormalnoIn >= ShiftExpressionnormal | RelationalExpressionnormalnoIn instanceof ShiftExpressionnormal
+BitwiseOrExpressionnormalnoIn -> BitwiseXorExpressionnormalnoIn | BitwiseOrExpressionnormalnoIn '|' BitwiseXorExpressionnormalnoIn
+VariableDefinition -> var VariableDeclarationListallowIn
+LogicalOrExpressioninitialallowIn -> LogicalAndExpressioninitialallowIn | LogicalOrExpressioninitialallowIn '||' LogicalAndExpressionnormalallowIn
+PostfixExpressioninitial -> LeftSideExpressioninitial | LeftSideExpressioninitial '++' | LeftSideExpressioninitial --
+CaseGroups -> "" | CaseGroups CaseGroup
+LiteralElement -> AssignmentExpressionnormalallowIn
+OptionalExpression -> ExpressionnormalallowIn | ""
+ConditionalExpressionnormalnoIn -> LogicalOrExpressionnormalnoIn | LogicalOrExpressionnormalnoIn '?' AssignmentExpressionnormalnoIn : AssignmentExpressionnormalnoIn
+BitwiseAndExpressionnormalnoIn -> EqualityExpressionnormalnoIn | BitwiseAndExpressionnormalnoIn & EqualityExpressionnormalnoIn
+WhileStatementfull -> while ParenthesizedExpression Statementfull
+BitwiseXorExpressionnormalallowIn -> BitwiseAndExpressionnormalallowIn | BitwiseXorExpressionnormalallowIn ^ BitwiseAndExpressionnormalallowIn
+RelationalExpressionnormalallowIn -> ShiftExpressionnormal | RelationalExpressionnormalallowIn < ShiftExpressionnormal | RelationalExpressionnormalallowIn > ShiftExpressionnormal | RelationalExpressionnormalallowIn <= ShiftExpressionnormal | RelationalExpressionnormalallowIn >= ShiftExpressionnormal | RelationalExpressionnormalallowIn instanceof ShiftExpressionnormal | RelationalExpressionnormalallowIn in ShiftExpressionnormal
+LeftSideExpressioninitial -> CallExpressioninitial | ShortNewExpression
+Statementfull -> EmptyStatement | ExpressionStatement OptionalSemicolon | VariableDefinition OptionalSemicolon | Block | LabeledStatementfull | IfStatementfull | SwitchStatement | DoStatement OptionalSemicolon | WhileStatementfull | ForStatementfull | WithStatementfull | ContinueStatement OptionalSemicolon | BreakStatement OptionalSemicolon | ReturnStatement OptionalSemicolon | ThrowStatement OptionalSemicolon | TryStatement
+FormalParameter -> Identifier
+CaseGuards -> CaseGuard | CaseGuards CaseGuard
+EmptyStatement -> ;
+LogicalOrExpressionnormalnoIn -> LogicalAndExpressionnormalnoIn | LogicalOrExpressionnormalnoIn '||' LogicalAndExpressionnormalnoIn
+ExpressionnormalnoIn -> AssignmentExpressionnormalnoIn | ExpressionnormalnoIn , AssignmentExpressionnormalnoIn
+DoStatement -> do Statementfull while ParenthesizedExpression
+BitwiseAndExpressionnormalallowIn -> EqualityExpressionnormalallowIn | BitwiseAndExpressionnormalallowIn & EqualityExpressionnormalallowIn
+AdditiveExpressioninitial -> MultiplicativeExpressioninitial | AdditiveExpressioninitial '+' MultiplicativeExpressionnormal | AdditiveExpressioninitial - MultiplicativeExpressionnormal
+Arguments -> '(' ')' | '(' ArgumentList ')'
+WithStatementfull -> with ParenthesizedExpression Statementfull
+ShortNewExpression -> new ShortNewSubexpression
+LogicalAndExpressionnormalnoIn -> BitwiseOrExpressionnormalnoIn | LogicalAndExpressionnormalnoIn && BitwiseOrExpressionnormalnoIn
+OptionalLabel -> "" | Identifier
+FunctionDefinition -> NamedFunction
+ContinueStatement -> continue OptionalLabel
+RelationalExpressioninitialallowIn -> ShiftExpressioninitial | RelationalExpressioninitialallowIn < ShiftExpressionnormal | RelationalExpressioninitialallowIn > ShiftExpressionnormal | RelationalExpressioninitialallowIn <= ShiftExpressionnormal | RelationalExpressioninitialallowIn >= ShiftExpressionnormal | RelationalExpressioninitialallowIn instanceof ShiftExpressionnormal | RelationalExpressioninitialallowIn in ShiftExpressionnormal
+ConditionalExpressioninitialallowIn -> LogicalOrExpressioninitialallowIn | LogicalOrExpressioninitialallowIn '?' AssignmentExpressionnormalallowIn : AssignmentExpressionnormalallowIn
+UnaryExpressioninitial -> PostfixExpressioninitial | delete LeftSideExpressionnormal | void UnaryExpressionnormal | typeof UnaryExpressionnormal | '++' LeftSideExpressionnormal | -- LeftSideExpressionnormal | '+' UnaryExpressionnormal | - UnaryExpressionnormal | ~ UnaryExpressionnormal | ! UnaryExpressionnormal
+FieldList -> LiteralField
+VariableDeclarationnoIn -> Identifier VariableInitializernoIn
+IfStatementfull -> if ParenthesizedExpression Statementfull | if ParenthesizedExpression StatementnoShortIf else Statementfull
+TryStatement -> try Block CatchClauses | try Block FinallyClause | try Block CatchClauses FinallyClause
+LeftSideExpressionnormal -> CallExpressionnormal | ShortNewExpression
+NamedFunction -> function Identifier FormalParametersAndBody
+BlockStatementsPrefix -> Statementfull | BlockStatementsPrefix Statementfull
+FunctionExpression -> AnonymousFunction | NamedFunction
+FormalParametersPrefix -> FormalParameter | FormalParametersPrefix , FormalParameter
+TopStatement -> Statementfull | FunctionDefinition
+UnaryExpressionnormal -> PostfixExpressionnormal | delete LeftSideExpressionnormal | void UnaryExpressionnormal | typeof UnaryExpressionnormal | '++' LeftSideExpressionnormal | -- LeftSideExpressionnormal | '+' UnaryExpressionnormal | - UnaryExpressionnormal | ~ UnaryExpressionnormal | ! UnaryExpressionnormal
+StatementnoShortIf -> EmptyStatement | ExpressionStatement OptionalSemicolon | VariableDefinition OptionalSemicolon | Block | LabeledStatementnoShortIf | IfStatementnoShortIf | SwitchStatement | DoStatement OptionalSemicolon | WhileStatementnoShortIf | ForStatementnoShortIf | WithStatementnoShortIf | ContinueStatement OptionalSemicolon | BreakStatement OptionalSemicolon | ReturnStatement OptionalSemicolon | ThrowStatement OptionalSemicolon | TryStatement
+ForInBinding -> LeftSideExpressionnormal | var VariableDeclarationnoIn
+ShiftExpressioninitial -> AdditiveExpressioninitial | ShiftExpressioninitial << AdditiveExpressionnormal | ShiftExpressioninitial >> AdditiveExpressionnormal | ShiftExpressioninitial >>> AdditiveExpressionnormal
+MemberOperator -> [ ExpressionnormalallowIn ] | . Identifier
+ConditionalExpressionnormalallowIn -> LogicalOrExpressionnormalallowIn | LogicalOrExpressionnormalallowIn '?' AssignmentExpressionnormalallowIn : AssignmentExpressionnormalallowIn
+ExpressionnormalallowIn -> AssignmentExpressionnormalallowIn | ExpressionnormalallowIn , AssignmentExpressionnormalallowIn
+OptionalSemicolon -> ;
+MultiplicativeExpressionnormal -> UnaryExpressionnormal | MultiplicativeExpressionnormal '*' UnaryExpressionnormal | MultiplicativeExpressionnormal / UnaryExpressionnormal | MultiplicativeExpressionnormal % UnaryExpressionnormal
+EqualityExpressionnormalnoIn -> RelationalExpressionnormalnoIn | EqualityExpressionnormalnoIn == RelationalExpressionnormalnoIn | EqualityExpressionnormalnoIn != RelationalExpressionnormalnoIn | EqualityExpressionnormalnoIn === RelationalExpressionnormalnoIn | EqualityExpressionnormalnoIn !== RelationalExpressionnormalnoIn
+CaseGroup -> CaseGuards BlockStatementsPrefix
+BitwiseOrExpressioninitialallowIn -> BitwiseXorExpressioninitialallowIn | BitwiseOrExpressioninitialallowIn '|' BitwiseXorExpressionnormalallowIn
+BreakStatement -> break OptionalLabel
+ExpressioninitialallowIn -> AssignmentExpressioninitialallowIn | ExpressioninitialallowIn , AssignmentExpressionnormalallowIn
+VariableDeclarationListallowIn -> VariableDeclarationallowIn | VariableDeclarationListallowIn , VariableDeclarationallowIn
+IfStatementnoShortIf -> if ParenthesizedExpression StatementnoShortIf else StatementnoShortIf
+AdditiveExpressionnormal -> MultiplicativeExpressionnormal | AdditiveExpressionnormal '+' MultiplicativeExpressionnormal | AdditiveExpressionnormal - MultiplicativeExpressionnormal
+LogicalOrExpressionnormalallowIn -> LogicalAndExpressionnormalallowIn | LogicalOrExpressionnormalallowIn '||' LogicalAndExpressionnormalallowIn
+ThrowStatement -> throw ExpressionnormalallowIn
+LogicalAndExpressioninitialallowIn -> BitwiseOrExpressioninitialallowIn | LogicalAndExpressioninitialallowIn && BitwiseOrExpressionnormalallowIn
+LiteralField -> Identifier : AssignmentExpressionnormalallowIn
+ArgumentList -> AssignmentExpressionnormalallowIn | ArgumentList , AssignmentExpressionnormalallowIn
+WhileStatementnoShortIf -> while ParenthesizedExpression StatementnoShortIf
+CompoundAssignment -> '*=' | /= | %= | '+=' | -= | <<= | >>= | >>>= | &= | ^= | '|='
+ObjectLiteral -> { } | { FieldList }
+VariableInitializerallowIn -> "" | = AssignmentExpressionnormalallowIn
+CatchClauses -> CatchClause | CatchClauses CatchClause

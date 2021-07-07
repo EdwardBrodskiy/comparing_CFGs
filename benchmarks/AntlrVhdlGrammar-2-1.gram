@@ -1,0 +1,441 @@
+design_file -> star1
+selected_signal_assignment -> WITH expression SELECT target LE opts selected_waveforms SEMI
+star46 -> "" | COMMA name star46
+opt75 -> "" | IN | OUT
+subprogram_statement_part -> star52
+opt128 -> "" | IS
+signal_mode -> IN | OUT | INOUT | BUFFER | LINKAGE
+opt47 -> "" | identifier
+wait_statement -> opt144 WAIT opt145 opt146 opt147 SEMI
+simultaneous_alternative -> WHEN choices ARROW simultaneous_statement_part
+interface_port_declaration -> identifier_list COLON signal_mode subtype_indication opt77
+process_statement -> opt101 PROCESS opt102 opt103 process_declarative_part BEGIN process_statement_part END PROCESS opt104 SEMI
+opt62 -> "" | DOUBLESTAR primary
+opt31 -> "" | IS
+case_statement_alternative -> WHEN choices ARROW sequence_of_statements
+star7 -> "" | configuration_item star7
+opt7 -> "" | label_colon
+subprogram_body -> subprogram_specification IS subprogram_declarative_part BEGIN subprogram_statement_part END opt133 opt134 SEMI
+opt106 -> "" | relational_operator shift_expression
+aggregate -> LPAREN element_association star2 RPAREN
+assertion_statement -> opt10 assertion SEMI
+opt145 -> "" | sensitivity_clause
+opt97 -> "" | identifier
+interface_quantity_declaration -> QUANTITY identifier_list COLON opt75 subtype_indication opt76
+opt133 -> "" | subprogram_kind
+index_specification -> discrete_range | expression
+entity_declarative_part -> star15
+quantity_list -> name star42 | OTHERS | ALL
+parameter_specification -> identifier IN discrete_range
+physical_literal -> abstract_literal identifier
+opt86 -> "" | name_attribute_part | name_function_call_or_indexed_part | name_slice_part
+opt20 -> "" | LPAREN expression RPAREN
+opt78 -> "" | BUS
+opt51 -> "" | LPAREN identifier RPAREN
+star10 -> "" | COMMA break_element star10
+star39 -> "" | sequential_statement star39
+opt137 -> "" | selected_name
+actual_parameter_part -> association_list
+waveform -> waveform_element star56 | UNAFFECTED
+opt58 -> "" | port_clause
+opt141 -> "" | label_colon
+element_declaration -> identifier_list COLON element_subtype_definition SEMI
+opt101 -> "" | label_colon
+signal_list -> name star46 | OTHERS | ALL
+opt11 -> "" | formal_part ARROW
+process_statement_part -> star41
+use_clause -> USE selected_name star55 SEMI
+opt124 -> "" | label_colon
+signal_kind -> REGISTER | BUS
+component_configuration -> FOR component_specification opt29 opt30 END FOR SEMI
+star13 -> "" | context_item star13
+sequential_statement -> wait_statement | assertion_statement | report_statement | signal_assignment_statement | variable_assignment_statement | if_statement | case_statement | loop_statement | next_statement | exit_statement | return_statement | opt111 NULL SEMI | break_statement | procedure_call_statement
+star4 -> "" | architecture_statement star4
+opt68 -> "" | ELSE sequence_of_statements
+opt131 -> "" | index_constraint
+star43 -> "" | COMMA waveform WHEN choices star43
+opt16 -> "" | generic_map_aspect SEMI
+star22 -> "" | SEMI interface_constant_declaration star22
+entity_declarative_item -> subprogram_declaration | subprogram_body | type_declaration | subtype_declaration | constant_declaration | signal_declaration | variable_declaration | file_declaration | alias_declaration | attribute_declaration | attribute_specification | disconnection_specification | step_limit_specification | use_clause
+opt36 -> "" | port_map_aspect
+opt82 -> "" | VARASGN expression
+binding_indication -> opt12 opt13 opt14
+file_declaration -> FILE identifier_list COLON subtype_indication opt63 SEMI
+opt65 -> "" | star20 BEGIN
+entity_class -> ENTITY | ARCHITECTURE | CONFIGURATION | PROCEDURE | FUNCTION | PACKAGE | TYPE | SUBTYPE | CONSTANT | SIGNAL | VARIABLE | COMPONENT | LABEL | LITERAL | UNITS | FILE | NATURE | SUBNATURE | QUANTITY
+opt55 -> "" | identifier
+opt33 -> "" | port_clause
+opt88 -> "" | actual_parameter_part
+star30 -> "" | COMMA logical_name star30
+opt102 -> "" | LPAREN sensitivity_list RPAREN
+simultaneous_procedural_statement -> opt127 PROCEDURAL opt128 procedural_declarative_part BEGIN procedural_statement_part END PROCEDURAL opt129 SEMI
+formal_parameter_list -> interface_list
+star23 -> "" | COMMA group_constituent star23
+condition_clause -> UNTIL condition
+opt138 -> "" | constraint
+assertion -> ASSERT condition opt8 opt9
+block_header -> opt15 opt17
+secondary_unit -> architecture_body | package_body
+opt122 -> "" | label_colon
+group_constituent_list -> group_constituent star23
+simple_expression -> opt119 term star48
+star19 -> "" | logical_operator relation star19
+procedural_declarative_part -> star38
+context_item -> library_clause | use_clause
+step_limit_specification -> LIMIT quantity_specification WITH expression SEMI
+instantiated_unit -> opt70 name | ENTITY name opt71 | CONFIGURATION name
+opt12 -> "" | USE entity_aspect
+group_declaration -> GROUP label_colon name LPAREN group_constituent_list RPAREN SEMI
+opt40 -> "" | sensitivity_clause
+shift_expression -> simple_expression opt112
+star25 -> "" | ELSIF condition THEN sequence_of_statements star25
+subprogram_declarative_item -> subprogram_declaration | subprogram_body | type_declaration | subtype_declaration | constant_declaration | variable_declaration | file_declaration | alias_declaration | attribute_declaration | attribute_specification | use_clause | group_template_declaration | group_declaration
+entity_statement -> concurrent_assertion_statement | process_statement | concurrent_procedure_call_statement
+opt115 -> "" | signal_kind
+opt27 -> "" | label_colon
+opt43 -> "" | label_colon
+term -> factor star53
+concurrent_signal_assignment_statement -> opt43 or2
+or1 -> qualified_expression | subtype_indication
+star15 -> "" | entity_declarative_item star15
+opt50 -> "" | choices ARROW
+star40 -> "" | process_declarative_item star40
+type_definition -> scalar_type_definition | composite_type_definition | access_type_definition | file_type_definition
+alias_declaration -> ALIAS alias_designator opt1 IS name opt2 SEMI
+configuration_declarative_part -> star12
+block_statement_part -> star9
+star35 -> "" | package_body_declarative_item star35
+interface_port_list -> interface_port_declaration star28
+star17 -> "" | entity_statement star17
+scalar_type_definition -> physical_type_definition | enumeration_type_definition | range_constraint
+block_configuration -> FOR block_specification star6 star7 END FOR SEMI
+opt77 -> "" | BUS
+opt125 -> "" | ELSE simultaneous_statement_part
+process_declarative_part -> star40
+function_specification -> FUNCTION designator opt136 RETURN subtype_indication
+entity_aspect -> ENTITY name opt51 | CONFIGURATION name | OPEN
+exit_statement -> opt59 EXIT opt60 opt61 SEMI
+opt24 -> "" | label_colon
+opt63 -> "" | file_open_information
+index_constraint -> LPAREN discrete_range star26 RPAREN
+star52 -> "" | sequential_statement star52
+opt87 -> "" | expression star32
+or3 -> aggregate | LPAREN expression RPAREN
+opt76 -> "" | VARASGN expression
+guarded_signal_specification -> signal_list COLON name
+numeric_literal -> abstract_literal | physical_literal
+opt9 -> "" | SEVERITY expression
+interface_constant_declaration -> opt72 identifier_list COLON opt73 subtype_indication opt74
+variable_declaration -> opt142 VARIABLE identifier_list COLON subtype_indication opt143 SEMI
+star1 -> "" | design_unit star1
+star45 -> "" | sequential_statement star45
+suffix -> identifier | CHARACTER_LITERAL | STRING_LITERAL | ALL
+return_statement -> opt109 RETURN opt110 SEMI
+port_clause -> PORT LPAREN port_list RPAREN SEMI
+library_unit -> secondary_unit | primary_unit
+opt127 -> "" | label_colon
+opt96 -> "" | PACKAGE
+component_specification -> instantiation_list COLON name
+opt48 -> "" | VARASGN expression
+star54 -> "" | COMMA index_subtype_definition star54
+signature -> LBRACKET opt117 opt118 RBRACKET
+interface_file_declaration -> FILE identifier_list COLON subtype_indication
+selected_name -> identifier star34
+opt35 -> "" | generic_map_aspect
+opt19 -> "" | LPAREN index_specification RPAREN
+logical_operator -> AND | OR | NAND | NOR | XOR
+package_body_declarative_item -> subprogram_declaration | subprogram_body | type_declaration | subtype_declaration | constant_declaration | variable_declaration | file_declaration | alias_declaration | use_clause | group_template_declaration | group_declaration
+element_subtype_definition -> subtype_indication
+star9 -> "" | architecture_statement star9
+package_declarative_item -> subprogram_declaration | type_declaration | subtype_declaration | constant_declaration | signal_declaration | variable_declaration | file_declaration | alias_declaration | component_declaration | attribute_declaration | attribute_specification | disconnection_specification | use_clause
+block_statement -> label_colon BLOCK opt20 opt21 block_header block_declarative_part BEGIN block_statement_part END BLOCK opt22 SEMI
+opt67 -> "" | label_colon
+association_list -> association_element star5
+opt17 -> "" | port_clause opt18
+star28 -> "" | SEMI interface_port_declaration star28
+type_declaration -> TYPE identifier opt140 SEMI
+break_statement -> opt24 BREAK opt25 opt26 SEMI
+subprogram_declarative_part -> star51
+plus1 -> case_statement_alternative | case_statement_alternative plus1
+signal_assignment_statement -> opt113 target LE opt114 waveform SEMI
+star3 -> "" | block_declarative_item star3
+opt71 -> "" | LPAREN identifier RPAREN
+star21 -> "" | architecture_statement star21
+architecture_declarative_part -> star3
+component_instantiation_statement -> label_colon instantiated_unit opt35 opt36 SEMI
+factor -> primary opt62 | ABS primary | NOT primary
+star12 -> "" | configuration_declarative_item star12
+opt23 -> "" | break_selector_clause
+opt2 -> "" | signature
+opt39 -> "" | break_list
+opt134 -> "" | designator
+sequence_of_statements -> star45
+quantity_specification -> quantity_list COLON name
+opt54 -> "" | ENTITY
+concurrent_procedure_call_statement -> opt42 procedure_call SEMI
+opt18 -> "" | port_map_aspect SEMI
+port_map_aspect -> PORT MAP LPAREN association_list RPAREN
+star27 -> "" | COMMA identifier star27
+opt13 -> "" | generic_map_aspect
+opt109 -> "" | label_colon
+constrained_array_definition -> ARRAY index_constraint OF subtype_indication
+shift_operator -> SLL | SRL | SLA | SRA | ROL | ROR
+opt91 -> "" | WHEN condition
+subtype_indication -> selected_name opt137 opt138 opt139
+opt28 -> "" | identifier
+plus3 -> simultaneous_alternative | simultaneous_alternative plus3
+star29 -> "" | SEMI interface_element star29
+opt59 -> "" | label_colon
+configuration_declarative_item -> use_clause | attribute_specification | group_declaration
+entity_header -> opt57 opt58
+star5 -> "" | COMMA association_element star5
+opt83 -> "" | label_colon
+attribute_specification -> ATTRIBUTE attribute_designator OF entity_specification IS expression SEMI
+opt73 -> "" | IN
+primary_unit -> entity_declaration | configuration_declaration | package_declaration
+identifier_list -> identifier star24
+disconnection_specification -> DISCONNECT guarded_signal_specification AFTER expression SEMI
+interface_list -> interface_element star29
+identifier -> Identifier
+opt49 -> "" | REJECT expression
+secondary_unit_declaration -> identifier EQ physical_literal SEMI
+process_declarative_item -> subprogram_declaration | subprogram_body | type_declaration | subtype_declaration | constant_declaration | variable_declaration | file_declaration | alias_declaration | attribute_declaration | attribute_specification | use_clause | group_template_declaration | group_declaration
+procedure_call_statement -> opt100 procedure_call SEMI
+package_body -> PACKAGE BODY identifier IS package_body_declarative_part END opt94 opt95 SEMI
+star41 -> "" | sequential_statement star41
+star34 -> "" | DOT suffix star34
+waveform_element -> expression opt148
+enumeration_type_definition -> LPAREN enumeration_literal star18 RPAREN
+sensitivity_clause -> ON sensitivity_list
+opt130 -> "" | label_colon
+attribute_designator -> identifier | RANGE | REVERSE_RANGE | ACROSS | THROUGH | REFERENCE
+opt114 -> "" | delay_mechanism
+opt44 -> "" | WHEN condition opt45
+subtype_declaration -> SUBTYPE identifier IS subtype_indication SEMI
+generic_clause -> GENERIC LPAREN generic_list RPAREN SEMI
+star2 -> "" | COMMA element_association star2
+opt95 -> "" | identifier
+logical_name -> identifier
+star33 -> "" | COMMA explicit_range star33
+access_type_definition -> ACCESS subtype_indication
+star31 -> "" | DOT name_part star31
+explicit_range -> simple_expression direction simple_expression
+range_constraint -> RANGE range
+star24 -> "" | COMMA identifier star24
+allocator -> NEW or1
+entity_class_entry -> entity_class opt52
+opt5 -> "" | label_colon
+star44 -> "" | COMMA name star44
+opt45 -> "" | ELSE conditional_waveforms
+opt64 -> "" | OPEN expression
+simultaneous_if_statement -> opt124 IF condition USE simultaneous_statement_part star49 opt125 END USE opt126 SEMI
+break_element -> opt23 name ARROW expression
+unconstrained_array_definition -> ARRAY LPAREN index_subtype_definition star54 RPAREN OF subtype_indication
+file_logical_name -> expression
+opt1 -> "" | COLON alias_indication
+opt4 -> "" | identifier
+sensitivity_list -> name star44
+composite_type_definition -> array_type_definition | record_type_definition
+association_element -> opt11 actual_part
+opt8 -> "" | REPORT expression
+interface_variable_declaration -> opt80 identifier_list COLON opt81 subtype_indication opt82
+entity_designator -> entity_tag opt56
+opt14 -> "" | port_map_aspect
+package_body_declarative_part -> star35
+opt112 -> "" | shift_operator simple_expression
+generic_list -> interface_constant_declaration star22
+star56 -> "" | COMMA waveform_element star56
+opt136 -> "" | LPAREN formal_parameter_list RPAREN
+subprogram_specification -> procedure_specification | function_specification
+target -> name | aggregate
+interface_declaration -> interface_constant_declaration | interface_signal_declaration | interface_variable_declaration | interface_file_declaration | interface_quantity_declaration
+opt32 -> "" | generic_clause
+opt41 -> "" | WHEN condition
+package_declaration -> PACKAGE identifier IS package_declarative_part END opt96 opt97 SEMI
+architecture_statement -> block_statement | process_statement | opt5 concurrent_procedure_call_statement | opt6 concurrent_assertion_statement | opt7 concurrent_signal_assignment_statement | component_instantiation_statement | generate_statement | concurrent_break_statement | simultaneous_statement
+actual_part -> name LPAREN actual_designator RPAREN | actual_designator
+opt119 -> "" | PLUS | MINUS
+opt100 -> "" | label_colon
+star16 -> "" | COMMA entity_designator star16
+opt69 -> "" | identifier
+configuration_declaration -> CONFIGURATION identifier OF name IS configuration_declarative_part block_configuration END opt46 opt47 SEMI
+delay_mechanism -> TRANSPORT | opt49 INERTIAL
+star20 -> "" | block_declarative_item star20
+opt111 -> "" | label_colon
+iteration_scheme -> WHILE condition | FOR parameter_specification
+component_declaration -> COMPONENT identifier opt31 opt32 opt33 END COMPONENT opt34 SEMI
+configuration_specification -> FOR component_specification binding_indication SEMI
+entity_declaration -> ENTITY identifier IS entity_header entity_declarative_part opt53 END opt54 opt55 SEMI
+opt146 -> "" | condition_clause
+selected_waveforms -> waveform WHEN choices star43
+opt38 -> "" | label_colon
+name_slice_part -> LPAREN explicit_range star33 RPAREN
+plus2 -> element_declaration | element_declaration plus2
+opt108 -> "" | SEVERITY expression
+opt92 -> "" | GUARDED
+interface_signal_declaration -> SIGNAL identifier_list COLON subtype_indication opt78 opt79
+opt53 -> "" | BEGIN entity_statement_part
+enumeration_literal -> identifier | CHARACTER_LITERAL
+label_colon -> identifier COLON
+subprogram_kind -> PROCEDURE | FUNCTION
+opt129 -> "" | identifier
+opt29 -> "" | binding_indication SEMI
+alias_indication -> subnature_indication | subtype_indication
+opt70 -> "" | COMPONENT
+generate_statement -> label_colon generation_scheme GENERATE opt65 star21 END GENERATE opt66 SEMI
+star47 -> "" | COMMA name star47
+opt140 -> "" | IS type_definition
+adding_operator -> PLUS | MINUS | AMPERSAND
+star14 -> "" | COMMA entity_class_entry star14
+star37 -> "" | secondary_unit_declaration star37
+opt105 -> "" | identifier
+configuration_item -> block_configuration | component_configuration
+literal -> NULL | BIT_STRING_LITERAL | STRING_LITERAL | enumeration_literal | numeric_literal
+opt99 -> "" | LPAREN actual_parameter_part RPAREN
+opt143 -> "" | VARASGN expression
+relation -> shift_expression opt106
+break_list -> break_element star10
+entity_statement_part -> star17
+opt22 -> "" | identifier
+opt84 -> "" | iteration_scheme
+entity_specification -> entity_name_list COLON entity_class
+opt135 -> "" | LPAREN formal_parameter_list RPAREN
+variable_assignment_statement -> opt141 target VARASGN expression SEMI
+architecture_body -> ARCHITECTURE identifier OF identifier IS architecture_declarative_part BEGIN architecture_statement_part END opt3 opt4 SEMI
+opt118 -> "" | RETURN name
+opt74 -> "" | VARASGN expression
+opt126 -> "" | identifier
+constraint -> range_constraint | index_constraint
+opt60 -> "" | identifier
+opt6 -> "" | label_colon
+simultaneous_statement_part -> star50
+multiplying_operator -> MUL | DIV | MOD | REM
+opt3 -> "" | ARCHITECTURE
+choices -> choice star11
+star53 -> "" | multiplying_operator factor star53
+condition -> expression
+file_type_definition -> FILE OF subtype_indication
+star18 -> "" | COMMA enumeration_literal star18
+opt15 -> "" | generic_clause opt16
+design_unit -> context_clause library_unit
+array_type_definition -> unconstrained_array_definition | constrained_array_definition
+constant_declaration -> CONSTANT identifier_list COLON subtype_indication opt48 SEMI
+group_template_declaration -> GROUP identifier IS LPAREN entity_class_entry_list RPAREN SEMI
+opt107 -> "" | label_colon
+opt116 -> "" | VARASGN expression
+opt26 -> "" | WHEN condition
+opt144 -> "" | label_colon
+opt46 -> "" | CONFIGURATION
+opt103 -> "" | IS
+opt132 -> "" | TOLERANCE expression ACROSS expression THROUGH
+opt61 -> "" | WHEN condition
+concurrent_break_statement -> opt38 BREAK opt39 opt40 opt41 SEMI
+opt21 -> "" | IS
+procedure_call -> selected_name opt99
+opt81 -> "" | signal_mode
+base_unit_declaration -> identifier SEMI
+subnature_indication -> name opt131 opt132
+star26 -> "" | COMMA discrete_range star26
+element_association -> opt50 expression
+actual_designator -> expression | OPEN
+index_subtype_definition -> name RANGE BOX
+designator -> identifier | STRING_LITERAL
+simple_simultaneous_statement -> opt120 simple_expression ASSIGN simple_expression opt121 SEMI
+opt120 -> "" | label_colon
+opt93 -> "" | delay_mechanism
+star42 -> "" | COMMA name star42
+generic_map_aspect -> GENERIC MAP LPAREN association_list RPAREN
+conditional_waveforms -> waveform opt44
+name -> selected_name | name_part star31
+attribute_declaration -> ATTRIBUTE label_colon name SEMI
+abstract_literal -> INTEGER | REAL_LITERAL | BASE_LITERAL
+port_list -> interface_port_list
+choice -> identifier | discrete_range | simple_expression | OTHERS
+star55 -> "" | COMMA selected_name star55
+case_statement -> opt27 CASE expression IS plus1 END CASE opt28 SEMI
+context_clause -> star13
+opt90 -> "" | identifier
+if_statement -> opt67 IF condition THEN sequence_of_statements star25 opt68 END opt69 SEMI
+star48 -> "" | adding_operator term star48
+or2 -> conditional_signal_assignment | selected_signal_assignment
+opt30 -> "" | block_configuration
+record_type_definition -> RECORD plus2 END RECORD opt105
+opt42 -> "" | label_colon
+opt79 -> "" | VARASGN expression
+opt57 -> "" | generic_clause
+relational_operator -> EQ | NE | LT | LE | GT | GE
+block_declarative_item -> subprogram_declaration | subprogram_body | type_declaration | subtype_declaration | constant_declaration | signal_declaration | variable_declaration | file_declaration | alias_declaration | component_declaration | attribute_declaration | attribute_specification | configuration_specification | disconnection_specification | step_limit_specification | use_clause
+opt113 -> "" | label_colon
+star36 -> "" | package_declarative_item star36
+star6 -> "" | use_clause star6
+opt148 -> "" | AFTER expression
+package_declarative_part -> star36
+logical_name_list -> logical_name star30
+opt72 -> "" | CONSTANT
+opt52 -> "" | BOX
+name_attribute_part -> APOSTROPHE attribute_designator opt87
+entity_class_entry_list -> entity_class_entry star14
+conditional_signal_assignment -> target LE opts conditional_waveforms SEMI
+simultaneous_case_statement -> opt122 CASE expression USE plus3 END CASE opt123 SEMI
+star51 -> "" | subprogram_declarative_item star51
+next_statement -> opt89 NEXT opt90 opt91 SEMI
+star32 -> "" | COMMA expression star32
+opt123 -> "" | identifier
+block_specification -> identifier opt19 | name
+procedural_statement_part -> star39
+entity_name_list -> entity_designator star16 | OTHERS | ALL
+formal_part -> identifier
+opt121 -> "" | tolerance_aspect
+primary -> literal | qualified_expression | LPAREN expression RPAREN | allocator | aggregate | name
+opt89 -> "" | label_colon
+instantiation_list -> identifier star27 | OTHERS | ALL
+opt98 -> "" | identifier
+opt80 -> "" | VARIABLE
+star50 -> "" | simultaneous_statement star50
+architecture_statement_part -> star4
+report_statement -> opt107 REPORT expression opt108 SEMI
+opt147 -> "" | timeout_clause
+opt37 -> "" | label_colon
+file_open_information -> opt64 IS file_logical_name
+break_selector_clause -> FOR name USE
+opt110 -> "" | expression
+star38 -> "" | procedural_declarative_item star38
+opt139 -> "" | tolerance_aspect
+opt66 -> "" | identifier
+opts -> opt92 opt93
+opt34 -> "" | identifier
+opt56 -> "" | signature
+star11 -> "" | BAR choice star11
+name_part -> selected_name opt86
+loop_statement -> opt83 opt84 LOOP sequence_of_statements END LOOP opt85 SEMI
+timeout_clause -> FOR expression
+block_declarative_part -> star8
+star49 -> "" | ELSIF condition USE simultaneous_statement_part star49
+physical_type_definition -> range_constraint UNITS base_unit_declaration star37 END UNITS opt98
+entity_tag -> identifier | CHARACTER_LITERAL | STRING_LITERAL
+generation_scheme -> FOR parameter_specification | IF condition
+opt117 -> "" | name star47
+subprogram_declaration -> subprogram_specification SEMI
+opt104 -> "" | identifier
+group_constituent -> name | CHARACTER_LITERAL
+discrete_range -> range | subtype_indication
+opt94 -> "" | PACKAGE BODY
+library_clause -> LIBRARY logical_name_list SEMI
+procedural_declarative_item -> subprogram_declaration | subprogram_body | type_declaration | subtype_declaration | constant_declaration | variable_declaration | alias_declaration | attribute_declaration | attribute_specification | use_clause | group_template_declaration | group_declaration
+alias_designator -> identifier | CHARACTER_LITERAL | STRING_LITERAL
+expression -> relation star19
+interface_element -> interface_declaration
+name_function_call_or_indexed_part -> LPAREN opt88 RPAREN
+opt25 -> "" | break_list
+opt142 -> "" | SHARED
+opt85 -> "" | identifier
+simultaneous_statement -> simple_simultaneous_statement | simultaneous_if_statement | simultaneous_case_statement | simultaneous_procedural_statement | opt130 NULL SEMI
+procedure_specification -> PROCEDURE designator opt135
+qualified_expression -> subtype_indication APOSTROPHE or3
+signal_declaration -> SIGNAL identifier_list COLON subtype_indication opt115 opt116 SEMI
+star8 -> "" | block_declarative_item star8
+opt10 -> "" | label_colon
+concurrent_assertion_statement -> opt37 assertion SEMI
+tolerance_aspect -> TOLERANCE expression
+range -> explicit_range | name
+direction -> TO | DOWNTO

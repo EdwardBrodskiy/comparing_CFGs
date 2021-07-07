@@ -1,0 +1,122 @@
+program -> opt1
+propertyAssignment -> propertyName : singleExpression | getter '(' ')' { functionBody } | setter '(' propertySetParameterList ')' { functionBody }
+plus4 -> , | , plus4
+elementList -> opt21 singleExpression star3
+BooleanLiteral -> true | false
+opt11 -> "" | caseClauses
+statement -> block | variableStatement | emptyStatement | expressionStatement | ifStatement | iterationStatement | continueStatement | breakStatement | returnStatement | withStatement | labelledStatement | switchStatement | throwStatement | tryStatement
+or4 -> < | > | <= | >=
+expressionStatement -> expressionSequence
+Return -> return
+keyword -> Break | Do | Instanceof | Typeof | Case | Else | New | Var | Catch | Finally | Return | Void | Continue | For | Switch | While | Function | This | With | Default | If | Throw | Delete | In | Try
+Else -> else
+expressionSequence -> singleExpression star6
+Continue -> continue
+breakStatement -> Break opt9
+arguments -> '(' opt25 ')'
+literal -> NullLiteral | BooleanLiteral | StringLiteral | RegularExpression | numericLiteral
+tryStatement -> Try block catchProduction | Try block finallyProduction | Try block catchProduction finallyProduction
+opt20 -> "" | elision
+Finally -> finally
+opt10 -> "" | expressionSequence
+opt5 -> "" | expressionSequence
+propertySetParameterList -> Identifier
+opt27 -> "" | formalParameterList
+opt15 -> "" | statementList
+Try -> try
+opt2 -> "" | statementList
+opt24 -> "" | ,
+functionDeclaration -> Function Identifier '(' opt16 ')' { functionBody }
+or5 -> == | != | === | !==
+caseBlock -> { opt11 opt12 }
+arrayLiteral -> [ opt18 opt19 opt20 ]
+opt14 -> "" | statementList
+variableDeclaration -> Identifier opt3
+If -> if
+initialiser -> = singleExpression
+opt21 -> "" | elision
+objectLiteral -> { opt23 opt24 }
+opt17 -> "" | sourceElements
+This -> this
+emptyStatement -> ;
+NullLiteral -> null
+numericLiteral -> Number
+Typeof -> typeof
+opt18 -> "" | elementList
+Catch -> catch
+opt6 -> "" | expressionSequence
+reservedWord -> keyword | NullLiteral | BooleanLiteral
+continueStatement -> Continue opt8
+Throw -> throw
+star4 -> "" | , propertyAssignment star4
+setter -> Identifier
+or1 -> '*' | / | %
+sourceElements -> plus1
+plus1 -> sourceElement | sourceElement plus1
+For -> for
+defaultClause -> Default : opt15
+labelledStatement -> Identifier : statement
+While -> while
+Switch -> switch
+New -> new
+opt1 -> "" | sourceElements
+variableDeclarationList -> variableDeclaration star1
+Default -> default
+iterationStatement -> Do statement While '(' expressionSequence ')' | While '(' expressionSequence ')' statement | For '(' opt5 ; opt6 ; opt7 ')' statement | For '(' singleExpression In expressionSequence ')' statement | For '(' Var variableDeclaration In expressionSequence ')' statement
+Break -> break
+opt26 -> "" | Identifier
+opt13 -> "" | caseClauses
+formalParameterList -> Identifier star2
+opt22 -> "" | elision
+finallyProduction -> Finally block
+block -> { opt2 }
+or2 -> '+' | -
+star1 -> "" | , variableDeclaration star1
+propertyName -> identifierName | StringLiteral | numericLiteral
+opt7 -> "" | expressionSequence
+elision -> plus4
+star6 -> "" | , singleExpression star6
+assignmentOperator -> '*=' | /= | %= | '+=' | -= | <<= | >>= | >>>= | &= | ^= | '|='
+StringLiteral -> String
+opt16 -> "" | formalParameterList
+star2 -> "" | , Identifier star2
+opt28 -> "" | arguments
+singleExpression -> Function opt26 '(' opt27 ')' { functionBody } | singleExpression [ expressionSequence ] | singleExpression . identifierName | singleExpression arguments | New singleExpression opt28 | singleExpression '++' | singleExpression -- | Delete singleExpression | Void singleExpression | Typeof singleExpression | '++' singleExpression | -- singleExpression | '+' singleExpression | - singleExpression | ~ singleExpression | ! singleExpression | singleExpression or1 singleExpression | singleExpression or2 singleExpression | singleExpression or3 singleExpression | singleExpression or4 singleExpression | singleExpression Instanceof singleExpression | singleExpression In singleExpression | singleExpression or5 singleExpression | singleExpression & singleExpression | singleExpression ^ singleExpression | singleExpression '|' singleExpression | singleExpression && singleExpression | singleExpression '||' singleExpression | singleExpression '?' singleExpression : singleExpression | singleExpression = expressionSequence | singleExpression assignmentOperator expressionSequence | This | Identifier | literal | arrayLiteral | objectLiteral | '(' expressionSequence ')'
+opt3 -> "" | initialiser
+argumentList -> singleExpression star5
+Void -> void
+switchStatement -> Switch '(' expressionSequence ')' caseBlock
+caseClause -> Case expressionSequence : opt14
+withStatement -> With '(' expressionSequence ')' statement
+ifStatement -> If '(' expressionSequence ')' statement opt4
+Instanceof -> instanceof
+Do -> do
+opt23 -> "" | propertyNameAndValueList
+propertyNameAndValueList -> propertyAssignment star4
+opt12 -> "" | defaultClause opt13
+getter -> Identifier
+Var -> var
+statementList -> plus2
+variableStatement -> Var variableDeclarationList
+catchProduction -> Catch '(' Identifier ')' block
+With -> with
+opt25 -> "" | argumentList
+or3 -> << | >> | >>>
+plus2 -> statement | statement plus2
+functionBody -> opt17
+opt8 -> "" | Identifier
+In -> in
+throwStatement -> Throw expressionSequence
+opt4 -> "" | Else statement
+identifierName -> Identifier | reservedWord
+star5 -> "" | , singleExpression star5
+sourceElement -> statement | functionDeclaration
+Function -> function
+returnStatement -> Return opt10
+Case -> case
+caseClauses -> plus3
+opt19 -> "" | ,
+Delete -> delete
+opt9 -> "" | Identifier
+plus3 -> caseClause | caseClause plus3
+star3 -> "" | , opt22 singleExpression star3

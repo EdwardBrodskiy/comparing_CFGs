@@ -1,0 +1,469 @@
+translationUnit :  externalDeclaration;
+ :  translationUnit externalDeclaration;
+
+primaryExpression :  "Identifier";
+ :  "Constant";
+ :  plus-2;
+ :  "(" expression ")";
+ :  genericSelection;
+ :  "(" compoundStatement ")";
+
+plus-2 :  "StringLiteral";
+ :  "StringLiteral" plus-2;
+
+genericSelection :  "_Generic" "(" assignmentExpression "," genericAssocList ")";
+
+genericAssocList :  genericAssociation;
+ :  genericAssocList "," genericAssociation;
+
+genericAssociation :  typeName ":" assignmentExpression;
+ :  "default" ":" assignmentExpression;
+
+postfixExpression :  primaryExpression;
+ :  postfixExpression "[" expression "]";
+ :  postfixExpression "(" opt-3 ")";
+ :  postfixExpression "." "Identifier";
+ :  postfixExpression "->" "Identifier";
+ :  postfixExpression "++";
+ :  postfixExpression "--";
+ :  "(" typeName ")" "{" initializerList "}";
+ :  "(" typeName ")" "{" initializerList "," "}";
+ :  "(" typeName ")" "{" initializerList "}";
+ :  "(" typeName ")" "{" initializerList "," "}";
+
+opt-3 : ;
+ :  argumentExpressionList;
+
+argumentExpressionList :  assignmentExpression;
+ :  argumentExpressionList "," assignmentExpression;
+
+unaryExpression :  postfixExpression;
+ :  "++" unaryExpression;
+ :  "--" unaryExpression;
+ :  unaryOperator castExpression;
+ :  "sizeof" unaryExpression;
+ :  "sizeof" "(" typeName ")";
+ :  "_Alignof" "(" typeName ")";
+ :  "&&" "Identifier";
+
+unaryOperator :  "&";
+ :  "*";
+ :  "+";
+ :  "-";
+ :  "~";
+ :  "!";
+
+castExpression :  unaryExpression;
+ :  "(" typeName ")" castExpression;
+ :  "(" typeName ")" castExpression;
+
+multiplicativeExpression :  castExpression;
+ :  multiplicativeExpression "*" castExpression;
+ :  multiplicativeExpression "/" castExpression;
+ :  multiplicativeExpression "%" castExpression;
+
+additiveExpression :  multiplicativeExpression;
+ :  additiveExpression "+" multiplicativeExpression;
+ :  additiveExpression "-" multiplicativeExpression;
+
+shiftExpression :  additiveExpression;
+ :  shiftExpression "<<" additiveExpression;
+ :  shiftExpression ">>" additiveExpression;
+
+relationalExpression :  shiftExpression;
+ :  relationalExpression "<" shiftExpression;
+ :  relationalExpression ">" shiftExpression;
+ :  relationalExpression "<=" shiftExpression;
+ :  relationalExpression ">=" shiftExpression;
+
+equalityExpression :  relationalExpression;
+ :  equalityExpression "==" relationalExpression;
+ :  equalityExpression "!=" relationalExpression;
+
+andExpression :  equalityExpression;
+ :  andExpression "&" equalityExpression;
+
+exclusiveOrExpression :  andExpression;
+ :  exclusiveOrExpression "^" andExpression;
+
+inclusiveOrExpression :  exclusiveOrExpression;
+ :  inclusiveOrExpression "|" exclusiveOrExpression;
+
+logicalAndExpression :  inclusiveOrExpression;
+ :  logicalAndExpression "&&" inclusiveOrExpression;
+
+logicalOrExpression :  logicalAndExpression;
+ :  logicalOrExpression "||" logicalAndExpression;
+
+conditionalExpression :  logicalOrExpression opt-4;
+
+opt-4 : ;
+ :  "?" expression ":" conditionalExpression;
+
+assignmentExpression :  conditionalExpression;
+ :  unaryExpression assignmentOperator assignmentExpression;
+
+assignmentOperator :  "=";
+ :  "*=";
+ :  "/=";
+ :  "%=";
+ :  "+=";
+ :  "-=";
+ :  "<<=";
+ :  ">>=";
+ :  "&=";
+ :  "^=";
+ :  "|=";
+
+expression :  assignmentExpression;
+ :  expression "," assignmentExpression;
+
+constantExpression :  conditionalExpression;
+
+declaration :  declarationSpecifiers opt-5 ";";
+ :  staticAssertDeclaration;
+
+opt-5 : ;
+ :  initDeclaratorList;
+
+declarationSpecifiers :  plus-6;
+
+plus-6 :  declarationSpecifier;
+ :  declarationSpecifier plus-6;
+
+declarationSpecifiers2 :  plus-7;
+
+plus-7 :  declarationSpecifier;
+ :  declarationSpecifier plus-7;
+
+declarationSpecifier :  storageClassSpecifier;
+ :  typeSpecifier;
+ :  typeQualifier;
+ :  functionSpecifier;
+ :  alignmentSpecifier;
+
+initDeclaratorList :  initDeclarator;
+ :  initDeclaratorList "," initDeclarator;
+
+initDeclarator :  declarator;
+ :  declarator "=" initializer;
+
+storageClassSpecifier :  "typedef";
+ :  "extern";
+ :  "static";
+ :  "_Thread_local";
+ :  "auto";
+ :  "register";
+
+typeSpecifier :  "void";
+ :  "char";
+ :  "short";
+ :  "int";
+ :  "long";
+ :  "float";
+ :  "double";
+ :  "signed";
+ :  "unsigned";
+ :  "_Bool";
+ :  "_Complex";
+ :  atomicTypeSpecifier;
+ :  structOrUnionSpecifier;
+ :  enumSpecifier;
+ :  typedefName;
+
+structOrUnionSpecifier :  structOrUnion opt-8 "{" structDeclarationList "}";
+ :  structOrUnion "Identifier";
+
+opt-8 : ;
+ :  "Identifier";
+
+structOrUnion :  "struct";
+ :  "union";
+
+structDeclarationList :  structDeclaration;
+ :  structDeclarationList structDeclaration;
+
+structDeclaration :  specifierQualifierList opt-9 ";";
+ :  staticAssertDeclaration;
+
+opt-9 : ;
+ :  structDeclaratorList;
+
+specifierQualifierList :  typeSpecifier opt-10;
+ :  typeQualifier opt-11;
+
+opt-10 : ;
+ :  specifierQualifierList;
+
+opt-11 : ;
+ :  specifierQualifierList;
+
+structDeclaratorList :  structDeclarator;
+ :  structDeclaratorList "," structDeclarator;
+
+structDeclarator :  declarator;
+ :  opt-12 ":" constantExpression;
+
+opt-12 : ;
+ :  declarator;
+
+enumSpecifier :  "enum" opt-13 "{" enumeratorList "}";
+ :  "enum" opt-14 "{" enumeratorList "," "}";
+ :  "enum" "Identifier";
+
+opt-13 : ;
+ :  "Identifier";
+
+opt-14 : ;
+ :  "Identifier";
+
+enumeratorList :  enumerator;
+ :  enumeratorList "," enumerator;
+
+enumerator :  enumerationConstant;
+ :  enumerationConstant "=" constantExpression;
+
+enumerationConstant :  "Identifier";
+
+atomicTypeSpecifier :  "_Atomic" "(" typeName ")";
+
+typeQualifier :  "const";
+ :  "restrict";
+ :  "volatile";
+ :  "_Atomic";
+
+functionSpecifier :  "inline";
+ :  "_Noreturn";
+
+alignmentSpecifier :  "_Alignas" "(" typeName ")";
+ :  "_Alignas" "(" constantExpression ")";
+
+declarator :  opt-15 directDeclarator;
+
+opt-15 : ;
+ :  pointer;
+
+directDeclarator :  "Identifier";
+ :  "(" declarator ")";
+ :  directDeclarator "[" opt-16 opt-17 "]";
+ :  directDeclarator "[" "static" opt-18 assignmentExpression "]";
+ :  directDeclarator "[" typeQualifierList "static" assignmentExpression "]";
+ :  directDeclarator "[" opt-19 "*" "]";
+ :  directDeclarator "(" parameterTypeList ")";
+ :  directDeclarator "(" opt-20 ")";
+
+opt-16 : ;
+ :  typeQualifierList;
+
+opt-17 : ;
+ :  assignmentExpression;
+
+opt-18 : ;
+ :  typeQualifierList;
+
+opt-19 : ;
+ :  typeQualifierList;
+
+opt-20 : ;
+ :  identifierList;
+
+pointer :  "*" opt-24;
+ :  "*" opt-25 pointer;
+ :  "^" opt-26;
+ :  "^" opt-27 pointer;
+
+opt-24 : ;
+ :  typeQualifierList;
+
+opt-25 : ;
+ :  typeQualifierList;
+
+opt-26 : ;
+ :  typeQualifierList;
+
+opt-27 : ;
+ :  typeQualifierList;
+
+typeQualifierList :  typeQualifier;
+ :  typeQualifierList typeQualifier;
+
+parameterTypeList :  parameterList;
+ :  parameterList "," "...";
+
+parameterList :  parameterDeclaration;
+ :  parameterList "," parameterDeclaration;
+
+parameterDeclaration :  declarationSpecifiers declarator;
+ :  declarationSpecifiers2 opt-28;
+
+opt-28 : ;
+ :  abstractDeclarator;
+
+identifierList :  "Identifier";
+ :  identifierList "," "Identifier";
+
+typeName :  specifierQualifierList opt-29;
+
+opt-29 : ;
+ :  abstractDeclarator;
+
+abstractDeclarator :  pointer;
+ :  opt-30 directAbstractDeclarator;
+
+opt-30 : ;
+ :  pointer;
+
+directAbstractDeclarator :  "(" abstractDeclarator ")";
+ :  "[" opt-31 opt-32 "]";
+ :  "[" "static" opt-33 assignmentExpression "]";
+ :  "[" typeQualifierList "static" assignmentExpression "]";
+ :  "[" "*" "]";
+ :  "(" opt-34 ")";
+ :  directAbstractDeclarator "[" opt-35 opt-36 "]";
+ :  directAbstractDeclarator "[" "static" opt-37 assignmentExpression "]";
+ :  directAbstractDeclarator "[" typeQualifierList "static" assignmentExpression "]";
+ :  directAbstractDeclarator "[" "*" "]";
+ :  directAbstractDeclarator "(" opt-38 ")";
+
+opt-31 : ;
+ :  typeQualifierList;
+
+opt-32 : ;
+ :  assignmentExpression;
+
+opt-33 : ;
+ :  typeQualifierList;
+
+opt-34 : ;
+ :  parameterTypeList;
+
+opt-35 : ;
+ :  typeQualifierList;
+
+opt-36 : ;
+ :  assignmentExpression;
+
+opt-37 : ;
+ :  typeQualifierList;
+
+opt-38 : ;
+ :  parameterTypeList;
+
+typedefName :  "Identifier";
+
+initializer :  assignmentExpression;
+ :  "{" initializerList "}";
+ :  "{" initializerList "," "}";
+
+initializerList :  opt-39 initializer;
+ :  initializerList "," opt-40 initializer;
+
+opt-39 : ;
+ :  designation;
+
+opt-40 : ;
+ :  designation;
+
+designation :  designatorList "=";
+
+designatorList :  designator;
+ :  designatorList designator;
+
+designator :  "[" constantExpression "]";
+ :  "." "Identifier";
+
+staticAssertDeclaration :  "_Static_assert" "(" constantExpression "," plus-41 ")" ";";
+
+plus-41 :  "StringLiteral";
+ :  "StringLiteral" plus-41;
+
+statement :  labeledStatement;
+ :  compoundStatement;
+ :  expressionStatement;
+ :  selectionStatement;
+ :  iterationStatement;
+ :  jumpStatement;
+ :  "volatile" "(" opt-42 star-44 ")" ";";
+
+opt-42 : ;
+ :  logicalOrExpression star-43;
+
+star-43 : ;
+ :  "," logicalOrExpression star-43;
+
+star-44 : ;
+ :  ":" opt-45 star-44;
+
+opt-45 : ;
+ :  logicalOrExpression star-46;
+
+star-46 : ;
+ :  "," logicalOrExpression star-46;
+
+labeledStatement :  "Identifier" ":" statement;
+ :  "case" constantExpression ":" statement;
+ :  "default" ":" statement;
+
+compoundStatement :  "{" opt-47 "}";
+
+opt-47 : ;
+ :  blockItemList;
+
+blockItemList :  blockItem;
+ :  blockItemList blockItem;
+
+blockItem :  declaration;
+ :  statement;
+
+expressionStatement :  opt-48 ";";
+
+opt-48 : ;
+ :  expression;
+
+selectionStatement :  "if" "(" expression ")" statement opt-49;
+ :  "switch" "(" expression ")" statement;
+
+opt-49 : ;
+ :  "else" statement;
+
+iterationStatement :  "while" "(" expression ")" statement;
+ :  "do" statement "while" "(" expression ")" ";";
+ :  "for" "(" opt-50 ";" opt-51 ";" opt-52 ")" statement;
+ :  "for" "(" declaration ";" opt-54 ")" statement;
+
+opt-50 : ;
+ :  expression;
+
+opt-51 : ;
+ :  expression;
+
+opt-52 : ;
+ :  expression;
+
+opt-54 : ;
+ :  expression;
+
+jumpStatement :  "goto" "Identifier" ";";
+ :  "continue" ";";
+ :  "break" ";";
+ :  "return" opt-55 ";";
+ :  "goto" unaryExpression ";";
+
+opt-55 : ;
+ :  expression;
+
+externalDeclaration :  functionDefinition;
+ :  declaration;
+ :  ";";
+
+functionDefinition :  opt-57 declarator opt-58 compoundStatement;
+
+opt-57 : ;
+ :  declarationSpecifiers;
+
+opt-58 : ;
+ :  declarationList;
+
+declarationList :  declaration;
+ :  declarationList declaration;
+

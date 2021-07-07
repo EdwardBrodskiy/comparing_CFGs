@@ -1,0 +1,775 @@
+CompilationUnit :  opt-2 star-4 star-5;
+
+opt-2 : ;
+ :  opt-3 "package" QualifiedIdentifier ";";
+
+opt-3 : ;
+ :  Annotations;
+
+star-4 : ;
+ :  ImportDeclaration star-4;
+
+star-5 : ;
+ :  TypeDeclaration star-5;
+
+Identifier :  "IDENTIFIER";
+
+QualifiedIdentifier :  Identifier star-6;
+
+star-6 : ;
+ :  "." Identifier star-6;
+
+QualifiedIdentifierList :  QualifiedIdentifier star-7;
+
+star-7 : ;
+ :  "," QualifiedIdentifier star-7;
+
+ImportDeclaration :  "import" opt-8 Identifier star-9 opt-10 ";";
+
+opt-8 : ;
+ :  "static";
+
+star-9 : ;
+ :  "." Identifier star-9;
+
+opt-10 : ;
+ :  "." "*";
+
+TypeDeclaration :  ClassOrInterfaceDeclaration;
+ :  ";";
+
+ClassOrInterfaceDeclaration :  star-11 or-12;
+
+star-11 : ;
+ :  Modifier star-11;
+
+or-12 :  ClassDeclaration;
+ :  InterfaceDeclaration;
+
+ClassDeclaration :  NormalClassDeclaration;
+ :  EnumDeclaration;
+
+InterfaceDeclaration :  NormalInterfaceDeclaration;
+ :  AnnotationTypeDeclaration;
+
+NormalClassDeclaration :  "class" Identifier opt-13 opt-14 opt-15 ClassBody;
+
+opt-13 : ;
+ :  TypeParameters;
+
+opt-14 : ;
+ :  "extends" Type;
+
+opt-15 : ;
+ :  "implements" TypeList;
+
+EnumDeclaration :  "enum" Identifier opt-16 EnumBody;
+
+opt-16 : ;
+ :  "implements" TypeList;
+
+NormalInterfaceDeclaration :  "interface" Identifier opt-17 opt-18 InterfaceBody;
+
+opt-17 : ;
+ :  TypeParameters;
+
+opt-18 : ;
+ :  "extends" TypeList;
+
+AnnotationTypeDeclaration :  "@" "interface" Identifier AnnotationTypeBody;
+
+Type :  BasicType star-19;
+ :  ReferenceType star-20;
+
+star-19 : ;
+ :  "[]" star-19;
+
+star-20 : ;
+ :  "[]" star-20;
+
+BasicType :  "byte";
+ :  "short";
+ :  "char";
+ :  "int";
+ :  "long";
+ :  "float";
+ :  "double";
+ :  "boolean";
+
+ReferenceType :  Identifier opt-21 star-22;
+
+opt-21 : ;
+ :  TypeArguments;
+
+star-22 : ;
+ :  "." Identifier "[TypeArguments]" star-22;
+
+TypeArguments :  "<" TypeArgument star-23 ">";
+
+star-23 : ;
+ :  "," TypeArgument star-23;
+
+TypeArgument :  ReferenceType;
+ :  "?" opt-24;
+
+opt-24 : ;
+ :  or-25 ReferenceType;
+
+or-25 :  "extends";
+ :  "super";
+
+NonWildcardTypeArguments :  "<" TypeList ">";
+
+TypeList :  ReferenceType star-26;
+
+star-26 : ;
+ :  "," ReferenceType star-26;
+
+TypeArgumentsOrDiamond :  "<" ">";
+ :  TypeArguments;
+
+NonWildcardTypeArgumentsOrDiamond :  "<" ">";
+ :  NonWildcardTypeArguments;
+
+TypeParameters :  "<" TypeParameter star-27 ">";
+
+star-27 : ;
+ :  "," TypeParameter star-27;
+
+TypeParameter :  Identifier opt-28;
+
+opt-28 : ;
+ :  "extends" Bound;
+
+Bound :  ReferenceType star-29;
+
+star-29 : ;
+ :  "&" ReferenceType star-29;
+
+Modifier :  Annotation;
+ :  "public";
+ :  "protected";
+ :  "private";
+ :  "static";
+ :  "abstract";
+ :  "final";
+ :  "native";
+ :  "synchronized";
+ :  "transient";
+ :  "volatile";
+ :  "strictfp";
+
+Annotations :  Annotation star-30;
+
+star-30 : ;
+ :  Annotation star-30;
+
+Annotation :  "@" QualifiedIdentifier opt-31;
+
+opt-31 : ;
+ :  "(" opt-32 ")";
+
+opt-32 : ;
+ :  AnnotationElement;
+
+AnnotationElement :  ElementValuePairs;
+ :  ElementValue;
+
+ElementValuePairs :  ElementValuePair star-33;
+
+star-33 : ;
+ :  "," ElementValuePair star-33;
+
+ElementValuePair :  Identifier "=" ElementValue;
+
+ElementValue :  Annotation;
+ :  Expression1;
+ :  ElementValueArrayInitializer;
+
+ElementValueArrayInitializer :  "{" opt-34 opt-35 "}";
+
+opt-34 : ;
+ :  ElementValues;
+
+opt-35 : ;
+ :  ",";
+
+ElementValues :  ElementValue star-36;
+
+star-36 : ;
+ :  "," ElementValue star-36;
+
+ClassBody :  "{" star-37 "}";
+
+star-37 : ;
+ :  ClassBodyDeclaration star-37;
+
+ClassBodyDeclaration :  ";";
+ :  star-38 MemberDecl;
+ :  opt-39 Block;
+
+star-38 : ;
+ :  Modifier star-38;
+
+opt-39 : ;
+ :  "static";
+
+MemberDecl :  MethodOrFieldDecl;
+ :  "void" Identifier VoidMethodDeclaratorRest;
+ :  Identifier ConstructorDeclaratorRest;
+ :  GenericMethodOrConstructorDecl;
+ :  ClassDeclaration;
+ :  InterfaceDeclaration;
+
+MethodOrFieldDecl :  Type Identifier MethodOrFieldRest;
+
+MethodOrFieldRest :  FieldDeclaratorsRest ";";
+ :  MethodDeclaratorRest;
+
+FieldDeclaratorsRest :  VariableDeclaratorRest star-40;
+
+star-40 : ;
+ :  "," VariableDeclarator star-40;
+
+MethodDeclaratorRest :  FormalParameters star-41 opt-42 or-43;
+
+star-41 : ;
+ :  "[]" star-41;
+
+opt-42 : ;
+ :  "throws" QualifiedIdentifierList;
+
+or-43 :  Block;
+ :  ";";
+
+VoidMethodDeclaratorRest :  FormalParameters opt-44 or-45;
+
+opt-44 : ;
+ :  "throws" QualifiedIdentifierList;
+
+or-45 :  Block;
+ :  ";";
+
+ConstructorDeclaratorRest :  FormalParameters opt-46 Block;
+
+opt-46 : ;
+ :  "throws" QualifiedIdentifierList;
+
+GenericMethodOrConstructorDecl :  TypeParameters GenericMethodOrConstructorRest;
+
+GenericMethodOrConstructorRest :  or-47 Identifier MethodDeclaratorRest;
+ :  Identifier ConstructorDeclaratorRest;
+
+or-47 :  Type;
+ :  "void";
+
+InterfaceBody :  "{" star-48 "}";
+
+star-48 : ;
+ :  InterfaceBodyDeclaration star-48;
+
+InterfaceBodyDeclaration :  ";";
+ :  star-49 InterfaceMemberDecl;
+
+star-49 : ;
+ :  Modifier star-49;
+
+InterfaceMemberDecl :  InterfaceMethodOrFieldDecl;
+ :  "void" Identifier VoidInterfaceMethodDeclaratorRest;
+ :  InterfaceGenericMethodDecl;
+ :  ClassDeclaration;
+ :  InterfaceDeclaration;
+
+InterfaceMethodOrFieldDecl :  Type Identifier InterfaceMethodOrFieldRest;
+
+InterfaceMethodOrFieldRest :  ConstantDeclaratorsRest ";";
+ :  InterfaceMethodDeclaratorRest;
+
+ConstantDeclaratorsRest :  ConstantDeclaratorRest star-50;
+
+star-50 : ;
+ :  "," ConstantDeclarator star-50;
+
+ConstantDeclaratorRest :  star-51 "=" VariableInitializer;
+
+star-51 : ;
+ :  "[]" star-51;
+
+ConstantDeclarator :  Identifier ConstantDeclaratorRest;
+
+InterfaceMethodDeclaratorRest :  FormalParameters star-52 opt-53 ";";
+
+star-52 : ;
+ :  "[]" star-52;
+
+opt-53 : ;
+ :  "throws" QualifiedIdentifierList;
+
+VoidInterfaceMethodDeclaratorRest :  FormalParameters opt-54 ";";
+
+opt-54 : ;
+ :  "throws" QualifiedIdentifierList;
+
+InterfaceGenericMethodDecl :  TypeParameters or-55 Identifier InterfaceMethodDeclaratorRest;
+
+or-55 :  Type;
+ :  "void";
+
+FormalParameters :  "(" opt-56 ")";
+
+opt-56 : ;
+ :  FormalParameterDecls;
+
+FormalParameterDecls :  star-57 Type FormalParameterDeclsRest;
+
+star-57 : ;
+ :  VariableModifier star-57;
+
+VariableModifier :  "final";
+ :  Annotation;
+
+FormalParameterDeclsRest :  VariableDeclaratorId opt-58;
+ :  "..." VariableDeclaratorId;
+
+opt-58 : ;
+ :  "," FormalParameterDecls;
+
+VariableDeclaratorId :  Identifier star-59;
+
+star-59 : ;
+ :  "[]" star-59;
+
+VariableDeclarators :  VariableDeclarator star-60;
+
+star-60 : ;
+ :  "," VariableDeclarator star-60;
+
+VariableDeclarator :  Identifier VariableDeclaratorRest;
+
+VariableDeclaratorRest :  star-61 opt-62;
+
+star-61 : ;
+ :  "[]" star-61;
+
+opt-62 : ;
+ :  "=" VariableInitializer;
+
+VariableInitializer :  ArrayInitializer;
+ :  Expression;
+
+ArrayInitializer :  "{" opt-63 "}";
+
+opt-63 : ;
+ :  VariableInitializer star-64 opt-65;
+
+star-64 : ;
+ :  "," VariableInitializer star-64;
+
+opt-65 : ;
+ :  ",";
+
+Block :  "{" BlockStatements "}";
+
+BlockStatements :  star-66;
+
+star-66 : ;
+ :  BlockStatement star-66;
+
+BlockStatement :  LocalVariableDeclarationStatement;
+ :  ClassOrInterfaceDeclaration;
+ :  opt-67 Statement;
+
+opt-67 : ;
+ :  Identifier ":";
+
+LocalVariableDeclarationStatement :  star-68 Type VariableDeclarators ";";
+
+star-68 : ;
+ :  VariableModifier star-68;
+
+Statement :  Block;
+ :  ";";
+ :  Identifier ":" Statement;
+ :  StatementExpression ";";
+ :  "if" ParExpression Statement opt-69;
+ :  "assert" Expression opt-70 ";";
+ :  "switch" ParExpression star-71;
+ :  "while" ParExpression Statement;
+ :  "do" Statement "while" ParExpression ";";
+ :  "for" ForControl Statement;
+ :  "break" opt-72 ";";
+ :  "continue" opt-73 ";";
+ :  "return" opt-74 ";";
+ :  "throw" Expression ";";
+ :  "synchronized" ParExpression Block;
+ :  "try" Block or-75;
+ :  "try" ResourceSpecification Block opt-77 opt-78;
+
+opt-69 : ;
+ :  "else" Statement;
+
+opt-70 : ;
+ :  ":" Expression;
+
+star-71 : ;
+ :  SwitchBlockStatementGroups star-71;
+
+opt-72 : ;
+ :  Identifier;
+
+opt-73 : ;
+ :  Identifier;
+
+opt-74 : ;
+ :  Expression;
+
+or-75 :  Catches;
+ :  opt-76 Finally;
+
+opt-76 : ;
+ :  Catches;
+
+opt-77 : ;
+ :  Catches;
+
+opt-78 : ;
+ :  Finally;
+
+StatementExpression :  Expression;
+
+Catches :  CatchClause star-79;
+
+star-79 : ;
+ :  CatchClause star-79;
+
+CatchClause :  "catch" "(" star-80 CatchType Identifier ")" Block;
+
+star-80 : ;
+ :  VariableModifier star-80;
+
+CatchType :  QualifiedIdentifier star-81;
+
+star-81 : ;
+ :  "|" QualifiedIdentifier star-81;
+
+Finally :  "finally" Block;
+
+ResourceSpecification :  Resources opt-82;
+
+opt-82 : ;
+ :  ";";
+
+Resources :  Resource star-83;
+
+star-83 : ;
+ :  ";" Resource star-83;
+
+Resource :  star-84 ReferenceType VariableDeclaratorId "=" Expression;
+
+star-84 : ;
+ :  VariableModifier star-84;
+
+SwitchBlockStatementGroups :  "{" SwitchBlockStatementGroup "}";
+
+SwitchBlockStatementGroup :  SwitchLabels BlockStatements;
+
+SwitchLabels :  SwitchLabel star-85;
+
+star-85 : ;
+ :  SwitchLabel star-85;
+
+SwitchLabel :  "case" Expression ":";
+ :  "case" EnumConstantName ":";
+ :  "default" ":";
+
+EnumConstantName :  Identifier;
+
+ForControl :  ForVarControl;
+ :  ForInit ";" opt-86 ";" opt-87;
+
+opt-86 : ;
+ :  Expression;
+
+opt-87 : ;
+ :  "ForUpdate";
+
+ForVarControl :  star-88 Type VariableDeclaratorId ForVarControlRest;
+
+star-88 : ;
+ :  VariableModifier star-88;
+
+ForVarControlRest :  ForVariableDeclaratorsRest ";" opt-89 ";" opt-90;
+ :  ":" Expression;
+
+opt-89 : ;
+ :  Expression;
+
+opt-90 : ;
+ :  "ForUpdate";
+
+ForVariableDeclaratorsRest :  opt-91 star-92;
+
+opt-91 : ;
+ :  "=" VariableInitializer;
+
+star-92 : ;
+ :  "," VariableDeclarator star-92;
+
+ForInit :  "ForUpdate:";
+ :  StatementExpression star-93;
+
+star-93 : ;
+ :  "," StatementExpression star-93;
+
+Expression :  Expression1 opt-94;
+
+opt-94 : ;
+ :  AssignmentOperator Expression1;
+
+AssignmentOperator :  "=";
+ :  "+" "=";
+ :  "-=";
+ :  "*" "=";
+ :  "/=";
+ :  "&=";
+ :  "|" "=";
+ :  "^=";
+ :  "%=";
+ :  "<<=";
+ :  ">>=";
+ :  ">>>=";
+
+Expression1 :  Expression2 opt-95;
+
+opt-95 : ;
+ :  Expression1Rest;
+
+Expression1Rest :  "?" Expression ":" Expression1;
+
+Expression2 :  Expression3 opt-96;
+
+opt-96 : ;
+ :  Expression2Rest;
+
+Expression2Rest :  star-97;
+ :  "instanceof" Type;
+
+star-97 : ;
+ :  InfixOp Expression3 star-97;
+
+InfixOp :  "|" "|";
+ :  "&&";
+ :  "|";
+ :  "^";
+ :  "&";
+ :  "==";
+ :  "!=";
+ :  "<";
+ :  ">";
+ :  "<=";
+ :  ">=";
+ :  "<<";
+ :  ">>";
+ :  ">>>";
+ :  "+";
+ :  "-";
+ :  "*";
+ :  "/";
+ :  "%";
+
+Expression3 :  PrefixOp Expression3;
+ :  "(" Expression "|" Type ")" Expression3;
+ :  Primary star-98 star-99;
+
+star-98 : ;
+ :  Selector star-98;
+
+star-99 : ;
+ :  PostfixOp star-99;
+
+PrefixOp :  "+" "+";
+ :  "--";
+ :  "!";
+ :  "~";
+ :  "+";
+ :  "-";
+
+PostfixOp :  "+" "+";
+ :  "--";
+
+Primary :  Literal;
+ :  ParExpression;
+ :  "this" opt-100;
+ :  "super" SuperSuffix;
+ :  "new" Creator;
+ :  NonWildcardTypeArguments ExplicitGenericInvocationSuffix "|" "this" Arguments;
+ :  Identifier star-101 opt-102;
+ :  BasicType star-103 "." "class";
+ :  "void" "." "class";
+
+opt-100 : ;
+ :  Arguments;
+
+star-101 : ;
+ :  "." Identifier star-101;
+
+opt-102 : ;
+ :  IdentifierSuffix;
+
+star-103 : ;
+ :  "[]" star-103;
+
+Literal :  "IntegerLiteral";
+ :  "FloatingPointLiteral";
+ :  "CharacterLiteral";
+ :  "StringLiteral";
+ :  "BooleanLiteral";
+ :  "NullLiteral";
+
+ParExpression :  "(" Expression ")";
+
+Arguments :  "(" opt-104 ")";
+
+opt-104 : ;
+ :  Expression star-105;
+
+star-105 : ;
+ :  "," Expression star-105;
+
+SuperSuffix :  Arguments;
+ :  "." Identifier opt-106;
+
+opt-106 : ;
+ :  Arguments;
+
+ExplicitGenericInvocationSuffix :  Identifier Arguments;
+
+Creator :  NonWildcardTypeArguments CreatedName ClassCreatorRest;
+ :  CreatedName ClassCreatorRest "|" ArrayCreatorRest;
+
+CreatedName :  Identifier opt-107 star-108;
+
+opt-107 : ;
+ :  TypeArgumentsOrDiamond;
+
+star-108 : ;
+ :  "." Identifier "[TypeArgumentsOrDiamond]" star-108;
+
+ClassCreatorRest :  Arguments opt-109;
+
+opt-109 : ;
+ :  ClassBody;
+
+ArrayCreatorRest :  "[" or-110;
+
+or-110 :  "]" star-111 ArrayInitializer;
+ :  Expression "]" star-112 star-113;
+
+star-111 : ;
+ :  "[]" star-111;
+
+star-112 : ;
+ :  "[" Expression "]" star-112;
+
+star-113 : ;
+ :  "[]" star-113;
+
+IdentifierSuffix :  "[" or-114 "]";
+ :  Arguments;
+ :  "." or-116;
+
+or-114 :  star-115 "." "class";
+ :  Expression;
+
+star-115 : ;
+ :  "[]" star-115;
+
+or-116 :  "class";
+ :  ExplicitGenericInvocation;
+ :  "this";
+ :  "super" Arguments;
+ :  "new" opt-117 InnerCreator;
+
+opt-117 : ;
+ :  NonWildcardTypeArguments;
+
+ExplicitGenericInvocation :  NonWildcardTypeArguments ExplicitGenericInvocationSuffix;
+
+InnerCreator :  Identifier opt-118 ClassCreatorRest;
+
+opt-118 : ;
+ :  NonWildcardTypeArgumentsOrDiamond;
+
+Selector :  "." Identifier opt-119;
+ :  "." ExplicitGenericInvocation;
+ :  "." "this";
+ :  "." "super" SuperSuffix;
+ :  "." "new" opt-120 InnerCreator;
+ :  "[" Expression "]";
+
+opt-119 : ;
+ :  Arguments;
+
+opt-120 : ;
+ :  NonWildcardTypeArguments;
+
+EnumBody :  "{" opt-121 opt-122 opt-123 "}";
+
+opt-121 : ;
+ :  EnumConstants;
+
+opt-122 : ;
+ :  ",";
+
+opt-123 : ;
+ :  EnumBodyDeclarations;
+
+EnumConstants :  EnumConstant;
+ :  EnumConstants "," EnumConstant;
+
+EnumConstant :  opt-124 Identifier opt-125 opt-126;
+
+opt-124 : ;
+ :  Annotations;
+
+opt-125 : ;
+ :  Arguments;
+
+opt-126 : ;
+ :  ClassBody;
+
+EnumBodyDeclarations :  ";" star-127;
+
+star-127 : ;
+ :  ClassBodyDeclaration star-127;
+
+AnnotationTypeBody :  "{" opt-128 "}";
+
+opt-128 : ;
+ :  AnnotationTypeElementDeclarations;
+
+AnnotationTypeElementDeclarations :  AnnotationTypeElementDeclaration;
+ :  AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration;
+
+AnnotationTypeElementDeclaration :  star-129 AnnotationTypeElementRest;
+
+star-129 : ;
+ :  Modifier star-129;
+
+AnnotationTypeElementRest :  Type Identifier AnnotationMethodOrConstantRest ";";
+ :  ClassDeclaration;
+ :  InterfaceDeclaration;
+ :  EnumDeclaration;
+ :  AnnotationTypeDeclaration;
+
+AnnotationMethodOrConstantRest :  AnnotationMethodRest;
+ :  ConstantDeclaratorsRest;
+
+AnnotationMethodRest :  "(" ")" opt-130 opt-131;
+
+opt-130 : ;
+ :  "[]";
+
+opt-131 : ;
+ :  "default" ElementValue;
+

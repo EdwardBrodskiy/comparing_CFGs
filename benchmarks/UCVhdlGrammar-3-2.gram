@@ -1,0 +1,285 @@
+design_file -> design_unit design_units
+access_type_definition -> ACCESS subtype_indication
+index_specification -> discrete_range | expression
+expanded_name -> simple_name | expanded_name DOT simple_name
+ELSIF__THEN__seq_of_stmts -> "" | ELSIF condition THEN sequence_of_statements ELSIF__THEN__seq_of_stmts
+port_map_aspect_opt -> "" | port_map_aspect
+entity_statements -> "" | entity_statements entity_statement
+signal_assignment_statement -> target LE TRANSPORT_opt waveform Semicolon_ERR
+local_port_mode_opt -> "" | IN | OUT | INOUT | BUFFER | LINKAGE
+base_unit_declaration -> Identifier Semicolon_ERR
+package_declaration -> PACKAGE Identifier IS package_declarative_part END_ERR simple_name_opt Semicolon_ERR
+waveform_elements -> "" | COMMA waveform_element waveform_elements
+timeout_clause -> FOR expression
+selected_names -> "" | selected_names COMMA selected_name
+use_clause -> USE selected_name selected_names Semicolon_ERR
+element_declaration -> identifier_list COLON element_subtype_definition Semicolon_ERR
+signal_kind_opt -> "" | signal_kind
+subtype_declaration -> SUBTYPE Identifier IS subtype_indication Semicolon_ERR
+operator_symbol -> relational_operator | adding_operator | multiplying_operator | logical_operator | miscellaneous_operator | STRING_LITERAL
+index_subtype_definition -> name RANGE BOX
+procedure_parameter_object_class_opt -> "" | VARIABLE | CONSTANT
+block_declarative_item -> constant_declaration | signal_declaration | type_declaration | subtype_declaration | attribute_declaration | component_declaration | alias_declaration | attribute_specification | configuration_specification | subprogram_declaration | subprogram_body | file_declaration | disconnection_specification | use_clause
+identifier_list -> Identifier identifiers
+process_declarative_part -> process_declarative_items
+set_of_statements -> concurrent_statements
+generic_map_aspect_Semicolon_opt -> "" | generic_map_aspect Semicolon_ERR
+enumeration_literals -> "" | enumeration_literals COMMA enumeration_literal
+architecture_declarative_part -> block_declarative_items
+PORT__local_port_list_opt -> "" | PORT LPAREN local_port_list RightParen_ERR Semicolon_ERR
+SEVERITY__expression_opt -> "" | SEVERITY expression
+physical_type_definition -> range_constraint UNITS base_unit_declaration secondary_unit_declarations END_ERR UNITS
+wait_statement -> WAIT sensitivity_clause_opt condition_clause_opt timeout_clause_opt Semicolon_ERR
+library_clause -> LIBRARY logical_name_list Semicolon_ERR
+instantiation_list -> identifier_list | OTHERS | ALL
+choice -> simple_expression | simple_expression direction simple_expression | name range_constraint | OTHERS
+guard_expression_opt -> "" | guard_expression
+relationXOR__relation -> relation XOR relation | relationXOR__relation XOR relation
+DoubleStar__primary_opt -> "" | DOUBLESTAR primary
+WHEN__condition_opt -> "" | WHEN condition
+port_clause -> PORT LPAREN formal_port_list RightParen_ERR Semicolon_ERR
+package_declarative_items -> "" | package_declarative_items package_declarative_item
+component_instantiation_statement -> a_label name generic_map_aspect_opt port_map_aspect_opt Semicolon_ERR
+subprogram_body -> subprogram_specification IS subprogram_declarative_part BEGIN sequence_of_statements END_ERR designator_opt Semicolon_ERR
+entity_declarative_item -> alias_declaration | constant_declaration | type_declaration | subtype_declaration | attribute_declaration | attribute_specification | subprogram_declaration | subprogram_body | signal_declaration | file_declaration | disconnection_specification | use_clause
+name -> simple_name | name aggregate | name DOT suffix | name APOSTROPHE attribute_designator aggregate_opt
+configuration_declarative_item -> use_clause | attribute_specification
+formal_generic_list -> formal_generic_element formal_generic_elements
+port_map_aspect -> PORT MAP LPAREN association_list RightParen_ERR
+logical_names -> "" | logical_names COMMA Identifier
+function_parameter_element -> function_parameter_object_class_opt identifier_list COLON function_parameter_mode_opt type_mark constraint_opt VARASGN__expression_opt
+generic_clause_map_aspect_opt -> "" | generic_clause generic_map_aspect_Semicolon_opt
+BUS_opt -> "" | BUS
+context_clause -> context_items
+package_body_declarative_items -> "" | package_body_declarative_items package_body_declarative_item
+binding_indication -> entity_aspect generic_map_aspect_opt port_map_aspect_opt
+TRANSPORT_opt -> "" | TRANSPORT
+iteration_scheme -> WHILE condition | FOR loop_parameter_specification
+suffix -> simple_name | CHARACTER_LITERAL | ALL
+array_type_definition -> unconstrained_array_definition | constrained_array_definition
+miscellaneous_operator -> DOUBLESTAR | ABS | NOT
+guarded_signal_specification -> signal_list COLON type_mark
+formal_port_list -> formal_port_element formal_port_elements
+abstract_literal_opt -> "" | abstract_literal
+design_unit -> context_clause library_unit
+AFTER__expression_opt -> "" | AFTER expression
+association_elements -> "" | COMMA association_element association_elements
+process_statement -> a_label unlabeled_process_statement | unlabeled_process_statement
+generation_scheme -> FOR generate_parameter_specification | IF condition
+loop_statement -> a_label unlabeled_loop_statement | unlabeled_loop_statement
+CONSTANT_opt -> "" | CONSTANT
+range_type_definition -> range_constraint
+subprogram_declarative_part -> "" | subprogram_declarative_part subprogram_declarative_item
+local_generic_elements -> "" | local_generic_elements Semicolon_ERR local_generic_element
+sign_opttermadd_op__terms -> term UNARY_SIGN | sign term UNARY_SIGN | sign_opttermadd_op__terms adding_operator term
+unlabeled_conditional_signal_assignment -> target LE GUARDED_opt TRANSPORT_opt waveform__WHEN__condition__ELSE waveform Semicolon_ERR
+configuration_declaration -> CONFIGURATION Identifier OF name IS configuration_declarative_part block_configuration END_ERR simple_name_opt Semicolon_ERR
+variable_assignment_statement -> target VARASGN expression Semicolon_ERR
+full_type_declaration -> TYPE Identifier IS type_definition Semicolon_ERR
+component_declaration -> COMPONENT Identifier GENERIC__local_generic_list_opt PORT__local_port_list_opt END_ERR COMPONENT Semicolon_ERR
+configuration_item -> block_configuration | component_configuration
+signal_declaration -> SIGNAL identifier_list COLON subtype_indication signal_kind_opt VARASGN__expression_opt Semicolon_ERR
+entity_name_list -> entity_designator entity_designators | OTHERS | ALL
+signal_kind -> REGISTER | BUS
+primary_unit -> entity_declaration | configuration_declaration | package_declaration
+component_configuration -> FOR instantiation_list COLON name USE__binding_indication_opt block_configuration_opt END_ERR FOR Semicolon_ERR
+unlabeled_concurrent_procedure_call -> procedure_call_statement
+attribute_name -> name APOSTROPHE attribute_designator aggregate_opt
+case_statement_alternatives -> "" | case_statement_alternatives case_statement_alternative
+exit_statement -> EXIT label_opt WHEN__condition_opt Semicolon_ERR
+local_generic_list -> local_generic_element local_generic_elements
+concurrent_signal_assignment_statement -> a_label unlabeled_conditional_signal_assignment | unlabeled_conditional_signal_assignment | a_label unlabeled_selected_signal_assignment | unlabeled_selected_signal_assignment
+generic_map_aspect -> GENERIC MAP LPAREN association_list RightParen_ERR
+END_ERR -> END
+enumeration_literal -> Identifier | CHARACTER_LITERAL
+UNARY_SIGN -> PLUS | MINUS
+index_constraint -> LPAREN discrete_range discrete_ranges RightParen_ERR
+entity_statement_part -> entity_statements
+ELSE__seq_of_stmts_opt -> "" | ELSE sequence_of_statements
+unlabeled_generate_statement -> generation_scheme GENERATE set_of_statements END_ERR GENERATE label_opt Semicolon_ERR
+sensitivity_list_opt -> "" | sensitivity_list
+simple_name -> Identifier
+range_constraint -> RANGE range
+element_declarations -> "" | element_declarations element_declaration
+Bar__choice_opt -> "" | Bar__choice_opt BAR choice
+literal -> numeric_literal | CHARACTER_LITERAL | STRING_LITERAL | BIT_STRING_LITERAL | NULL
+SIGNAL_opt -> "" | SIGNAL
+generic_clause -> GENERIC LPAREN formal_generic_list RightParen_ERR Semicolon_ERR
+relationAND__relation -> relation AND relation | relationAND__relation AND relation
+local_port_list -> local_port_element local_port_elements
+package_declarative_item -> type_declaration | subtype_declaration | attribute_declaration | constant_declaration | alias_declaration | subprogram_declaration | component_declaration | attribute_specification | signal_declaration | file_declaration | disconnection_specification | use_clause
+type_declaration -> full_type_declaration | incomplete_type_declaration
+relational_operator -> EQ | NE | LT | LE | GT | GE
+condition_clause_opt -> "" | condition_clause
+architecture_identifier_opt -> "" | LPAREN simple_name RightParen_ERR
+concurrent_procedure_call -> a_label unlabeled_concurrent_procedure_call | unlabeled_concurrent_procedure_call
+waveform__WHEN__choices -> "" | waveform__WHEN__choices COMMA waveform WHEN choices
+record_type_definition -> RECORD element_declaration element_declarations END_ERR RECORD
+logical_operator -> AND | OR | NAND | NOR | XOR
+expression -> relationAND__relation | relationOR__relation | relationNAND_NOR__relation | relationXOR__relation
+process_declarative_item -> constant_declaration | variable_declaration | type_declaration | subtype_declaration | attribute_declaration | attribute_specification | subprogram_declaration | subprogram_body | file_declaration | alias_declaration | use_clause
+secondary_unit_declaration -> Identifier EQ physical_literal Semicolon_ERR
+sequential_statements -> "" | sequential_statement sequential_statements
+association_element -> name ARROW OPEN_or_expression | OPEN_or_expression
+relation -> simple_expression relop__simple_expression_opt
+timeout_clause_opt -> "" | timeout_clause
+RightParen_ERR -> RPAREN
+type_or_function_name -> expanded_name
+REPORT__expression_opt -> "" | REPORT expression
+procedure_call_statement -> name Semicolon_ERR
+package_body_declarative_part -> package_body_declarative_items
+entity_declarative_items -> "" | entity_declarative_items entity_declarative_item
+design_units -> "" | design_unit design_units
+configuration_declarative_items -> "" | configuration_declarative_items configuration_declarative_item
+next_statement -> NEXT label_opt WHEN__condition_opt Semicolon_ERR
+library_unit -> primary_unit | secondary_unit
+unlabeled_selected_signal_assignment -> WITH expression SELECT target LE GUARDED_opt TRANSPORT_opt waveform WHEN choices waveform__WHEN__choices Semicolon_ERR
+attribute_declaration -> ATTRIBUTE Identifier COLON type_mark Semicolon_ERR
+GUARDED_opt -> "" | GUARDED
+prefix -> name
+entity_designator -> simple_name | operator_symbol
+iteration_scheme_opt -> "" | iteration_scheme
+generic_clause_opt -> "" | generic_clause
+expression_opt -> "" | expression
+port_clause_map_aspect_opt -> "" | port_clause port_map_aspect_Semicolon_opt
+enumeration_type_definition -> LPAREN enumeration_literal enumeration_literals RightParen_ERR
+target -> name | aggregate
+constraint_opt -> "" | constraint
+function_parameter_mode_opt -> "" | IN
+signal_list -> name names | OTHERS | ALL
+procedure_parameter_mode_opt -> "" | IN | OUT | INOUT
+discrete_range -> range | name range_constraint | type_mark
+OPEN_or_expression -> OPEN | expression
+simple_expression -> sign_opttermadd_op__terms
+sensitivity_clause -> ON signal_list
+multiplying_operator -> MUL | DIV | MOD | REM
+architecture_statement_part -> concurrent_statements
+file_declaration -> FILE Identifier COLON subtype_indication IS mode_opt expression Semicolon_ERR
+constant_declaration -> CONSTANT identifier_list COLON subtype_indication VARASGN__expression_opt Semicolon_ERR
+procedure_parameter_element -> procedure_parameter_object_class_opt identifier_list COLON procedure_parameter_mode_opt type_mark constraint_opt VARASGN__expression_opt
+mode_opt -> "" | IN | OUT | INOUT | BUFFER | LINKAGE
+constrained_array_definition -> ARRAY index_constraint OF subtype_indication
+case_statement_alternative -> WHEN choices ARROW sequence_of_statements
+block_statement -> a_label BLOCK guard_expression_opt generic_clause_map_aspect_opt port_clause_map_aspect_opt block_declarative_part BEGIN set_of_statements END_ERR BLOCK label_opt Semicolon_ERR
+label -> Identifier
+BEGIN__entity_statement_part_opt -> "" | BEGIN entity_statement_part
+context_item -> library_clause | use_clause
+logical_name_list -> Identifier logical_names
+sensitivity_clause_opt -> "" | sensitivity_clause
+sequence_of_statements -> sequential_statements
+qualified_expression -> name APOSTROPHE aggregate
+loop_parameter_specification -> Identifier IN discrete_range
+simple_name_opt -> "" | simple_name
+element_association -> expression | choice Bar__choice_opt ARROW expression | simple_expression direction simple_expression | name range_constraint
+discrete_ranges -> "" | discrete_ranges COMMA discrete_range
+function_parameter_list_opt -> "" | LPAREN function_parameter_element function_parameter_elements RightParen_ERR
+subtype_indication -> type_or_function_name type_mark constraint_opt | type_mark constraint_opt
+entity_aspect -> ENTITY name architecture_identifier_opt | CONFIGURATION Identifier | OPEN
+concurrent_statements -> "" | concurrent_statement concurrent_statements
+port_map_aspect_Semicolon_opt -> "" | port_map_aspect Semicolon_ERR
+scalar_type_definition -> enumeration_type_definition | range_type_definition | physical_type_definition
+null_statement -> NULL Semicolon_ERR
+entity_specification -> entity_name_list COLON entity_class
+choices -> choice Bar__choice_opt
+relationOR__relation -> relation OR relation | relationOR__relation OR relation
+variable_declaration -> VARIABLE identifier_list COLON subtype_indication VARASGN__expression_opt Semicolon_ERR
+element_subtype_definition -> subtype_indication
+condition -> expression
+entity_declaration -> ENTITY Identifier IS generic_clause_opt port_clause_opt entity_declarative_part BEGIN__entity_statement_part_opt END_ERR simple_name_opt Semicolon_ERR
+element_associations -> "" | element_associations COMMA element_association
+concurrent_assertion_statement -> a_label unlabeled_concurrent_assertion_statement | unlabeled_concurrent_assertion_statement
+block_configuration -> FOR block_specification use_clauses configuration_items END_ERR FOR Semicolon_ERR
+process_declarative_items -> "" | process_declarative_items process_declarative_item
+constraint -> range_constraint | aggregate
+type_mark -> expanded_name
+formal_generic_element -> CONSTANT_opt identifier_list COLON IN_opt type_mark constraint_opt VARASGN__expression_opt
+block_declarative_part -> block_declarative_items
+factor -> primary DoubleStar__primary_opt | ABS primary | NOT primary
+primary -> literal | qualified_expression | name | aggregate | allocator
+waveform_element -> expression AFTER__expression_opt
+function_parameter_object_class_opt -> "" | CONSTANT | SIGNAL
+association_list -> association_element association_elements
+block_configuration_opt -> "" | block_configuration
+guard_expression -> LPAREN expression RightParen_ERR
+secondary_unit -> architecture_body | package_body
+abstract_literal -> INTEGER | REAL_LITERAL | BASE_LITERAL
+aggregate_opt -> "" | aggregate
+entity_designators -> "" | entity_designators COMMA entity_designator
+attribute_specification -> ATTRIBUTE attribute_designator OF entity_specification IS expression Semicolon_ERR
+unlabeled_loop_statement -> iteration_scheme_opt LOOP sequence_of_statements END_ERR LOOP label_opt Semicolon_ERR
+formal_port_elements -> "" | formal_port_elements Semicolon_ERR formal_port_element
+local_port_element -> SIGNAL_opt identifier_list COLON local_port_mode_opt type_mark constraint_opt
+block_specification -> label opt_index_spec_opt
+if_statement -> IF condition THEN sequence_of_statements ELSIF__THEN__seq_of_stmts ELSE__seq_of_stmts_opt END_ERR IF Semicolon_ERR
+generate_parameter_specification -> Identifier IN discrete_range
+relationNAND_NOR__relation -> relation | relation NAND relation | relation NOR relation
+condition_clause -> UNTIL expression
+Semicolon_ERR -> SEMI
+GENERIC__local_generic_list_opt -> "" | GENERIC LPAREN local_generic_list RightParen_ERR Semicolon_ERR
+concurrent_statement -> block_statement | process_statement | concurrent_assertion_statement | concurrent_signal_assignment_statement | component_instantiation_statement | generate_statement | concurrent_procedure_call
+package_declarative_part -> package_declarative_items
+secondary_unit_declarations -> "" | secondary_unit_declarations secondary_unit_declaration
+numeric_literal -> abstract_literal | abstract_literal name
+package_body -> PACKAGE BODY Identifier IS package_body_declarative_part END_ERR simple_name_opt Semicolon_ERR
+procedure_parameter_list_opt -> "" | LPAREN procedure_parameter_element procedure_parameter_elements RightParen_ERR
+alias_declaration -> ALIAS Identifier COLON subtype_indication IS name Semicolon_ERR
+unconstrained_array_definition -> ARRAY LPAREN index_subtype_definition index_subtype_definitions RightParen_ERR OF subtype_indication
+entity_statement -> concurrent_assertion_statement | concurrent_procedure_call | process_statement
+unlabeled_process_statement -> PROCESS sensitivity_list_opt process_declarative_part BEGIN sequence_of_statements END_ERR PROCESS label_opt Semicolon_ERR
+range -> attribute_name | simple_expression direction simple_expression
+adding_operator -> PLUS | MINUS | AMPERSAND
+context_items -> "" | context_items context_item
+block_declarative_items -> "" | block_declarative_items block_declarative_item
+opt_index_spec_opt -> "" | LPAREN index_specification RightParen_ERR
+local_generic_element -> CONSTANT_opt identifier_list COLON IN_opt type_mark constraint_opt
+designator_opt -> "" | designator
+entity_declarative_part -> entity_declarative_items
+direction -> TO | DOWNTO
+selected_name -> prefix DOT suffix
+local_port_elements -> "" | local_port_elements Semicolon_ERR local_port_element
+sequential_statement -> assertion_statement | signal_assignment_statement | variable_assignment_statement | if_statement | case_statement | loop_statement | next_statement | exit_statement | return_statement | null_statement | procedure_call_statement | wait_statement
+relop__simple_expression_opt -> "" | relational_operator simple_expression
+configuration_items -> "" | configuration_items configuration_item
+procedure_parameter_elements -> "" | procedure_parameter_elements Semicolon_ERR procedure_parameter_element
+index_subtype_definitions -> "" | index_subtype_definitions COMMA index_subtype_definition
+waveform__WHEN__condition__ELSE -> "" | waveform__WHEN__condition__ELSE waveform WHEN expression ELSE
+configuration_specification -> FOR instantiation_list COLON name USE binding_indication Semicolon_ERR
+assertion_statement -> ASSERT expression REPORT__expression_opt SEVERITY__expression_opt Semicolon_ERR
+identifiers -> "" | COMMA Identifier identifiers
+disconnection_specification -> DISCONNECT guarded_signal_specification AFTER expression Semicolon_ERR
+a_label -> label COLON
+allocator -> NEW qualified_expression
+designator -> Identifier | operator_symbol
+use_clauses -> "" | use_clause use_clauses
+port_clause_opt -> "" | port_clause
+function_parameter_elements -> ""
+VARASGN__expression_opt -> "" | VARASGN expression
+return_statement -> RETURN expression_opt Semicolon_ERR
+generic_map_aspect_opt -> "" | generic_map_aspect
+term -> factor | term multiplying_operator factor
+sign -> PLUS | MINUS
+configuration_declarative_part -> configuration_declarative_items
+case_statement -> CASE expression IS case_statement_alternative case_statement_alternatives END_ERR CASE Semicolon_ERR
+unlabeled_concurrent_assertion_statement -> assertion_statement
+subprogram_declaration -> subprogram_specification Semicolon_ERR
+attribute_designator -> simple_name | RANGE
+USE__binding_indication_opt -> "" | USE binding_indication Semicolon_ERR
+entity_class -> ENTITY | ARCHITECTURE | PACKAGE | FUNCTION | PROCEDURE | SUBTYPE | CONSTANT | VARIABLE | SIGNAL | LABEL | TYPE | CONFIGURATION | COMPONENT
+names -> "" | names COMMA name
+label_opt -> "" | label
+formal_port_element -> SIGNAL_opt identifier_list COLON mode_opt type_mark constraint_opt BUS_opt VARASGN__expression_opt
+generate_statement -> a_label unlabeled_generate_statement
+package_body_declarative_item -> subprogram_declaration | subprogram_body | type_declaration | subtype_declaration | constant_declaration | file_declaration | alias_declaration | use_clause
+type_definition -> scalar_type_definition | composite_type_definition | access_type_definition | file_type_definition
+subprogram_declarative_item -> constant_declaration | variable_declaration | alias_declaration | type_declaration | subtype_declaration | attribute_declaration | attribute_specification | subprogram_declaration | subprogram_body | file_declaration | use_clause
+IN_opt -> "" | IN
+waveform -> waveform_element waveform_elements
+file_type_definition -> FILE OF type_mark
+architecture_body -> ARCHITECTURE Identifier OF name IS architecture_declarative_part BEGIN architecture_statement_part END_ERR simple_name_opt Semicolon_ERR
+composite_type_definition -> array_type_definition | record_type_definition
+incomplete_type_declaration -> TYPE Identifier Semicolon_ERR
+formal_generic_elements -> "" | formal_generic_elements Semicolon_ERR formal_generic_element
+sensitivity_list -> LPAREN signal_list RightParen_ERR
+physical_literal -> abstract_literal_opt name
+aggregate -> LPAREN element_association element_associations RightParen_ERR
+subprogram_specification -> PROCEDURE designator procedure_parameter_list_opt | FUNCTION designator function_parameter_list_opt RETURN type_mark

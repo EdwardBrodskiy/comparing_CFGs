@@ -1,0 +1,253 @@
+CompilationUnit -> opt1 star1 star2
+star6 -> "" | Modifier star6
+opt61 -> "" | Arguments
+InnerCreator -> Identifier opt54 ClassCreatorRest
+or9 -> star53 . class | Expression
+SwitchLabel -> case Expression : | case EnumConstantName : | default :
+Annotation -> @ QualifiedIdentifier opt14
+star54 -> "" | ClassBodyDeclaration star54
+AnnotationMethodOrConstantRest -> AnnotationMethodRest | ConstantDeclaratorsRest
+opt23 -> "" | throws QualifiedIdentifierList
+QualifiedIdentifier -> Identifier star3
+opt45 -> "" | Expression1Rest
+or2 -> extends | super
+opt39 -> "" | Expression
+Expression2Rest -> star43 | instanceof Type
+TypeDeclaration -> ClassOrInterfaceDeclaration | ;
+opt14 -> "" | '(' opt15 ')'
+star14 -> "" | Annotation star14
+ReferenceType -> Identifier opt11 star9
+opt54 -> "" | NonWildcardTypeArgumentsOrDiamond
+ConstantDeclaratorsRest -> ConstantDeclaratorRest star23
+star23 -> "" | , ConstantDeclarator star23
+LocalVariableDeclarationStatement -> star32 Type VariableDeclarators ;
+TypeList -> ReferenceType star11
+opt27 -> "" | VariableInitializer star30 opt28
+ClassOrInterfaceDeclaration -> star6 or1
+Selector -> . Identifier opt55 | . ExplicitGenericInvocation | . this | . super SuperSuffix | . new opt56 InnerCreator | [ Expression ]
+ExplicitGenericInvocationSuffix -> super SuperSuffix | Identifier Arguments
+opt38 -> "" | ;
+opt17 -> "" | ,
+AnnotationTypeBody -> { opt63 }
+BlockStatement -> LocalVariableDeclarationStatement | ClassOrInterfaceDeclaration | opt29 Statement
+opt10 -> "" | extends TypeList
+Expression1 -> Expression2 opt45
+opt2 -> "" | Annotations
+opt50 -> "" | Arguments
+ConstantDeclarator -> Identifier ConstantDeclaratorRest
+opt29 -> "" | Identifier :
+EnumBody -> { opt57 opt58 opt59 }
+opt26 -> "" | = VariableInitializer
+InterfaceMethodOrFieldRest -> ConstantDeclaratorsRest ; | InterfaceMethodDeclaratorRest
+opt44 -> "" | AssignmentOperator Expression1
+ClassCreatorRest -> Arguments opt52
+NonWildcardTypeArguments -> < TypeList >
+InterfaceDeclaration -> NormalInterfaceDeclaration | AnnotationTypeDeclaration
+ResourceSpecification -> Resources opt38
+opt57 -> "" | EnumConstants
+opt41 -> "" | Expression
+star9 -> "" | . Identifier [TypeArguments] star9
+opt65 -> "" | default ElementValue
+ElementValue -> Annotation | Expression1 | ElementValueArrayInitializer
+MemberDecl -> MethodOrFieldDecl | void Identifier VoidMethodDeclaratorRest | Identifier ConstructorDeclaratorRest | GenericMethodOrConstructorDecl | ClassDeclaration | InterfaceDeclaration
+AnnotationTypeElementDeclarations -> AnnotationTypeElementDeclaration | AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
+AnnotationMethodRest -> '(' ')' opt64 opt65
+opt62 -> "" | ClassBody
+or3 -> Block | ;
+star45 -> "" | PostfixOp star45
+VariableDeclaratorRest -> star29 opt26
+opt19 -> "" | throws QualifiedIdentifierList
+star26 -> "" | VariableModifier star26
+opt34 -> "" | Expression
+SwitchLabels -> SwitchLabel star39
+star44 -> "" | Selector star44
+star11 -> "" | , ReferenceType star11
+star39 -> "" | SwitchLabel star39
+Bound -> ReferenceType star13
+star12 -> "" | , TypeParameter star12
+or1 -> ClassDeclaration | InterfaceDeclaration
+AnnotationTypeElementDeclaration -> star55 AnnotationTypeElementRest
+ClassDeclaration -> NormalClassDeclaration | EnumDeclaration
+star18 -> "" | Modifier star18
+Arguments -> '(' opt49 ')'
+opt31 -> "" | : Expression
+ParExpression -> '(' Expression ')'
+opt22 -> "" | throws QualifiedIdentifierList
+or7 -> Catches | opt35 Finally
+FormalParameterDecls -> star26 Type FormalParameterDeclsRest
+AnnotationTypeDeclaration -> @ interface Identifier AnnotationTypeBody
+star52 -> "" | [] star52
+Resource -> star38 ReferenceType VariableDeclaratorId = Expression
+opt64 -> "" | []
+star4 -> "" | , QualifiedIdentifier star4
+star36 -> ""
+opt51 -> "" | TypeArgumentsOrDiamond
+opt48 -> "" | IdentifierSuffix
+PrefixOp -> '+' '+' | -- | ! | ~ | '+' | -
+ArrayCreatorRest -> [ or8
+star22 -> "" | Modifier star22
+Statement -> Block | ; | Identifier : Statement | StatementExpression ; | if ParExpression Statement opt30 | assert Expression opt31 ; | switch ParExpression star33 | while ParExpression Statement | do Statement while ParExpression ; | for ForControl Statement | break opt32 ; | continue opt33 ; | return opt34 ; | throw Expression ; | synchronized ParExpression Block | try Block or7 | try ResourceSpecification Block opt36 opt37
+opt16 -> "" | ElementValues
+BasicType -> byte | short | char | int | long | float | double | boolean
+opt1 -> "" | opt2 package QualifiedIdentifier ;
+VariableDeclaratorId -> Identifier star27
+star31 -> "" | BlockStatement star31
+opt53 -> "" | NonWildcardTypeArguments
+MethodOrFieldDecl -> Type Identifier MethodOrFieldRest
+opt58 -> "" | ,
+opt18 -> "" | static
+star47 -> "" | [] star47
+VariableDeclarators -> VariableDeclarator star28
+MethodOrFieldRest -> FieldDeclaratorsRest ; | MethodDeclaratorRest
+opt9 -> "" | TypeParameters
+VariableDeclarator -> Identifier VariableDeclaratorRest
+GenericMethodOrConstructorDecl -> TypeParameters GenericMethodOrConstructorRest
+EnumConstantName -> Identifier
+ElementValuePairs -> ElementValuePair star15
+Expression1Rest -> '?' Expression : Expression1
+star3 -> "" | . Identifier star3
+opt20 -> "" | throws QualifiedIdentifierList
+SuperSuffix -> Arguments | . Identifier opt50
+opt25 -> "" | , FormalParameterDecls
+star33 -> "" | SwitchBlockStatementGroups star33
+opt35 -> "" | Catches
+NormalInterfaceDeclaration -> interface Identifier opt9 opt10 InterfaceBody
+InterfaceMemberDecl -> InterfaceMethodOrFieldDecl | void Identifier VoidInterfaceMethodDeclaratorRest | InterfaceGenericMethodDecl | ClassDeclaration | InterfaceDeclaration
+Expression2 -> Expression3 opt46
+opt42 -> "" | ForUpdate
+InterfaceMethodOrFieldDecl -> Type Identifier InterfaceMethodOrFieldRest
+opt11 -> "" | TypeArguments
+opt30 -> "" | else Statement
+star21 -> "" | InterfaceBodyDeclaration star21
+Primary -> Literal | ParExpression | this opt47 | super SuperSuffix | new Creator | NonWildcardTypeArguments ExplicitGenericInvocationSuffix '|' this Arguments | Identifier star46 opt48 | BasicType star47 . class | void . class
+star27 -> "" | [] star27
+TypeArgument -> ReferenceType | '?' opt12
+star17 -> "" | ClassBodyDeclaration star17
+opt43 -> "" | = VariableInitializer
+opt13 -> "" | extends Bound
+star51 -> "" | [ Expression ] star51
+VariableInitializer -> ArrayInitializer | Expression
+star25 -> "" | [] star25
+CatchClause -> catch '(' star35 CatchType Identifier ')' Block
+opt28 -> "" | ,
+NonWildcardTypeArgumentsOrDiamond -> < > | NonWildcardTypeArguments
+star10 -> "" | , TypeArgument star10
+opt3 -> "" | static
+star43 -> "" | InfixOp Expression3 star43
+ForVarControlRest -> ForVariableDeclaratorsRest ; opt41 ; opt42 | : Expression
+Type -> BasicType star7 | ReferenceType star8
+star35 -> "" | VariableModifier star35
+InfixOp -> '|' '|' | && | '|' | ^ | & | == | != | < | > | <= | >= | << | >> | >>> | '+' | - | '*' | / | %
+opt59 -> "" | EnumBodyDeclarations
+star15 -> "" | , ElementValuePair star15
+opt5 -> "" | TypeParameters
+AnnotationElement -> ElementValuePairs | ElementValue
+Catches -> CatchClause star34
+star55 -> "" | Modifier star55
+ForInit -> ForUpdate: | StatementExpression star42
+ConstantDeclaratorRest -> star24 = VariableInitializer
+star49 -> "" | . Identifier [TypeArgumentsOrDiamond] star49
+FieldDeclaratorsRest -> VariableDeclaratorRest star19
+or4 -> Block | ;
+star46 -> "" | . Identifier star46
+CatchType -> QualifiedIdentifier star36
+star19 -> "" | , VariableDeclarator star19
+FormalParameters -> '(' opt24 ')'
+Annotations -> Annotation star14
+Expression3 -> PrefixOp Expression3 | '(' Expression '|' Type ')' Expression3 | Primary star44 star45
+star38 -> "" | VariableModifier star38
+opt36 -> "" | Catches
+TypeArgumentsOrDiamond -> < > | TypeArguments
+VariableModifier -> final | Annotation
+opt55 -> "" | Arguments
+opt32 -> "" | Identifier
+star8 -> "" | [] star8
+EnumConstant -> opt60 Identifier opt61 opt62
+Block -> { BlockStatements }
+opt49 -> "" | Expression star48
+VoidInterfaceMethodDeclaratorRest -> FormalParameters opt23 ;
+star28 -> "" | , VariableDeclarator star28
+or6 -> Type | void
+InterfaceBody -> { star21 }
+TypeArguments -> < TypeArgument star10 >
+SwitchBlockStatementGroups -> { SwitchBlockStatementGroup }
+ArrayInitializer -> { opt27 }
+BlockStatements -> star31
+ExplicitGenericInvocation -> NonWildcardTypeArguments ExplicitGenericInvocationSuffix
+opt40 -> "" | ForUpdate
+opt8 -> "" | implements TypeList
+opt52 -> "" | ClassBody
+ConstructorDeclaratorRest -> FormalParameters opt21 Block
+EnumConstants -> EnumConstant | EnumConstants , EnumConstant
+or10 -> class | ExplicitGenericInvocation | this | super Arguments | new opt53 InnerCreator
+star2 -> "" | TypeDeclaration star2
+EnumDeclaration -> enum Identifier opt8 EnumBody
+InterfaceMethodDeclaratorRest -> FormalParameters star25 opt22 ;
+Identifier -> IDENTIFIER
+opt15 -> "" | AnnotationElement
+star41 -> "" | , VariableDeclarator star41
+GenericMethodOrConstructorRest -> or5 Identifier MethodDeclaratorRest | Identifier ConstructorDeclaratorRest
+ClassBody -> { star17 }
+star50 -> "" | [] star50
+opt46 -> "" | Expression2Rest
+star5 -> "" | . Identifier star5
+opt63 -> "" | AnnotationTypeElementDeclarations
+ForControl -> ForVarControl | ForInit ; opt39 ; opt40
+opt6 -> "" | extends Type
+IdentifierSuffix -> [ or9 ] | Arguments | . or10
+Modifier -> Annotation | public | protected | private | static | abstract | final | native | synchronized | transient | volatile | strictfp
+AnnotationTypeElementRest -> Type Identifier AnnotationMethodOrConstantRest ; | ClassDeclaration | InterfaceDeclaration | EnumDeclaration | AnnotationTypeDeclaration
+star16 -> "" | , ElementValue star16
+ElementValues -> ElementValue star16
+or5 -> Type | void
+star30 -> "" | , VariableInitializer star30
+ImportDeclaration -> import opt3 Identifier star5 opt4 ;
+PostfixOp -> '+' '+' | --
+ClassBodyDeclaration -> ; | star18 MemberDecl | opt18 Block
+opt12 -> "" | or2 ReferenceType
+ForVariableDeclaratorsRest -> opt43 star41
+star34 -> "" | CatchClause star34
+opt60 -> "" | Annotations
+star13 -> "" | & ReferenceType star13
+TypeParameter -> Identifier opt13
+InterfaceGenericMethodDecl -> TypeParameters or6 Identifier InterfaceMethodDeclaratorRest
+Creator -> NonWildcardTypeArguments CreatedName ClassCreatorRest | CreatedName ClassCreatorRest '|' ArrayCreatorRest
+star42 -> "" | , StatementExpression star42
+CreatedName -> Identifier opt51 star49
+opt37 -> "" | Finally
+opt24 -> "" | FormalParameterDecls
+TypeParameters -> < TypeParameter star12 >
+FormalParameterDeclsRest -> VariableDeclaratorId opt25 | ... VariableDeclaratorId
+InterfaceBodyDeclaration -> ; | star22 InterfaceMemberDecl
+NormalClassDeclaration -> class Identifier opt5 opt6 opt7 ClassBody
+star24 -> "" | [] star24
+StatementExpression -> Expression
+star32 -> "" | VariableModifier star32
+star7 -> "" | [] star7
+ElementValuePair -> Identifier = ElementValue
+ForVarControl -> star40 Type VariableDeclaratorId ForVarControlRest
+Literal -> IntegerLiteral | FloatingPointLiteral | CharacterLiteral | StringLiteral | BooleanLiteral | NullLiteral
+VoidMethodDeclaratorRest -> FormalParameters opt20 or4
+EnumBodyDeclarations -> ; star54
+star1 -> "" | ImportDeclaration star1
+star37 -> "" | ; Resource star37
+opt56 -> "" | NonWildcardTypeArguments
+opt21 -> "" | throws QualifiedIdentifierList
+star29 -> "" | [] star29
+star20 -> "" | [] star20
+or8 -> ] star50 ArrayInitializer | Expression ] star51 star52
+opt33 -> "" | Identifier
+star48 -> "" | , Expression star48
+MethodDeclaratorRest -> FormalParameters star20 opt19 or3
+QualifiedIdentifierList -> QualifiedIdentifier star4
+Expression -> Expression1 opt44
+star40 -> "" | VariableModifier star40
+opt7 -> "" | implements TypeList
+ElementValueArrayInitializer -> { opt16 opt17 }
+AssignmentOperator -> = | '+' = | -= | '*' = | /= | &= | '|' = | ^= | %= | <<= | >>= | >>>=
+Resources -> Resource star37
+star53 -> "" | [] star53
+Finally -> finally Block
+opt47 -> "" | Arguments
+opt4 -> "" | . '*'
+SwitchBlockStatementGroup -> SwitchLabels BlockStatements

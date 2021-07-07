@@ -1,0 +1,388 @@
+program :  programHeading block DOT;
+
+programHeading :  "PROGRAM" identifier opt-18018 SEMI;
+
+opt-18018 : ;
+ :  LPAREN identifierList RPAREN;
+
+identifier :  "IDENTIFIER";
+
+block :  star-18019 compoundStatement;
+
+star-18019 : ;
+ :  or-18020 star-18019;
+
+or-18020 :  labelDeclarationPart;
+ :  constantDefinitionPart;
+ :  typeDefinitionPart;
+ :  variableDeclarationPart;
+ :  procedureAndFunctionDeclarationPart;
+
+labelDeclarationPart :  "LABEL" label star-18021 SEMI;
+
+star-18021 : ;
+ :  COMMA label star-18021;
+
+label :  unsignedInteger;
+
+constantDefinitionPart :  "CONST" constantDefinition star-18022 SEMI;
+
+star-18022 : ;
+ :  SEMI constantDefinition star-18022;
+
+constantDefinition :  identifier EQUAL constant;
+
+constant :  unsignedNumber;
+ :  sign unsignedNumber;
+ :  identifier;
+ :  sign identifier;
+ :  string;
+
+unsignedNumber :  unsignedInteger;
+ :  unsignedReal;
+
+unsignedInteger :  "UNSIGNED_INT";
+
+unsignedReal :  "UNSIGNED_REAL";
+
+sign :  PLUS;
+ :  MINUS;
+
+string :  "STRING";
+
+typeDefinitionPart :  "TYPE" typeDefinition star-18023 SEMI;
+
+star-18023 : ;
+ :  SEMI typeDefinition star-18023;
+
+typeDefinition :  identifier EQUAL or-18024;
+
+or-18024 :  type;
+ :  functionType;
+ :  procedureType;
+
+functionType :  "FUNCTION" opt-18025 COLON resultType;
+
+opt-18025 : ;
+ :  formalParameterList;
+
+procedureType :  "PROCEDURE" opt-18026;
+
+opt-18026 : ;
+ :  formalParameterList;
+
+type :  simpleType;
+ :  structuredType;
+ :  pointerType;
+
+simpleType :  scalarType;
+ :  subrangeType;
+ :  typeIdentifier;
+
+scalarType :  LPAREN identifierList RPAREN;
+
+subrangeType :  constant "DOTDOT" constant;
+
+typeIdentifier :  identifier;
+
+structuredType :  "PACKED" unpackedStructuredType;
+ :  unpackedStructuredType;
+
+unpackedStructuredType :  arrayType;
+ :  recordType;
+ :  setType;
+ :  fileType;
+
+arrayType :  "ARRAY" LBRACK typeList RBRACK "OF" componentType;
+
+typeList :  indexType star-18027;
+
+star-18027 : ;
+ :  COMMA indexType star-18027;
+
+indexType :  simpleType;
+
+componentType :  type;
+
+recordType :  "RECORD" fieldList "END";
+
+fieldList :  fixedPart opt-18028;
+ :  variantPart;
+
+opt-18028 : ;
+ :  SEMI variantPart;
+ :  SEMI;
+
+fixedPart :  recordSection star-18029;
+
+star-18029 : ;
+ :  SEMI recordSection star-18029;
+
+recordSection :  identifierList COLON type;
+
+variantPart :  "CASE" tag "OF" variant star-18030;
+
+star-18030 : ;
+ :  or-18031 star-18030;
+
+or-18031 :  SEMI variant;
+ :  SEMI;
+
+tag :  identifier COLON typeIdentifier;
+ :  typeIdentifier;
+
+variant :  constList COLON LPAREN fieldList RPAREN;
+
+setType :  "SET" "OF" baseType;
+
+baseType :  simpleType;
+
+fileType :  "SFILE" "OF" type;
+ :  "SFILE";
+
+pointerType :  POINTER typeIdentifier;
+
+variableDeclarationPart :  "VAR" variableDeclaration star-18032 SEMI;
+
+star-18032 : ;
+ :  SEMI variableDeclaration star-18032-29441;
+
+variableDeclaration :  identifierList COLON type;
+
+procedureAndFunctionDeclarationPart :  procedureOrFunctionDeclaration SEMI;
+
+procedureOrFunctionDeclaration :  procedureDeclaration;
+ :  functionDeclaration;
+
+procedureDeclaration :  "PROCEDURE" identifier opt-18033 SEMI block;
+
+opt-18033 : ;
+ :  formalParameterList;
+
+formalParameterList :  LPAREN formalParameterSection star-18034 RPAREN;
+
+star-18034 : ;
+ :  SEMI formalParameterSection star-18034;
+
+formalParameterSection :  parameterGroup;
+ :  "VAR" parameterGroup;
+ :  "FUNCTION" parameterGroup;
+ :  "PROCEDURE" parameterGroup;
+
+parameterGroup :  identifierList COLON typeIdentifier;
+
+identifierList :  identifier star-18035;
+
+star-18035 : ;
+ :  COMMA identifier star-18035;
+
+constList :  constant star-18036;
+
+star-18036 : ;
+ :  COMMA constant star-18036;
+
+functionDeclaration :  "FUNCTION" identifier opt-18037 COLON resultType SEMI block;
+
+opt-18037 : ;
+ :  formalParameterList;
+
+resultType :  typeIdentifier;
+
+statement :  label COLON unlabelledStatement;
+ :  unlabelledStatement;
+
+unlabelledStatement :  simpleStatement;
+ :  structuredStatement;
+
+simpleStatement :  assignmentStatement;
+ :  procedureStatement;
+ :  gotoStatement;
+ :  emptyStatement;
+
+assignmentStatement :  variable "ASSIGN" expression;
+
+variable :  identifier star-18038;
+
+star-18038 : ;
+ :  or-18039 star-18038;
+
+or-18039 :  LBRACK expression star-18040 RBRACK;
+ :  DOT identifier;
+ :  POINTER;
+
+star-18040 : ;
+ :  COMMA expression star-18040;
+
+expression :  simpleExpression star-18041;
+
+star-18041 : ;
+ :  or-18042 simpleExpression star-18041;
+
+or-18042 :  EQUAL;
+ :  NOT_EQUAL;
+ :  LT;
+ :  "LE";
+ :  "GE";
+ :  GT;
+ :  "IN";
+
+simpleExpression :  term star-18043;
+
+star-18043 : ;
+ :  or-18044 term star-18043;
+
+or-18044 :  PLUS;
+ :  MINUS;
+ :  "OR";
+
+term :  signedFactor star-18045;
+
+star-18045 : ;
+ :  or-18046 signedFactor star-18045;
+
+or-18046 :  STAR;
+ :  SLASH;
+ :  "DIV";
+ :  "MOD";
+ :  "AND";
+
+signedFactor :  opt-18047 factor;
+
+opt-18047 : ;
+ :  PLUS;
+ :  MINUS;
+
+factor :  variable;
+ :  LPAREN expression RPAREN;
+ :  functionDesignator;
+ :  unsignedConstant;
+ :  set;
+ :  "NOT" factor;
+
+unsignedConstant :  unsignedNumber;
+ :  string;
+ :  "NIL";
+
+functionDesignator :  identifier LPAREN parameterList RPAREN;
+
+parameterList :  actualParameter star-18048;
+
+star-18048 : ;
+ :  COMMA actualParameter star-18048;
+
+set :  LBRACK elementList RBRACK;
+
+elementList :  element star-18049;
+ : ;
+
+star-18049 : ;
+ :  COMMA element star-18049;
+
+element :  expression opt-18050;
+
+opt-18050 : ;
+ :  "DOTDOT" expression;
+
+procedureStatement :  identifier opt-18051;
+
+opt-18051 : ;
+ :  LPAREN parameterList RPAREN;
+
+actualParameter :  expression;
+
+gotoStatement :  "GOTO" label;
+
+emptyStatement : ;
+
+structuredStatement :  compoundStatement;
+ :  conditionalStatement;
+ :  repetetiveStatement;
+ :  withStatement;
+
+compoundStatement :  "SBEGIN" statements "END";
+
+statements :  statement star-18052;
+
+star-18052 : ;
+ :  SEMI statement star-18052;
+
+conditionalStatement :  ifStatement;
+ :  caseStatement;
+
+ifStatement :  "IF" expression "THEN" statement opt-18053;
+
+opt-18053 : ;
+ :  "ELSE" statement;
+
+caseStatement :  "CASE" expression "OF" caseListElement star-18054 opt-18055 "END";
+
+star-18054 : ;
+ :  SEMI caseListElement star-18054;
+
+opt-18055 : ;
+ :  SEMI "ELSE" statements;
+
+caseListElement :  constList COLON statement;
+
+repetetiveStatement :  whileStatement;
+ :  repeatStatement;
+ :  forStatement;
+
+whileStatement :  "WHILE" expression "DO" statement;
+
+repeatStatement :  "REPEAT" statements "UNTIL" expression;
+
+forStatement :  "FOR" identifier "ASSIGN" forList "DO" statement;
+
+forList :  initialValue or-18056 finalValue;
+
+or-18056 :  "TO";
+ :  "DOWNTO";
+
+initialValue :  expression;
+
+finalValue :  expression;
+
+withStatement :  "WITH" recordVariableList "DO" statement;
+
+recordVariableList :  variable star-18057;
+
+star-18057 : ;
+ :  COMMA variable star-18057;
+
+PLUS :  "+";
+
+MINUS :  "-";
+
+STAR :  "*";
+
+SLASH :  "/";
+
+COMMA :  ",";
+
+SEMI :  ";";
+
+COLON :  ":";
+
+EQUAL :  "=";
+
+NOT_EQUAL :  "NE";
+
+LT :  "<";
+
+GT :  ">";
+
+LPAREN :  "(";
+
+RPAREN :  ")";
+
+LBRACK :  "[";
+
+RBRACK :  "]";
+
+POINTER :  "^";
+
+DOT :  ".";
+
+star-18032-29441 : ;
+

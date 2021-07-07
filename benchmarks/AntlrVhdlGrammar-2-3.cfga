@@ -1,0 +1,1330 @@
+design_file :  star-32908;
+
+star-32908 : ;
+ :  design_unit star-32908;
+
+abstract_literal :  "INTEGER";
+ :  "REAL_LITERAL";
+ :  "BASE_LITERAL";
+
+access_type_definition :  "ACCESS" subtype_indication;
+
+actual_designator :  expression;
+ :  "OPEN";
+
+actual_parameter_part :  association_list;
+
+actual_part :  name "LPAREN" actual_designator "RPAREN";
+ :  actual_designator;
+
+adding_operator :  "PLUS";
+ :  "MINUS";
+ :  "AMPERSAND";
+
+aggregate :  "LPAREN" element_association star-32911 "RPAREN";
+
+star-32911 : ;
+ :  "COMMA" element_association star-32911;
+
+alias_declaration :  "ALIAS" alias_designator opt-32912 "IS" name opt-32913 "SEMI";
+
+opt-32912 : ;
+ :  "COLON" alias_indication;
+
+opt-32913 : ;
+ :  signature;
+
+alias_designator :  identifier;
+ :  "CHARACTER_LITERAL";
+ :  "STRING_LITERAL";
+
+alias_indication :  subnature_indication;
+ :  subtype_indication;
+
+allocator :  "NEW" or-32914;
+
+or-32914 :  qualified_expression;
+ :  subtype_indication;
+
+architecture_body :  "ARCHITECTURE" identifier "OF" identifier "IS" architecture_declarative_part "BEGIN" architecture_statement_part "END" opt-32915 opt-32916 "SEMI";
+
+opt-32915 : ;
+ :  "ARCHITECTURE";
+
+opt-32916 : ;
+ :  identifier;
+
+architecture_declarative_part :  star-32917;
+
+star-32917 : ;
+ :  block_declarative_item star-32917;
+
+architecture_statement :  block_statement;
+ :  process_statement;
+ :  opt-32918 concurrent_procedure_call_statement;
+ :  opt-32919 concurrent_assertion_statement;
+ :  opt-32920 concurrent_signal_assignment_statement;
+ :  component_instantiation_statement;
+ :  generate_statement;
+ :  concurrent_break_statement;
+ :  simultaneous_statement;
+
+opt-32918 : ;
+ :  label_colon;
+
+opt-32919 : ;
+ :  label_colon;
+
+opt-32920 : ;
+ :  label_colon;
+
+architecture_statement_part :  star-32921;
+
+star-32921 : ;
+ :  architecture_statement star-32921;
+
+array_type_definition :  unconstrained_array_definition;
+ :  constrained_array_definition;
+
+assertion :  "ASSERT" condition opt-32922 opt-32923;
+
+opt-32922 : ;
+ :  "REPORT" expression;
+
+opt-32923 : ;
+ :  "SEVERITY" expression;
+
+assertion_statement :  opt-32924 assertion "SEMI";
+
+opt-32924 : ;
+ :  label_colon;
+
+association_element :  opt-32925 actual_part;
+
+opt-32925 : ;
+ :  formal_part "ARROW";
+
+association_list :  association_element star-32926;
+
+star-32926 : ;
+ :  "COMMA" association_element star-32926;
+
+attribute_declaration :  "ATTRIBUTE" label_colon name "SEMI";
+
+attribute_designator :  identifier;
+ :  "RANGE";
+ :  "REVERSE_RANGE";
+ :  "ACROSS";
+ :  "THROUGH";
+ :  "REFERENCE";
+
+attribute_specification :  "ATTRIBUTE" attribute_designator "OF" entity_specification "IS" expression "SEMI";
+
+base_unit_declaration :  identifier "SEMI";
+
+binding_indication :  opt-32927 opt-32928 opt-32929;
+
+opt-32927 : ;
+ :  "USE" entity_aspect;
+
+opt-32928 : ;
+ :  generic_map_aspect;
+
+opt-32929 : ;
+ :  port_map_aspect;
+
+block_configuration :  "FOR" block_specification star-32930 star-32931 "END" "FOR" "SEMI";
+
+star-32930 : ;
+ :  use_clause star-32930;
+
+star-32931 : ;
+ :  configuration_item star-32931;
+
+block_declarative_item :  subprogram_declaration;
+ :  subprogram_body;
+ :  type_declaration;
+ :  subtype_declaration;
+ :  constant_declaration;
+ :  signal_declaration;
+ :  variable_declaration;
+ :  file_declaration;
+ :  alias_declaration;
+ :  component_declaration;
+ :  attribute_declaration;
+ :  attribute_specification;
+ :  configuration_specification;
+ :  disconnection_specification;
+ :  step_limit_specification;
+ :  use_clause;
+
+block_declarative_part :  star-32932;
+
+star-32932 : ;
+ :  block_declarative_item star-32932;
+
+block_header :  opt-32933 opt-32935;
+
+opt-32933 : ;
+ :  generic_clause opt-32934;
+
+opt-32934 : ;
+ :  generic_map_aspect "SEMI";
+
+opt-32935 : ;
+ :  port_clause opt-32936;
+
+opt-32936 : ;
+ :  port_map_aspect "SEMI";
+
+block_specification :  identifier opt-32937;
+ :  name;
+
+opt-32937 : ;
+ :  "LPAREN" index_specification "RPAREN";
+
+block_statement :  label_colon "BLOCK" opt-32938 opt-32939 block_header block_declarative_part "BEGIN" block_statement_part "END" "BLOCK" opt-32940 "SEMI";
+
+opt-32938 : ;
+ :  "LPAREN" expression "RPAREN";
+
+opt-32939 : ;
+ :  "IS";
+
+opt-32940 : ;
+ :  identifier;
+
+block_statement_part :  star-32941;
+
+star-32941 : ;
+ :  architecture_statement star-32941;
+
+break_element :  opt-32944 name "ARROW" expression;
+
+opt-32944 : ;
+ :  break_selector_clause;
+
+break_list :  break_element star-32945;
+
+star-32945 : ;
+ :  "COMMA" break_element star-32945;
+
+break_selector_clause :  "FOR" name "USE";
+
+break_statement :  opt-32946 "BREAK" opt-32947 opt-32948 "SEMI";
+
+opt-32946 : ;
+ :  label_colon;
+
+opt-32947 : ;
+ :  break_list;
+
+opt-32948 : ;
+ :  "WHEN" condition;
+
+case_statement :  opt-32949 "CASE" expression "IS" plus-32950 "END" "CASE" opt-32951 "SEMI";
+
+opt-32949 : ;
+ :  label_colon;
+
+plus-32950 :  case_statement_alternative;
+ :  case_statement_alternative plus-32950;
+
+opt-32951 : ;
+ :  identifier;
+
+case_statement_alternative :  "WHEN" choices "ARROW" sequence_of_statements;
+
+choice :  identifier;
+ :  discrete_range;
+ :  simple_expression;
+ :  "OTHERS";
+
+choices :  choice star-32952;
+
+star-32952 : ;
+ :  "BAR" choice star-32952;
+
+component_configuration :  "FOR" component_specification opt-32953 opt-32954 "END" "FOR" "SEMI";
+
+opt-32953 : ;
+ :  binding_indication "SEMI";
+
+opt-32954 : ;
+ :  block_configuration;
+
+component_declaration :  "COMPONENT" identifier opt-32955 opt-32956 opt-32957 "END" "COMPONENT" opt-32958 "SEMI";
+
+opt-32955 : ;
+ :  "IS";
+
+opt-32956 : ;
+ :  generic_clause;
+
+opt-32957 : ;
+ :  port_clause;
+
+opt-32958 : ;
+ :  identifier;
+
+component_instantiation_statement :  label_colon instantiated_unit opt-32959 opt-32960 "SEMI";
+
+opt-32959 : ;
+ :  generic_map_aspect;
+
+opt-32960 : ;
+ :  port_map_aspect;
+
+component_specification :  instantiation_list "COLON" name;
+
+composite_type_definition :  array_type_definition;
+ :  record_type_definition;
+
+concurrent_assertion_statement :  opt-32961 assertion "SEMI";
+
+opt-32961 : ;
+ :  label_colon;
+
+concurrent_break_statement :  opt-32962 "BREAK" opt-32963 opt-32964 opt-32965 "SEMI";
+
+opt-32962 : ;
+ :  label_colon;
+
+opt-32963 : ;
+ :  break_list;
+
+opt-32964 : ;
+ :  sensitivity_clause;
+
+opt-32965 : ;
+ :  "WHEN" condition;
+
+concurrent_procedure_call_statement :  opt-32966 procedure_call "SEMI";
+
+opt-32966 : ;
+ :  label_colon;
+
+concurrent_signal_assignment_statement :  opt-32967 or-32968;
+
+opt-32967 : ;
+ :  label_colon;
+
+or-32968 :  conditional_signal_assignment;
+ :  selected_signal_assignment;
+
+condition :  expression;
+
+condition_clause :  "UNTIL" condition;
+
+conditional_signal_assignment :  target "LE" opts conditional_waveforms "SEMI";
+
+conditional_waveforms :  waveform opt-32969;
+
+opt-32969 : ;
+ :  "WHEN" condition opt-32970;
+
+opt-32970 : ;
+ :  "ELSE" conditional_waveforms;
+
+configuration_declaration :  "CONFIGURATION" identifier "OF" name "IS" configuration_declarative_part block_configuration "END" opt-32971 opt-32972 "SEMI";
+
+opt-32971 : ;
+ :  "CONFIGURATION";
+
+opt-32972 : ;
+ :  identifier;
+
+configuration_declarative_item :  use_clause;
+ :  attribute_specification;
+ :  group_declaration;
+
+configuration_declarative_part :  star-32973;
+
+star-32973 : ;
+ :  configuration_declarative_item star-32973;
+
+configuration_item :  block_configuration;
+ :  component_configuration;
+
+configuration_specification :  "FOR" component_specification binding_indication "SEMI";
+
+constant_declaration :  "CONSTANT" identifier_list "COLON" subtype_indication opt-32974 "SEMI";
+
+opt-32974 : ;
+ :  "VARASGN" expression;
+
+constrained_array_definition :  "ARRAY" index_constraint "OF" subtype_indication;
+
+constraint :  range_constraint;
+ :  index_constraint;
+
+context_clause :  star-32975;
+
+star-32975 : ;
+ :  context_item star-32975;
+
+context_item :  library_clause;
+ :  use_clause;
+
+delay_mechanism :  "TRANSPORT";
+ :  opt-32976 "INERTIAL";
+
+opt-32976 : ;
+ :  "REJECT" expression;
+
+design_unit :  context_clause library_unit;
+
+designator :  identifier;
+ :  "STRING_LITERAL";
+
+direction :  "TO";
+ :  "DOWNTO";
+
+disconnection_specification :  "DISCONNECT" guarded_signal_specification "AFTER" expression "SEMI";
+
+discrete_range :  range;
+ :  subtype_indication;
+
+element_association :  opt-32977 expression;
+
+opt-32977 : ;
+ :  choices "ARROW";
+
+element_declaration :  identifier_list "COLON" element_subtype_definition "SEMI";
+
+element_subtype_definition :  subtype_indication;
+
+entity_aspect :  "ENTITY" name opt-32978;
+ :  "CONFIGURATION" name;
+ :  "OPEN";
+
+opt-32978 : ;
+ :  "LPAREN" identifier "RPAREN";
+
+entity_class :  "ENTITY";
+ :  "ARCHITECTURE";
+ :  "CONFIGURATION";
+ :  "PROCEDURE";
+ :  "FUNCTION";
+ :  "PACKAGE";
+ :  "TYPE";
+ :  "SUBTYPE";
+ :  "CONSTANT";
+ :  "SIGNAL";
+ :  "VARIABLE";
+ :  "COMPONENT";
+ :  "LABEL";
+ :  "LITERAL";
+ :  "UNITS";
+ :  "FILE";
+ :  "NATURE";
+ :  "SUBNATURE";
+ :  "QUANTITY";
+
+entity_class_entry :  entity_class opt-32979;
+
+opt-32979 : ;
+ :  "BOX";
+
+entity_class_entry_list :  entity_class_entry star-32980;
+
+star-32980 : ;
+ :  "COMMA" entity_class_entry star-32980;
+
+entity_declaration :  "ENTITY" identifier "IS" entity_header entity_declarative_part opt-32981 "END" opt-32982 opt-32983 "SEMI";
+
+opt-32981 : ;
+ :  "BEGIN" entity_statement_part;
+
+opt-32982 : ;
+ :  "ENTITY";
+
+opt-32983 : ;
+ :  identifier;
+
+entity_declarative_item :  subprogram_declaration;
+ :  subprogram_body;
+ :  type_declaration;
+ :  subtype_declaration;
+ :  constant_declaration;
+ :  signal_declaration;
+ :  variable_declaration;
+ :  file_declaration;
+ :  alias_declaration;
+ :  attribute_declaration;
+ :  attribute_specification;
+ :  disconnection_specification;
+ :  step_limit_specification;
+ :  use_clause;
+
+entity_declarative_part :  star-32984;
+
+star-32984 : ;
+ :  entity_declarative_item star-32984;
+
+entity_designator :  entity_tag opt-32985;
+
+opt-32985 : ;
+ :  signature;
+
+entity_header :  opt-32986 opt-32987;
+
+opt-32986 : ;
+ :  generic_clause;
+
+opt-32987 : ;
+ :  port_clause;
+
+entity_name_list :  entity_designator star-32988;
+ :  "OTHERS";
+ :  "ALL";
+
+star-32988 : ;
+ :  "COMMA" entity_designator star-32988;
+
+entity_specification :  entity_name_list "COLON" entity_class;
+
+entity_statement :  concurrent_assertion_statement;
+ :  process_statement;
+ :  concurrent_procedure_call_statement;
+
+entity_statement_part :  star-32989;
+
+star-32989 : ;
+ :  entity_statement star-32989;
+
+entity_tag :  identifier;
+ :  "CHARACTER_LITERAL";
+ :  "STRING_LITERAL";
+
+enumeration_literal :  identifier;
+ :  "CHARACTER_LITERAL";
+
+enumeration_type_definition :  "LPAREN" enumeration_literal star-32990 "RPAREN";
+
+star-32990 : ;
+ :  "COMMA" enumeration_literal star-32990;
+
+exit_statement :  opt-32991 "EXIT" opt-32992 opt-32993 "SEMI";
+
+opt-32991 : ;
+ :  label_colon;
+
+opt-32992 : ;
+ :  identifier;
+
+opt-32993 : ;
+ :  "WHEN" condition;
+
+expression :  relation star-32994;
+
+star-32994 : ;
+ :  logical_operator relation star-32994;
+
+factor :  primary opt-32995;
+ :  "ABS" primary;
+ :  "NOT" primary;
+
+opt-32995 : ;
+ :  "DOUBLESTAR" primary;
+
+file_declaration :  "FILE" identifier_list "COLON" subtype_indication opt-32996 "SEMI";
+
+opt-32996 : ;
+ :  file_open_information;
+
+file_logical_name :  expression;
+
+file_open_information :  opt-32997 "IS" file_logical_name;
+
+opt-32997 : ;
+ :  "OPEN" expression;
+
+file_type_definition :  "FILE" "OF" subtype_indication;
+
+formal_parameter_list :  interface_list;
+
+formal_part :  identifier;
+
+generate_statement :  label_colon generation_scheme "GENERATE" opt-32999 star-33001 "END" "GENERATE" opt-33002 "SEMI";
+
+opt-32999 : ;
+ :  star-33000 "BEGIN";
+
+star-33000 : ;
+ :  block_declarative_item star-33000;
+
+star-33001 : ;
+ :  architecture_statement star-33001;
+
+opt-33002 : ;
+ :  identifier;
+
+generation_scheme :  "FOR" parameter_specification;
+ :  "IF" condition;
+
+generic_clause :  "GENERIC" "LPAREN" generic_list "RPAREN" "SEMI";
+
+generic_list :  interface_constant_declaration star-33003;
+
+star-33003 : ;
+ :  "SEMI" interface_constant_declaration star-33003;
+
+generic_map_aspect :  "GENERIC" "MAP" "LPAREN" association_list "RPAREN";
+
+group_constituent :  name;
+ :  "CHARACTER_LITERAL";
+
+group_constituent_list :  group_constituent star-33004;
+
+star-33004 : ;
+ :  "COMMA" group_constituent star-33004;
+
+group_declaration :  "GROUP" label_colon name "LPAREN" group_constituent_list "RPAREN" "SEMI";
+
+group_template_declaration :  "GROUP" identifier "IS" "LPAREN" entity_class_entry_list "RPAREN" "SEMI";
+
+guarded_signal_specification :  signal_list "COLON" name;
+
+identifier :  "Identifier";
+
+identifier_list :  identifier star-33005;
+
+star-33005 : ;
+ :  "COMMA" identifier star-33005;
+
+if_statement :  opt-33006 "IF" condition "THEN" sequence_of_statements star-33007 opt-33008 "END" "IF" opt-33009 "SEMI";
+
+opt-33006 : ;
+ :  label_colon;
+
+star-33007 : ;
+ :  "ELSIF" condition "THEN" sequence_of_statements star-33007;
+
+opt-33008 : ;
+ :  "ELSE" sequence_of_statements;
+
+opt-33009 : ;
+ :  identifier;
+
+index_constraint :  "LPAREN" discrete_range star-33010 "RPAREN";
+
+star-33010 : ;
+ :  "COMMA" discrete_range star-33010;
+
+index_specification :  discrete_range;
+ :  expression;
+
+index_subtype_definition :  name "RANGE" "BOX";
+
+instantiated_unit :  opt-33011 name;
+ :  "ENTITY" name opt-33012;
+ :  "CONFIGURATION" name;
+
+opt-33011 : ;
+ :  "COMPONENT";
+
+opt-33012 : ;
+ :  "LPAREN" identifier "RPAREN";
+
+instantiation_list :  identifier star-33013;
+ :  "OTHERS";
+ :  "ALL";
+
+star-33013 : ;
+ :  "COMMA" identifier star-33013;
+
+interface_constant_declaration :  opt-33014 identifier_list "COLON" opt-33015 subtype_indication opt-33016;
+
+opt-33014 : ;
+ :  "CONSTANT";
+
+opt-33015 : ;
+ :  "IN";
+
+opt-33016 : ;
+ :  "VARASGN" expression;
+
+interface_declaration :  interface_constant_declaration;
+ :  interface_signal_declaration;
+ :  interface_variable_declaration;
+ :  interface_file_declaration;
+ :  interface_quantity_declaration;
+
+interface_element :  interface_declaration;
+
+interface_file_declaration :  "FILE" identifier_list "COLON" subtype_indication;
+
+interface_port_list :  interface_port_declaration star-33018;
+
+star-33018 : ;
+ :  "SEMI" interface_port_declaration star-33018;
+
+interface_list :  interface_element star-33019;
+
+star-33019 : ;
+ :  "SEMI" interface_element star-33019;
+
+interface_quantity_declaration :  "QUANTITY" identifier_list "COLON" opt-33020 subtype_indication opt-33021;
+
+opt-33020 : ;
+ :  "IN";
+ :  "OUT";
+
+opt-33021 : ;
+ :  "VARASGN" expression;
+
+interface_port_declaration :  identifier_list "COLON" signal_mode subtype_indication opt-33022;
+
+opt-33022 : ;
+ :  "BUS";
+
+interface_signal_declaration :  "SIGNAL" identifier_list "COLON" subtype_indication opt-33023 opt-33024;
+
+opt-33023 : ;
+ :  "BUS";
+
+opt-33024 : ;
+ :  "VARASGN" expression;
+
+interface_variable_declaration :  opt-33025 identifier_list "COLON" opt-33026 subtype_indication opt-33027;
+
+opt-33025 : ;
+ :  "VARIABLE";
+
+opt-33026 : ;
+ :  signal_mode;
+
+opt-33027 : ;
+ :  "VARASGN" expression;
+
+iteration_scheme :  "WHILE" condition;
+ :  "FOR" parameter_specification;
+
+label_colon :  identifier "COLON";
+
+library_clause :  "LIBRARY" logical_name_list "SEMI";
+
+library_unit :  secondary_unit;
+ :  primary_unit;
+
+literal :  "NULL";
+ :  "BIT_STRING_LITERAL";
+ :  "STRING_LITERAL";
+ :  enumeration_literal;
+ :  numeric_literal;
+
+logical_name :  identifier;
+
+logical_name_list :  logical_name star-33028;
+
+star-33028 : ;
+ :  "COMMA" logical_name star-33028;
+
+logical_operator :  "AND";
+ :  "OR";
+ :  "NAND";
+ :  "NOR";
+ :  "XOR";
+
+loop_statement :  opt-33029 opt-33030 "LOOP" sequence_of_statements "END" "LOOP" opt-33031 "SEMI";
+
+opt-33029 : ;
+ :  label_colon;
+
+opt-33030 : ;
+ :  iteration_scheme;
+
+opt-33031 : ;
+ :  identifier;
+
+signal_mode :  "IN";
+ :  "OUT";
+ :  "INOUT";
+ :  "BUFFER";
+ :  "LINKAGE";
+
+multiplying_operator :  "MUL";
+ :  "DIV";
+ :  "MOD";
+ :  "REM";
+
+name :  selected_name;
+ :  name_part star-33032;
+
+star-33032 : ;
+ :  "DOT" name_part star-33032;
+
+name_part :  selected_name opt-33033;
+
+opt-33033 : ;
+ :  name_attribute_part;
+ :  name_function_call_or_indexed_part;
+ :  name_slice_part;
+
+name_attribute_part :  "APOSTROPHE" attribute_designator opt-33034;
+
+opt-33034 : ;
+ :  expression star-33035;
+
+star-33035 : ;
+ :  "COMMA" expression star-33035;
+
+name_function_call_or_indexed_part :  "LPAREN" opt-33036 "RPAREN";
+
+opt-33036 : ;
+ :  actual_parameter_part;
+
+name_slice_part :  "LPAREN" explicit_range star-33037 "RPAREN";
+
+star-33037 : ;
+ :  "COMMA" explicit_range star-33037;
+
+selected_name :  identifier star-33038;
+
+star-33038 : ;
+ :  "DOT" suffix star-33038;
+
+next_statement :  opt-33039 "NEXT" opt-33040 opt-33041 "SEMI";
+
+opt-33039 : ;
+ :  label_colon;
+
+opt-33040 : ;
+ :  identifier;
+
+opt-33041 : ;
+ :  "WHEN" condition;
+
+numeric_literal :  abstract_literal;
+ :  physical_literal;
+
+opts :  opt-33042 opt-33043;
+
+opt-33042 : ;
+ :  "GUARDED";
+
+opt-33043 : ;
+ :  delay_mechanism;
+
+package_body :  "PACKAGE" "BODY" identifier "IS" package_body_declarative_part "END" opt-33044 opt-33045 "SEMI";
+
+opt-33044 : ;
+ :  "PACKAGE" "BODY";
+
+opt-33045 : ;
+ :  identifier;
+
+package_body_declarative_item :  subprogram_declaration;
+ :  subprogram_body;
+ :  type_declaration;
+ :  subtype_declaration;
+ :  constant_declaration;
+ :  variable_declaration;
+ :  file_declaration;
+ :  alias_declaration;
+ :  use_clause;
+ :  group_template_declaration;
+ :  group_declaration;
+
+package_body_declarative_part :  star-33046;
+
+star-33046 : ;
+ :  package_body_declarative_item star-33046;
+
+package_declaration :  "PACKAGE" identifier "IS" package_declarative_part "END" opt-33047 opt-33048 "SEMI";
+
+opt-33047 : ;
+ :  "PACKAGE";
+
+opt-33048 : ;
+ :  identifier;
+
+package_declarative_item :  subprogram_declaration;
+ :  type_declaration;
+ :  subtype_declaration;
+ :  constant_declaration;
+ :  signal_declaration;
+ :  variable_declaration;
+ :  file_declaration;
+ :  alias_declaration;
+ :  component_declaration;
+ :  attribute_declaration;
+ :  attribute_specification;
+ :  disconnection_specification;
+ :  use_clause;
+
+package_declarative_part :  star-33049;
+
+star-33049 : ;
+ :  package_declarative_item star-33049;
+
+parameter_specification :  identifier "IN" discrete_range;
+
+physical_literal :  abstract_literal identifier;
+
+physical_type_definition :  range_constraint "UNITS" base_unit_declaration star-33050 "END" "UNITS" opt-33051;
+
+star-33050 : ;
+ :  secondary_unit_declaration star-33050;
+
+opt-33051 : ;
+ :  identifier;
+
+port_clause :  "PORT" "LPAREN" port_list "RPAREN" "SEMI";
+
+port_list :  interface_port_list;
+
+port_map_aspect :  "PORT" "MAP" "LPAREN" association_list "RPAREN";
+
+primary :  literal;
+ :  qualified_expression;
+ :  "LPAREN" expression "RPAREN";
+ :  allocator;
+ :  aggregate;
+ :  name;
+
+primary_unit :  entity_declaration;
+ :  configuration_declaration;
+ :  package_declaration;
+
+procedural_declarative_item :  subprogram_declaration;
+ :  subprogram_body;
+ :  type_declaration;
+ :  subtype_declaration;
+ :  constant_declaration;
+ :  variable_declaration;
+ :  alias_declaration;
+ :  attribute_declaration;
+ :  attribute_specification;
+ :  use_clause;
+ :  group_template_declaration;
+ :  group_declaration;
+
+procedural_declarative_part :  star-33052;
+
+star-33052 : ;
+ :  procedural_declarative_item star-33052;
+
+procedural_statement_part :  star-33053;
+
+star-33053 : ;
+ :  sequential_statement star-33053;
+
+procedure_call :  selected_name opt-33054;
+
+opt-33054 : ;
+ :  "LPAREN" actual_parameter_part "RPAREN";
+
+procedure_call_statement :  opt-33055 procedure_call "SEMI";
+
+opt-33055 : ;
+ :  label_colon;
+
+process_declarative_item :  subprogram_declaration;
+ :  subprogram_body;
+ :  type_declaration;
+ :  subtype_declaration;
+ :  constant_declaration;
+ :  variable_declaration;
+ :  file_declaration;
+ :  alias_declaration;
+ :  attribute_declaration;
+ :  attribute_specification;
+ :  use_clause;
+ :  group_template_declaration;
+ :  group_declaration;
+
+process_declarative_part :  star-33056;
+
+star-33056 : ;
+ :  process_declarative_item star-33056;
+
+process_statement :  opt-33057 "PROCESS" opt-33058 opt-33059 process_declarative_part "BEGIN" process_statement_part "END" "PROCESS" opt-33060 "SEMI";
+
+opt-33057 : ;
+ :  label_colon;
+
+opt-33058 : ;
+ :  "LPAREN" sensitivity_list "RPAREN";
+
+opt-33059 : ;
+ :  "IS";
+
+opt-33060 : ;
+ :  identifier;
+
+process_statement_part :  star-33061;
+
+star-33061 : ;
+ :  sequential_statement star-33061;
+
+qualified_expression :  subtype_indication "APOSTROPHE" or-33062;
+
+or-33062 :  aggregate;
+ :  "LPAREN" expression "RPAREN";
+
+quantity_list :  name star-33063;
+ :  "OTHERS";
+ :  "ALL";
+
+star-33063 : ;
+ :  "COMMA" name star-33063;
+
+quantity_specification :  quantity_list "COLON" name;
+
+range :  explicit_range;
+ :  name;
+
+explicit_range :  simple_expression direction simple_expression;
+
+range_constraint :  "RANGE" range;
+
+record_type_definition :  "RECORD" plus-33066 "END" "RECORD" opt-33067;
+
+plus-33066 :  element_declaration;
+ :  element_declaration plus-33066;
+
+opt-33067 : ;
+ :  identifier;
+
+relation :  shift_expression opt-33068;
+
+opt-33068 : ;
+ :  relational_operator shift_expression;
+
+relational_operator :  "EQ";
+ :  "NE";
+ :  "LT";
+ :  "LE";
+ :  "GT";
+ :  "GE";
+
+report_statement :  opt-33069 "REPORT" expression opt-33070 "SEMI";
+
+opt-33069 : ;
+ :  label_colon;
+
+opt-33070 : ;
+ :  "SEVERITY" expression;
+
+return_statement :  opt-33071 "RETURN" opt-33072 "SEMI";
+
+opt-33071 : ;
+ :  label_colon;
+
+opt-33072 : ;
+ :  expression;
+
+scalar_type_definition :  physical_type_definition;
+ :  enumeration_type_definition;
+ :  range_constraint;
+
+secondary_unit :  architecture_body;
+ :  package_body;
+
+secondary_unit_declaration :  identifier "EQ" physical_literal "SEMI";
+
+selected_signal_assignment :  "WITH" expression "SELECT" target "LE" opts selected_waveforms "SEMI";
+
+selected_waveforms :  waveform "WHEN" choices star-33073;
+
+star-33073 : ;
+ :  "COMMA" waveform "WHEN" choices star-33073;
+
+sensitivity_clause :  "ON" sensitivity_list;
+
+sensitivity_list :  name star-33074;
+
+star-33074 : ;
+ :  "COMMA" name;
+
+sequence_of_statements :  star-33075;
+
+star-33075 : ;
+ :  sequential_statement star-33075;
+
+sequential_statement :  wait_statement;
+ :  assertion_statement;
+ :  report_statement;
+ :  signal_assignment_statement;
+ :  variable_assignment_statement;
+ :  if_statement;
+ :  case_statement;
+ :  loop_statement;
+ :  next_statement;
+ :  exit_statement;
+ :  return_statement;
+ :  opt-33076 "NULL" "SEMI";
+ :  break_statement;
+ :  procedure_call_statement;
+
+opt-33076 : ;
+ :  label_colon;
+
+shift_expression :  simple_expression opt-33077;
+
+opt-33077 : ;
+ :  shift_operator simple_expression;
+
+shift_operator :  "SLL";
+ :  "SRL";
+ :  "SLA";
+ :  "SRA";
+ :  "ROL";
+ :  "ROR";
+
+signal_assignment_statement :  opt-33078 target "LE" opt-33079 waveform "SEMI";
+
+opt-33078 : ;
+ :  label_colon;
+
+opt-33079 : ;
+ :  delay_mechanism;
+
+signal_declaration :  "SIGNAL" identifier_list "COLON" subtype_indication opt-33080 opt-33081 "SEMI";
+
+opt-33080 : ;
+ :  signal_kind;
+
+opt-33081 : ;
+ :  "VARASGN" expression;
+
+signal_kind :  "REGISTER";
+ :  "BUS";
+
+signal_list :  name star-33082;
+ :  "OTHERS";
+ :  "ALL";
+
+star-33082 : ;
+ :  "COMMA" name star-33082;
+
+signature :  "LBRACKET" opt-33083 opt-33085 "RBRACKET";
+
+opt-33083 : ;
+ :  name star-33084;
+
+star-33084 : ;
+ :  "COMMA" name star-33084;
+
+opt-33085 : ;
+ :  "RETURN" name;
+
+simple_expression :  opt-33086 term star-33087;
+
+opt-33086 : ;
+ :  "PLUS";
+ :  "MINUS";
+
+star-33087 : ;
+ :  adding_operator term star-33087;
+
+simple_simultaneous_statement :  opt-33088 simple_expression "ASSIGN" simple_expression opt-33089 "SEMI";
+
+opt-33088 : ;
+ :  label_colon;
+
+opt-33089 : ;
+ :  tolerance_aspect;
+
+simultaneous_alternative :  "WHEN" choices "ARROW" simultaneous_statement_part;
+
+simultaneous_case_statement :  opt-33090 "CASE" expression "USE" plus-33091 "END" "CASE" opt-33092 "SEMI";
+
+opt-33090 : ;
+ :  label_colon;
+
+plus-33091 :  simultaneous_alternative;
+ :  simultaneous_alternative plus-33091;
+
+opt-33092 : ;
+ :  identifier;
+
+simultaneous_if_statement :  opt-33093 "IF" condition "USE" simultaneous_statement_part star-33094 opt-33095 "END" "USE" opt-33096 "SEMI";
+
+opt-33093 : ;
+ :  label_colon;
+
+star-33094 : ;
+ :  "ELSIF" condition "USE" simultaneous_statement_part star-33094;
+
+opt-33095 : ;
+ :  "ELSE" simultaneous_statement_part;
+
+opt-33096 : ;
+ :  identifier;
+
+simultaneous_procedural_statement :  opt-33097 "PROCEDURAL" opt-33098 procedural_declarative_part "BEGIN" procedural_statement_part "END" "PROCEDURAL" opt-33099 "SEMI";
+
+opt-33097 : ;
+ :  label_colon;
+
+opt-33098 : ;
+ :  "IS";
+
+opt-33099 : ;
+ :  identifier;
+
+simultaneous_statement :  simple_simultaneous_statement;
+ :  simultaneous_if_statement;
+ :  simultaneous_case_statement;
+ :  simultaneous_procedural_statement;
+ :  opt-33100 "NULL" "SEMI";
+
+opt-33100 : ;
+ :  label_colon;
+
+simultaneous_statement_part :  star-33101;
+
+star-33101 : ;
+ :  simultaneous_statement star-33101;
+
+step_limit_specification :  "LIMIT" quantity_specification "WITH" expression "SEMI";
+
+subnature_indication :  name opt-33102 opt-33103;
+
+opt-33102 : ;
+ :  index_constraint;
+
+opt-33103 : ;
+ :  "TOLERANCE" expression "ACROSS" expression "THROUGH";
+
+subprogram_body :  subprogram_specification "IS" subprogram_declarative_part "BEGIN" subprogram_statement_part "END" opt-33104 opt-33105 "SEMI";
+
+opt-33104 : ;
+ :  subprogram_kind;
+
+opt-33105 : ;
+ :  designator;
+
+subprogram_declaration :  subprogram_specification "SEMI";
+
+subprogram_declarative_item :  subprogram_declaration;
+ :  subprogram_body;
+ :  type_declaration;
+ :  subtype_declaration;
+ :  constant_declaration;
+ :  variable_declaration;
+ :  file_declaration;
+ :  alias_declaration;
+ :  attribute_declaration;
+ :  attribute_specification;
+ :  use_clause;
+ :  group_template_declaration;
+ :  group_declaration;
+
+subprogram_declarative_part :  star-33106;
+
+star-33106 : ;
+ :  subprogram_declarative_item star-33106;
+
+subprogram_kind :  "PROCEDURE";
+ :  "FUNCTION";
+
+subprogram_specification :  procedure_specification;
+ :  function_specification;
+
+procedure_specification :  "PROCEDURE" designator opt-33107;
+
+opt-33107 : ;
+ :  "LPAREN" formal_parameter_list "RPAREN";
+
+function_specification :  "FUNCTION" designator opt-33108 "RETURN" subtype_indication;
+
+opt-33108 : ;
+ :  "LPAREN" formal_parameter_list "RPAREN";
+
+subprogram_statement_part :  star-33109;
+
+star-33109 : ;
+ :  sequential_statement star-33109;
+
+subtype_declaration :  "SUBTYPE" identifier "IS" subtype_indication "SEMI";
+
+subtype_indication :  selected_name opt-33110 opt-33111 opt-33112;
+
+opt-33110 : ;
+ :  selected_name;
+
+opt-33111 : ;
+ :  constraint;
+
+opt-33112 : ;
+ :  tolerance_aspect;
+
+suffix :  identifier;
+ :  "CHARACTER_LITERAL";
+ :  "STRING_LITERAL";
+ :  "ALL";
+
+target :  name;
+ :  aggregate;
+
+term :  factor star-33113;
+
+star-33113 : ;
+ :  multiplying_operator factor star-33113;
+
+timeout_clause :  "FOR" expression;
+
+tolerance_aspect :  "TOLERANCE" expression;
+
+type_declaration :  "TYPE" identifier opt-33117 "SEMI";
+
+opt-33117 : ;
+ :  "IS" type_definition;
+
+type_definition :  scalar_type_definition;
+ :  composite_type_definition;
+ :  access_type_definition;
+ :  file_type_definition;
+
+unconstrained_array_definition :  "ARRAY" "LPAREN" index_subtype_definition star-33118 "RPAREN" "OF" subtype_indication;
+
+star-33118 : ;
+ :  "COMMA" index_subtype_definition star-33118;
+
+use_clause :  "USE" selected_name star-33120 "SEMI";
+
+star-33120 : ;
+ :  "COMMA" selected_name star-33120;
+
+variable_assignment_statement :  opt-33121 target "VARASGN" expression "SEMI";
+
+opt-33121 : ;
+ :  label_colon;
+
+variable_declaration :  opt-33122 "VARIABLE" identifier_list "COLON" subtype_indication opt-33123 "SEMI";
+
+opt-33122 : ;
+ :  "SHARED";
+
+opt-33123 : ;
+ :  "VARASGN" expression;
+
+wait_statement :  opt-33124 "WAIT" opt-33125 opt-33126 opt-33127 "SEMI";
+
+opt-33124 : ;
+ :  label_colon;
+
+opt-33125 : ;
+ :  sensitivity_clause;
+
+opt-33126 : ;
+ :  condition_clause;
+
+opt-33127 : ;
+ :  timeout_clause;
+
+waveform :  waveform_element star-33128;
+ :  "UNAFFECTED";
+
+star-33128 : ;
+ :  "COMMA" waveform_element star-33128;
+
+waveform_element :  expression opt-33129;
+
+opt-33129 : ;
+ :  "AFTER" expression;
+

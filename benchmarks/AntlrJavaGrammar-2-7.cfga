@@ -1,0 +1,716 @@
+compilationUnit :  opt-122058 star-122059 star-122060;
+
+opt-122058 : ;
+ :  packageDeclaration;
+
+star-122059 : ;
+ :  importDeclaration star-122059;
+
+star-122060 : ;
+ :  typeDeclaration star-122060;
+
+packageDeclaration :  star-122061 "package" qualifiedName ";";
+
+star-122061 : ;
+ :  annotation star-122061;
+
+importDeclaration :  "import" opt-122062 qualifiedName opt-122063 ";";
+
+opt-122062 : ;
+ :  "static";
+
+opt-122063 : ;
+ :  "." "*";
+
+typeDeclaration :  star-122064 classDeclaration;
+ :  star-122065 enumDeclaration;
+ :  star-122066 interfaceDeclaration;
+ :  star-122067 annotationTypeDeclaration;
+ :  ";";
+
+star-122064 : ;
+ :  classOrInterfaceModifier star-122064;
+
+star-122065 : ;
+ :  classOrInterfaceModifier star-122065;
+
+star-122066 : ;
+ :  classOrInterfaceModifier star-122066;
+
+star-122067 : ;
+ :  classOrInterfaceModifier star-122067;
+
+modifier :  classOrInterfaceModifier;
+ :  "native";
+ :  "synchronized";
+ :  "transient";
+ :  "volatile";
+
+classOrInterfaceModifier :  annotation;
+ :  "public";
+ :  "protected";
+ :  "private";
+ :  "static";
+ :  "abstract";
+ :  "final";
+ :  "strictfp";
+
+variableModifier :  "final";
+ :  annotation;
+
+classDeclaration :  "class" Identifier opt-122068 opt-122069 opt-122070 classBody;
+
+opt-122068 : ;
+ :  typeParameters;
+
+opt-122069 : ;
+ :  "extends" type;
+
+opt-122070 : ;
+ :  "implements" typeList;
+
+typeParameters :  "<" typeParameter star-122071 ">";
+
+star-122071 : ;
+ :  "," typeParameter star-122071;
+
+typeParameter :  Identifier opt-122072;
+
+opt-122072 : ;
+ :  "extends" typeBound;
+
+typeBound :  type star-122073;
+
+star-122073 : ;
+ :  "&" type star-122073;
+
+enumDeclaration :  "enum" Identifier opt-122074 "{" opt-122075 opt-122076 opt-122077 "}";
+
+opt-122074 : ;
+ :  "implements" typeList;
+
+opt-122075 : ;
+ :  enumConstants;
+
+opt-122076 : ;
+ :  ",";
+
+opt-122077 : ;
+ :  enumBodyDeclarations;
+
+enumConstants :  enumConstant star-122078;
+
+star-122078 : ;
+ :  "," enumConstant star-122078;
+
+enumConstant :  star-122079 Identifier opt-122080 opt-122081;
+
+star-122079 : ;
+ :  annotation star-122079;
+
+opt-122080 : ;
+ :  arguments;
+
+opt-122081 : ;
+ :  classBody;
+
+enumBodyDeclarations :  ";" star-122082;
+
+star-122082 : ;
+ :  classBodyDeclaration star-122082;
+
+interfaceDeclaration :  "interface" Identifier opt-122083 opt-122084 interfaceBody;
+
+opt-122083 : ;
+ :  typeParameters;
+
+opt-122084 : ;
+ :  "extends" typeList;
+
+typeList :  type star-122085;
+
+star-122085 : ;
+ :  "," type star-122085;
+
+classBody :  "{" star-122086 "}";
+
+star-122086 : ;
+ :  classBodyDeclaration star-122086;
+
+interfaceBody :  "{" star-122087 "}";
+
+star-122087 : ;
+ :  interfaceBodyDeclaration star-122087;
+
+classBodyDeclaration :  ";";
+ :  opt-122088 block;
+ :  star-122089 memberDeclaration;
+
+opt-122088 : ;
+ :  "static";
+
+star-122089 : ;
+ :  modifier star-122089;
+
+memberDeclaration :  methodDeclaration;
+ :  genericMethodDeclaration;
+ :  fieldDeclaration;
+ :  constructorDeclaration;
+ :  genericConstructorDeclaration;
+ :  interfaceDeclaration;
+ :  annotationTypeDeclaration;
+ :  classDeclaration;
+ :  enumDeclaration;
+
+methodDeclaration :  or-122090 Identifier formalParameters star-122091 opt-122092 or-122093;
+
+or-122090 :  type;
+ :  "void";
+
+star-122091 : ;
+ :  "[" "]" star-122091;
+
+opt-122092 : ;
+ :  "throws" qualifiedNameList;
+
+or-122093 :  methodBody;
+ :  ";";
+
+genericMethodDeclaration :  typeParameters methodDeclaration;
+
+constructorDeclaration :  Identifier formalParameters opt-122094 constructorBody;
+
+opt-122094 : ;
+ :  "throws" qualifiedNameList;
+
+genericConstructorDeclaration :  typeParameters constructorDeclaration;
+
+fieldDeclaration :  type variableDeclarators ";";
+
+interfaceBodyDeclaration :  star-122095 interfaceMemberDeclaration;
+ :  ";";
+
+star-122095 : ;
+ :  modifier star-122095;
+
+interfaceMemberDeclaration :  constDeclaration;
+ :  interfaceMethodDeclaration;
+ :  genericInterfaceMethodDeclaration;
+ :  interfaceDeclaration;
+ :  annotationTypeDeclaration;
+ :  classDeclaration;
+ :  enumDeclaration;
+
+constDeclaration :  type constantDeclarator star-122096 ";";
+
+star-122096 : ;
+ :  "," constantDeclarator star-122096;
+
+constantDeclarator :  Identifier star-122097 "=" variableInitializer;
+
+star-122097 : ;
+ :  "[" "]" star-122097;
+
+interfaceMethodDeclaration :  or-122098 Identifier formalParameters star-122099 opt-122100 ";";
+
+or-122098 :  type;
+ :  "void";
+
+star-122099 : ;
+ :  "[" "]" star-122099;
+
+opt-122100 : ;
+ :  "throws" qualifiedNameList;
+
+genericInterfaceMethodDeclaration :  typeParameters interfaceMethodDeclaration;
+
+variableDeclarators :  variableDeclarator star-122101;
+
+star-122101 : ;
+ :  "," variableDeclarator star-122101;
+
+variableDeclarator :  variableDeclaratorId opt-122102;
+
+opt-122102 : ;
+ :  "=" variableInitializer;
+
+variableDeclaratorId :  Identifier star-122103;
+
+star-122103 : ;
+ :  "[" "]" star-122103;
+
+variableInitializer :  arrayInitializer;
+ :  expression;
+
+arrayInitializer :  "{" opt-122104 "}";
+
+opt-122104 : ;
+ :  variableInitializer star-122105 opt-122106;
+
+star-122105 : ;
+ :  "," variableInitializer star-122105;
+
+opt-122106 : ;
+ :  ",";
+
+enumConstantName :  Identifier;
+
+type :  classOrInterfaceType star-122107;
+ :  primitiveType star-122108;
+
+star-122107 : ;
+ :  "[" "]" star-122107;
+
+star-122108 : ;
+ :  "[" "]" star-122108;
+
+classOrInterfaceType :  Identifier opt-122109 star-122110;
+
+opt-122109 : ;
+ :  typeArguments;
+
+star-122110 : ;
+ :  "." Identifier opt-122111 star-122110;
+
+opt-122111 : ;
+ :  typeArguments;
+
+primitiveType :  "boolean";
+ :  "char";
+ :  "byte";
+ :  "short";
+ :  "int";
+ :  "long";
+ :  "float";
+ :  "double";
+
+typeArguments :  "<" typeArgument star-122112 ">";
+
+star-122112 : ;
+ :  "," typeArgument star-122112;
+
+typeArgument :  type;
+ :  "?" opt-122113;
+
+opt-122113 : ;
+ :  or-122114 type;
+
+or-122114 :  "extends";
+ :  "super";
+
+qualifiedNameList :  qualifiedName star-122115;
+
+star-122115 : ;
+ :  "," qualifiedName star-122115;
+
+formalParameters :  "(" opt-122116 ")";
+
+opt-122116 : ;
+ :  formalParameterList;
+
+formalParameterList :  formalParameter star-122117 opt-122118;
+ :  lastFormalParameter;
+
+star-122117 : ;
+ :  "," formalParameter star-122117;
+
+opt-122118 : ;
+ :  "," lastFormalParameter;
+
+formalParameter :  star-122119 type variableDeclaratorId;
+
+star-122119 : ;
+ :  variableModifier star-122119;
+
+lastFormalParameter :  star-122120 type "..." variableDeclaratorId;
+
+star-122120 : ;
+ :  variableModifier star-122120;
+
+methodBody :  block;
+
+constructorBody :  block;
+
+qualifiedName :  Identifier star-122121;
+
+star-122121 : ;
+ :  "." Identifier star-122121;
+
+literal :  "IntegerLiteral";
+ :  "FloatingPointLiteral";
+ :  "CharacterLiteral";
+ :  "StringLiteral";
+ :  "BooleanLiteral";
+ :  "NullLiteral";
+
+annotation :  "@" annotationName opt-122122;
+
+opt-122122 : ;
+ :  "(" opt-122123 ")";
+
+opt-122123 : ;
+ :  elementValuePairs;
+ :  elementValue;
+
+annotationName :  qualifiedName;
+
+elementValuePairs :  elementValuePair star-122124;
+
+star-122124 : ;
+ :  "," elementValuePair star-122124;
+
+elementValuePair :  Identifier "=" elementValue;
+
+elementValue :  expression;
+ :  annotation;
+ :  elementValueArrayInitializer;
+
+elementValueArrayInitializer :  "{" opt-122125 opt-122127 "}";
+
+opt-122125 : ;
+ :  elementValue star-122126;
+
+star-122126 : ;
+ :  "," elementValue star-122126;
+
+opt-122127 : ;
+ :  ",";
+
+annotationTypeDeclaration :  "@" "interface" Identifier annotationTypeBody;
+
+annotationTypeBody :  "{" star-122128 "}";
+
+star-122128 : ;
+ :  annotationTypeElementDeclaration star-122128;
+
+annotationTypeElementDeclaration :  star-122129 annotationTypeElementRest;
+ :  ";";
+
+star-122129 : ;
+ :  modifier star-122129;
+
+annotationTypeElementRest :  type annotationMethodOrConstantRest ";";
+ :  classDeclaration opt-122130;
+ :  interfaceDeclaration opt-122131;
+ :  enumDeclaration opt-122132;
+ :  annotationTypeDeclaration opt-122133;
+
+opt-122130 : ;
+ :  ";";
+
+opt-122131 : ;
+ :  ";";
+
+opt-122132 : ;
+ :  ";";
+
+opt-122133 : ;
+ :  ";";
+
+annotationMethodOrConstantRest :  annotationMethodRest;
+ :  annotationConstantRest;
+
+annotationMethodRest :  Identifier "(" ")" opt-122134;
+
+opt-122134 : ;
+ :  defaultValue;
+
+annotationConstantRest :  variableDeclarators;
+
+defaultValue :  "default" elementValue;
+
+block :  "{" star-122135 "}";
+
+star-122135 : ;
+ :  blockStatement star-122135;
+
+blockStatement :  localVariableDeclarationStatement;
+ :  statement;
+ :  typeDeclaration;
+
+localVariableDeclarationStatement :  localVariableDeclaration ";";
+
+localVariableDeclaration :  star-122136 type variableDeclarators;
+
+star-122136 : ;
+ :  variableModifier star-122136;
+
+statement :  block;
+ :  "ASSERT" expression opt-122137 ";";
+ :  "if" parExpression statement opt-122138;
+ :  "for" "(" forControl ")" statement;
+ :  "while" parExpression statement;
+ :  "do" statement "while" parExpression ";";
+ :  "try" block or-122139;
+ :  "try" resourceSpecification block star-122142 opt-122143;
+ :  "switch" parExpression "{" star-122144 star-122145 "}";
+ :  "synchronized" parExpression block;
+ :  "return" opt-122146 ";";
+ :  "throw" expression ";";
+ :  "break" opt-122147 ";";
+ :  "continue" opt-122148 ";";
+ :  ";";
+ :  statementExpression ";";
+ :  Identifier ":" statement;
+
+opt-122137 : ;
+ :  ":" expression;
+
+opt-122138 : ;
+ :  "else" statement;
+
+or-122139 :  plus-122140 opt-122141;
+ :  finallyBlock;
+
+plus-122140 :  catchClause;
+ :  catchClause plus-122140;
+
+opt-122141 : ;
+ :  finallyBlock;
+
+star-122142 : ;
+ :  catchClause star-122142;
+
+opt-122143 : ;
+ :  finallyBlock;
+
+star-122144 : ;
+ :  switchBlockStatementGroup star-122144;
+
+star-122145 : ;
+ :  switchLabel star-122145;
+
+opt-122146 : ;
+ :  expression;
+
+opt-122147 : ;
+ :  Identifier;
+
+opt-122148 : ;
+ :  Identifier;
+
+catchClause :  "catch" "(" star-122149 catchType Identifier ")" block;
+
+star-122149 : ;
+ :  variableModifier star-122149;
+
+catchType :  qualifiedName star-122150;
+
+star-122150 : ;
+ :  "|" qualifiedName star-122150;
+
+finallyBlock :  "finally" block;
+
+resourceSpecification :  "(" resources ")";
+
+resources :  resource star-122152;
+
+star-122152 : ;
+ :  ";" resource star-122152;
+
+resource :  star-122153 classOrInterfaceType variableDeclaratorId "=" expression;
+
+star-122153 : ;
+ :  variableModifier star-122153;
+
+switchBlockStatementGroup :  plus-122154 plus-122155;
+
+plus-122154 :  switchLabel;
+ :  switchLabel plus-122154;
+
+plus-122155 :  blockStatement;
+ :  blockStatement plus-122155;
+
+switchLabel :  "case" constantExpression ":";
+ :  "case" enumConstantName ":";
+ :  "default" ":";
+
+forControl :  enhancedForControl;
+ :  opt-122156 ";" opt-122157 ";" opt-122158;
+
+opt-122156 : ;
+ :  forInit;
+
+opt-122157 : ;
+ :  expression;
+
+opt-122158 : ;
+ :  forUpdate;
+
+forInit :  localVariableDeclaration;
+ :  expressionList;
+
+enhancedForControl :  star-122159 type variableDeclaratorId ":" expression;
+
+star-122159 : ;
+ :  variableModifier star-122159;
+
+forUpdate :  expressionList;
+
+parExpression :  "(" expression ")";
+
+expressionList :  expression star-122160;
+
+star-122160 : ;
+ :  "," expression star-122160;
+
+statementExpression :  expression;
+
+constantExpression :  expression;
+
+expression :  primary;
+ :  expression "." Identifier;
+ :  expression "." "this";
+ :  expression "." "new" opt-122161 innerCreator;
+ :  expression "." "super" superSuffix;
+ :  expression "." explicitGenericInvocation;
+ :  expression "[" expression "]";
+ :  expression "(" opt-122162 ")";
+ :  "new" creator;
+ :  "(" type ")" expression;
+ :  expression or-122163;
+ :  or-122164 expression;
+ :  or-122165 expression;
+ :  expression or-122166 expression;
+ :  expression or-122167 expression;
+ :  expression or-122168 expression;
+ :  expression or-122169 expression;
+ :  expression "instanceof" type;
+ :  expression or-122170 expression;
+ :  expression "&" expression;
+ :  expression "^" expression;
+ :  expression "|" expression;
+ :  expression "&&" expression;
+ :  expression "||" expression;
+ :  expression "?" expression ":" expression;
+ :  expression or-122171 expression;
+
+opt-122161 : ;
+ :  nonWildcardTypeArguments;
+
+opt-122162 : ;
+ :  expressionList;
+
+or-122163 :  "++";
+ :  "--";
+
+or-122164 :  "+";
+ :  "-";
+ :  "++";
+ :  "--";
+
+or-122165 :  "~";
+ :  "!";
+
+or-122166 :  "*";
+ :  "/";
+ :  "%";
+
+or-122167 :  "+";
+ :  "-";
+
+or-122168 :  "<" "<";
+ :  ">" ">" ">";
+ :  ">" ">";
+
+or-122169 :  "<=";
+ :  ">=";
+ :  ">";
+ :  "<";
+
+or-122170 :  "==";
+ :  "!=";
+
+or-122171 :  "=";
+ :  "+=";
+ :  "-=";
+ :  "*=";
+ :  "/=";
+ :  "&=";
+ :  "|=";
+ :  "^=";
+ :  ">>=";
+ :  ">>>=";
+ :  "<<=";
+ :  "%=";
+
+primary :  "(" expression ")";
+ :  "this";
+ :  "super";
+ :  literal;
+ :  Identifier;
+ :  type "." "class";
+ :  "void" "." "class";
+ :  nonWildcardTypeArguments or-122172;
+
+or-122172 :  explicitGenericInvocationSuffix;
+ :  "this" arguments;
+
+creator :  nonWildcardTypeArguments createdName classCreatorRest;
+ :  createdName or-122173;
+
+or-122173 :  arrayCreatorRest;
+ :  classCreatorRest;
+
+createdName :  Identifier opt-122174 star-122175;
+ :  primitiveType;
+
+opt-122174 : ;
+ :  typeArgumentsOrDiamond;
+
+star-122175 : ;
+ :  "." Identifier opt-122176 star-122175;
+
+opt-122176 : ;
+ :  typeArgumentsOrDiamond;
+
+innerCreator :  Identifier opt-122177 classCreatorRest;
+
+opt-122177 : ;
+ :  nonWildcardTypeArgumentsOrDiamond;
+
+arrayCreatorRest :  "[" or-122178;
+
+or-122178 :  "]" star-122179 arrayInitializer;
+ :  expression "]" star-122180 star-122181;
+
+star-122179 : ;
+ :  "[" "]" star-122179;
+
+star-122180 : ;
+ :  "[" expression "]" star-122180;
+
+star-122181 : ;
+ :  "[" "]" star-122181;
+
+classCreatorRest :  arguments opt-122182;
+
+opt-122182 : ;
+ :  classBody;
+
+explicitGenericInvocation :  nonWildcardTypeArguments explicitGenericInvocationSuffix;
+
+nonWildcardTypeArguments :  "<" typeList ">";
+
+typeArgumentsOrDiamond :  "<" ">";
+ :  typeArguments;
+
+nonWildcardTypeArgumentsOrDiamond :  "<" ">";
+ :  nonWildcardTypeArguments;
+
+superSuffix :  arguments;
+ :  "." Identifier opt-122183;
+
+opt-122183 : ;
+ :  arguments;
+
+explicitGenericInvocationSuffix :  "super" superSuffix;
+ :  Identifier arguments;
+
+arguments :  "(" opt-122184 ")";
+
+opt-122184 : ;
+ :  expressionList;
+
+Identifier :  "IDENTIFIER";
+

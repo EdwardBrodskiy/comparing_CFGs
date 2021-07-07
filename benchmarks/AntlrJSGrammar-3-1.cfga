@@ -1,0 +1,404 @@
+program :  opt-2;
+
+opt-2 : ;
+ :  sourceElements;
+
+sourceElements :  plus-3;
+
+plus-3 :  sourceElement;
+ :  sourceElement plus-3;
+
+sourceElement :  statement;
+ :  functionDeclaration;
+
+statement :  block;
+ :  variableStatement;
+ :  emptyStatement;
+ :  expressionStatement;
+ :  ifStatement;
+ :  iterationStatement;
+ :  continueStatement;
+ :  breakStatement;
+ :  returnStatement;
+ :  withStatement;
+ :  labelledStatement;
+ :  switchStatement;
+ :  throwStatement;
+ :  tryStatement;
+
+block :  "{" opt-4 "}";
+
+opt-4 : ;
+ :  statementList;
+
+statementList :  plus-5;
+
+plus-5 :  statement;
+ :  statement plus-5;
+
+variableStatement :  Var variableDeclarationList;
+
+variableDeclarationList :  variableDeclaration star-6;
+
+star-6 : ;
+ :  "," variableDeclaration star-6;
+
+variableDeclaration :  "Identifier" opt-7;
+
+opt-7 : ;
+ :  initialiser;
+
+initialiser :  "=" singleExpression;
+
+emptyStatement :  ";";
+
+expressionStatement :  expressionSequence;
+
+ifStatement :  If "(" expressionSequence ")" statement opt-8;
+
+opt-8 : ;
+ :  Else statement;
+
+iterationStatement :  Do statement While "(" expressionSequence ")";
+ :  While "(" expressionSequence ")" statement;
+ :  For "(" opt-9 ";" opt-10 ";" opt-11 ")" statement;
+ :  For "(" Var variableDeclarationList ";" opt-12 ";" opt-13 ")" statement;
+ :  For "(" singleExpression In expressionSequence ")" statement;
+ :  For "(" Var variableDeclaration In expressionSequence ")" statement;
+
+opt-9 : ;
+ :  expressionSequence;
+
+opt-10 : ;
+ :  expressionSequence;
+
+opt-11 : ;
+ :  expressionSequence;
+
+opt-12 : ;
+ :  expressionSequence;
+
+opt-13 : ;
+ :  expressionSequence;
+
+continueStatement :  Continue opt-14;
+
+opt-14 : ;
+ :  "Identifier";
+
+breakStatement :  Break opt-15;
+
+opt-15 : ;
+ :  "Identifier";
+
+returnStatement :  Return opt-16;
+
+opt-16 : ;
+ :  expressionSequence;
+
+withStatement :  With "(" expressionSequence ")" statement;
+
+switchStatement :  Switch "(" expressionSequence ")" caseBlock;
+
+caseBlock :  "{" opt-17 opt-18 "}";
+
+opt-17 : ;
+ :  caseClauses;
+
+opt-18 : ;
+ :  defaultClause opt-19;
+
+opt-19 : ;
+ :  caseClauses;
+
+caseClauses :  plus-20;
+
+plus-20 :  caseClause;
+ :  caseClause plus-20;
+
+caseClause :  Case expressionSequence ":" opt-21;
+
+opt-21 : ;
+ :  statementList;
+
+defaultClause :  Default ":" opt-22;
+
+opt-22 : ;
+ :  statementList;
+
+labelledStatement :  "Identifier" ":" statement;
+
+throwStatement :  Throw expressionSequence;
+
+tryStatement :  Try block catchProduction;
+ :  Try block finallyProduction;
+ :  Try block catchProduction finallyProduction;
+
+catchProduction :  Catch "(" "Identifier" ")" block;
+
+finallyProduction :  Finally block;
+
+functionDeclaration :  Function "Identifier" "(" opt-23 ")" "{" functionBody "}";
+
+opt-23 : ;
+ :  formalParameterList;
+
+formalParameterList :  "Identifier" star-24;
+
+star-24 : ;
+ :  "," "Identifier" star-24-18981;
+
+functionBody :  opt-25;
+
+opt-25 : ;
+ :  sourceElements;
+
+arrayLiteral :  "[" opt-26 opt-27 opt-28 "]";
+
+opt-26 : ;
+ :  elementList;
+
+opt-27 : ;
+ :  ",";
+
+opt-28 : ;
+ :  elision;
+
+elementList :  opt-29 singleExpression star-30;
+
+opt-29 : ;
+ :  elision;
+
+star-30 : ;
+ :  "," opt-31 singleExpression star-30;
+
+opt-31 : ;
+ :  elision;
+
+elision :  plus-32;
+
+plus-32 :  ",";
+ :  "," plus-32;
+
+objectLiteral :  "{" opt-33 opt-34 "}";
+
+opt-33 : ;
+ :  propertyNameAndValueList;
+
+opt-34 : ;
+ :  ",";
+
+propertyNameAndValueList :  propertyAssignment star-35;
+
+star-35 : ;
+ :  "," propertyAssignment star-35;
+
+propertyAssignment :  propertyName ":" singleExpression;
+ :  getter "(" ")" "{" functionBody "}";
+ :  setter "(" propertySetParameterList ")" "{" functionBody "}";
+
+propertyName :  identifierName;
+ :  StringLiteral;
+ :  numericLiteral;
+
+propertySetParameterList :  "Identifier";
+
+arguments :  "(" opt-36 ")";
+
+opt-36 : ;
+ :  argumentList;
+
+argumentList :  singleExpression star-37;
+
+star-37 : ;
+ :  "," singleExpression star-37;
+
+expressionSequence :  singleExpression star-38;
+
+star-38 : ;
+ :  "," singleExpression star-38;
+
+singleExpression :  Function opt-39 "(" opt-40 ")" "{" functionBody "}";
+ :  singleExpression "[" expressionSequence "]";
+ :  singleExpression "." identifierName;
+ :  singleExpression arguments;
+ :  New singleExpression opt-41;
+ :  singleExpression "++";
+ :  singleExpression "--";
+ :  Delete singleExpression;
+ :  Void singleExpression;
+ :  Typeof singleExpression;
+ :  "++" singleExpression;
+ :  "--" singleExpression;
+ :  "+" singleExpression;
+ :  "-" singleExpression;
+ :  "~" singleExpression;
+ :  "!" singleExpression;
+ :  singleExpression or-42 singleExpression;
+ :  singleExpression or-43 singleExpression;
+ :  singleExpression or-44 singleExpression;
+ :  singleExpression or-45 singleExpression;
+ :  singleExpression Instanceof singleExpression;
+ :  singleExpression In singleExpression;
+ :  singleExpression or-46 singleExpression;
+ :  singleExpression "&" singleExpression;
+ :  singleExpression "^" singleExpression;
+ :  singleExpression "|" singleExpression;
+ :  singleExpression "&&" singleExpression;
+ :  singleExpression "||" singleExpression;
+ :  singleExpression "?" singleExpression ":" singleExpression;
+ :  singleExpression "=" expressionSequence;
+ :  singleExpression assignmentOperator expressionSequence;
+ :  This;
+ :  "Identifier";
+ :  literal;
+ :  arrayLiteral;
+ :  objectLiteral;
+ :  "(" expressionSequence ")";
+
+opt-39 : ;
+ :  "Identifier";
+
+opt-40 : ;
+ :  formalParameterList;
+
+opt-41 : ;
+ :  arguments;
+
+or-42 :  "*";
+ :  "/";
+ :  "%";
+
+or-43 :  "+";
+ :  "-";
+
+or-44 :  "<<";
+ :  ">>";
+ :  ">>>";
+
+or-45 :  "<";
+ :  ">";
+ :  "<=";
+ :  ">=";
+
+or-46 :  "==";
+ :  "!=";
+ :  "===";
+ :  "!==";
+
+assignmentOperator :  "*=";
+ :  "/=";
+ :  "%=";
+ :  "+=";
+ :  "-=";
+ :  "<<=";
+ :  ">>=";
+ :  ">>>=";
+ :  "&=";
+ :  "^=";
+ :  "|=";
+
+literal :  NullLiteral;
+ :  BooleanLiteral;
+ :  StringLiteral;
+ :  "RegularExpression";
+ :  numericLiteral;
+
+numericLiteral :  "Number";
+
+identifierName :  "Identifier";
+ :  reservedWord;
+
+reservedWord :  keyword;
+ :  NullLiteral;
+ :  BooleanLiteral;
+
+keyword :  Break;
+ :  Do;
+ :  Instanceof;
+ :  Typeof;
+ :  Case;
+ :  Else;
+ :  New;
+ :  Var;
+ :  Catch;
+ :  Finally;
+ :  Return;
+ :  Void;
+ :  Continue;
+ :  For;
+ :  Switch;
+ :  While;
+ :  Function;
+ :  This;
+ :  With;
+ :  Default;
+ :  If;
+ :  Throw;
+ :  Delete;
+ :  In;
+ :  Try;
+
+getter :  "Identifier";
+
+setter :  "Identifier";
+
+NullLiteral :  "null";
+
+BooleanLiteral :  "true";
+ :  "false";
+
+Break :  "break";
+
+Do :  "do";
+
+Instanceof :  "instanceof";
+
+Typeof :  "typeof";
+
+Case :  "case";
+
+Else :  "else";
+
+New :  "new";
+
+Var :  "var";
+
+Catch :  "catch";
+
+Finally :  "finally";
+
+Return :  "return";
+
+Void :  "void";
+
+Continue :  "continue";
+
+For :  "for";
+
+Switch :  "switch";
+
+While :  "while";
+
+Function :  "function";
+
+This :  "this";
+
+With :  "with";
+
+Default :  "default";
+
+If :  "if";
+
+Throw :  "throw";
+
+Delete :  "delete";
+
+In :  "in";
+
+Try :  "try";
+
+StringLiteral :  "String";
+
+star-24-18981 : ;
+

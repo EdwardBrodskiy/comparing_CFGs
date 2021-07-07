@@ -1,0 +1,79 @@
+program -> PROGRAM newident external_files ; block .
+proc_heading -> PROCEDURE newident formal_params
+expressions -> expressions , expression | expression
+block -> opt_declarations statement_part
+opt_declarations -> "" | declarations
+variant_part -> CASE tag_field OF variants
+type_def -> newident = type
+const_defs -> const_defs ; const_def | const_def
+label_dcl_part -> LABEL labels ;
+case_list_elem -> case_label_list : statement | ""
+mult_op -> '*' | / | DIV | MOD | AND
+labels -> labels , label | label
+case_list -> case_list ; case_list_elem | case_list_elem
+record_section -> "" | newident_list : type
+param_group -> newident_list : paramtype
+unsigned_num -> UNSIGNED_INT | UNSIGNED_REAL
+actual_params -> "" | '(' actuals_list ')'
+term -> factor | term mult_op factor
+statements -> statements ; statement | statement
+variants -> variants ; variant | variant
+set -> [ member_list ]
+tag_field -> ident | newident : ident
+statement -> "" | label : statement | compound_stmt | assignment | procedure_call | GOTO label | IF expression THEN statement | IF expression THEN statement ELSE statement | CASE expression OF case_list END | WHILE expression DO statement | REPEAT statements UNTIL expression | FOR ident ASSIGN expression direction expression DO statement | WITH rec_var_list DO statement
+rec_var_list -> rec_var_list , record_var | record_var
+constant -> unsigned_num | '+' unsigned_num | - unsigned_num | ident | '+' ident | - ident | STRING
+type -> simple_type | PACKED struct_type | struct_type | ^ IDENTIFIER
+body -> block | IDENTIFIER
+member -> expression | expression DOTDOT expression
+variable_dcls -> variable_dcls ; variable_dcl | variable_dcl
+colon_things -> : expression | : expression : expression
+factor -> variable | unsigned_lit | '(' expression ')' | set | NOT factor
+formal_p_sect -> param_group | VAR param_group | proc_heading | func_heading
+declaration -> label_dcl_part | const_dcl_part | type_dcl_part | var_dcl_part | proc_dcl_part
+struct_type -> ARRAY [ index_t_list ] OF type | RECORD field_list END | SET OF simple_type | SFILE OF type
+formal_params -> "" | '(' formal_p_sects ')'
+variable -> ident actual_params | variable [ expressions ] | variable . ident | variable ^
+newident -> IDENTIFIER
+ident -> IDENTIFIER
+var_dcl_part -> VAR variable_dcls ;
+label -> UNSIGNED_INT
+func_heading -> FUNCTION newident function_form
+declarations -> declarations declaration | declaration
+assignment -> variable ASSIGN expression
+simple_expr -> term | '+' term | - term | simple_expr add_op term
+index_spec -> newident DOTDOT newident : ident
+formal_p_sects -> formal_p_sects ; formal_p_sect | formal_p_sect
+simple_type -> '(' newident_list ')' | constant DOTDOT constant | ident
+variable_dcl -> newident_list : type
+actual_param -> expression | expression colon_things
+member_list -> "" | members
+external_files -> "" | '(' newident_list ')'
+index_specs -> index_specs ; index_spec | index_spec
+record_var -> variable
+case_label_list -> case_label_list , case_label | case_label
+proc_dcl_part -> proc_or_func
+new_id_list -> new_id_list , newident | newident
+type_dcl_part -> TYPE type_defs ;
+statement_part -> compound_stmt
+procedure_call -> ident actual_params
+const_def -> newident = constant
+fixed_part -> fixed_part ; record_section | record_section
+relational_op -> = | < | > | LE | GE | NE | IN
+newident_list -> new_id_list
+function_form -> "" | formal_params : ident
+compound_stmt -> SBEGIN statements END
+type_defs -> type_defs ; type_def | type_def
+field_list -> fixed_part | fixed_part ; variant_part | variant_part
+actuals_list -> actuals_list , actual_param | actual_param
+members -> members , member | member
+paramtype -> ident | ARRAY [ index_specs ] OF paramtype | PACKED ARRAY [ index_spec ] OF ident
+unsigned_lit -> unsigned_num | STRING | NIL
+index_t_list -> simple_type
+const_dcl_part -> CONST const_defs ;
+proc_or_func -> proc_heading ; body ; | func_heading ; body ;
+variant -> "" | case_label_list : '(' field_list ')'
+expression -> simple_expr | simple_expr relational_op simple_expr
+case_label -> constant
+add_op -> '+' | - | OR
+direction -> TO | DOWNTO
