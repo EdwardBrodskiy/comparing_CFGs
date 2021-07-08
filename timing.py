@@ -4,7 +4,7 @@ from typing import Dict, Union, List
 
 from implementations import my_cyk, nltk_testing as nltk, lark_testing as lark, my_cyk_numpy, my_cyk_memo, my_cfg_analyzer
 
-timeout: float = 60  # time until a given test times out
+timeout: float = 60  # time until rule_a given test times out
 timeout_key: str = ''
 
 max_depth: int = 30  # to what length to run the tests

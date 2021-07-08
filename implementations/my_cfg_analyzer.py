@@ -1,4 +1,4 @@
-from cfg import cnf_10palindrome, alphabet10, convert_rules_to_list
+from cfg import cnf_10palindrome, alphabet10, convert_rules_to_list, cfg_rhs
 import numpy as np
 from typing import List
 
@@ -14,32 +14,62 @@ def is_matching_cfg(a, b, alphabet, max_depth: int):
     b = convert_rules_to_list(b)
     table = np.ones([len(a), len(b)], dtype=np.float16) * -1  # table of -1's
     successful_comparison = True
-    cheat_on_next = False
+    cheat_on_next = False  # TODO: should really cheat on the one with least undefined rules not the first one
     while successful_comparison or not cheat_on_next:
         cheat_on_next = not successful_comparison
         successful_comparison = False
-        for rule_a in range(1, len(a)):
-            for rule_b in range(1, len(b)):
-                if table[rule_a, rule_b] < 0:
-                    rhs_a = a[rule_a]
-                    rhs_b = b[rule_b]
+        for rule_a_index in range(1, len(a)):
+            for rule_b_index in range(1, len(b)):
+                if table[rule_a_index, rule_b_index] < 0:
+                    rhs_a = a[rule_a_index]
+                    rhs_b = b[rule_b_index]
                     try:
-                        if len(rhs_a) > len(rhs_b):
-                            table[rule_a, rule_b] = get_match_score(table, rhs_a, rhs_b, cheat_on_next)
-                        else:
-                            table[rule_a, rule_b] = get_match_score(table, rhs_b, rhs_a, cheat_on_next)
+                        table[rule_a_index, rule_b_index] = get_match_score(table, rhs_a, rhs_b, cheat_on_next)
                         successful_comparison = True
                         cheat_on_next = False
                     except UnknownValueError:
                         pass
-    if len(a[0]) > len(b[0]):
-        table[0, 0] = get_match_score(table, a[0], b[0], True)
-    else:
-        table[0, 0] = get_match_score(table, b[0], a[0], True)
+
+    table[0, 0] = get_match_score(table, a[0], b[0], True)
+
     return table[0, 0] == 1
 
 
-def get_match_score(table, larger_rule, smaller_rule, cheat):
+def is_matching_cfg_nikos(a, b, alphabet, max_depth: int):
+    memo_a = {}
+    memo_b = {}
+    a = convert_rules_to_list(a)
+    b = convert_rules_to_list(b)
+    table = np.zeros([len(a), len(b)], dtype=np.float16)
+    successful_comparison = True
+    cheat_on_next = False  # TODO: should really cheat on the one with least undefined rules not the first one
+    for _ in range(100):
+        cheat_on_next = not successful_comparison
+        successful_comparison = False
+        for rule_a_index in range(1, len(a)):
+            for rule_b_index in range(1, len(b)):
+
+                rhs_a = a[rule_a_index]
+                rhs_b = b[rule_b_index]
+                try:
+                    table[rule_a_index, rule_b_index] = get_match_score(table, rhs_a, rhs_b, cheat_on_next)
+                    successful_comparison = True
+                    cheat_on_next = False
+                except UnknownValueError:
+                    pass
+
+    table[0, 0] = get_match_score(table, a[0], b[0], True)
+    print(table)
+    return table[0, 0] == 1
+
+
+def get_match_score(table, rule_a: cfg_rhs, rule_b: cfg_rhs, cheat: bool) -> float:
+    if len(rule_a) > len(rule_b):
+        return get_match_score_ls(table, rule_a, rule_b, cheat)
+    return get_match_score_ls(table, rule_b, rule_a, cheat)
+
+
+def get_match_score_ls(table, larger_rule, smaller_rule, cheat):
     matches: List[float] = [0 for _ in larger_rule]
 
     for index, rhs_rule_a in enumerate(larger_rule):

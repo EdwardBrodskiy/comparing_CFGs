@@ -22,7 +22,7 @@ and removing (at random) one non-terminal from the righthand-side. In this case,
 to necessarily include the other.
 
 Type 3 Errors. We construct Gm as follows. We randomly choose one production of the grammar, say P, having at 
-least two non-terminals, and also choose one non-terminal of the right-hand-side, say N. We then create a copy 
+least two non-terminals, and also choose one non-terminal of the right-hand-side, say N. We then create rule_a copy 
 (say N0) of the non-terminal N that has every production of N except one (determined at random). We replace N 
 by N0 in the production P.
 '''

@@ -50,7 +50,7 @@ def parse(chars, rules, memo: Dict[str, np.array], start='S'):
                         right_side = table[span - partition - 1, span_start + partition + 1, rhs[1]]
                         if left_side and right_side:
                             table[span, span_start, key] = 1
-                            # TODO: check if a break here helps
+                            # TODO: check if rule_a break here helps
     memo[memo_key] = table
     return table[-1, 0, 0] == 1
 

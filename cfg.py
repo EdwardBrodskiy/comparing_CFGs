@@ -1,6 +1,8 @@
 from typing import Dict, List, Union, Tuple
 
-cfg_type = Dict[str, List[Union[Tuple, str]]]
+cfg_rhs = List[Union[Tuple, str]]
+
+cfg_type = Dict[str, cfg_rhs]
 
 
 def convert_rules_to_list(rules: cfg_type):

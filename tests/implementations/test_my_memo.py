@@ -1,7 +1,7 @@
 import unittest
 import implementations.my_cyk_memo as my_cyk
 
-from tests.implementations.tools_for_testing import word_and_result_from_nltk_10palindrome, inject_type_1_errors
+from tests.implementations.tools_for_testing import inject_type_1_errors
 
 
 class TestMyCyk(unittest.TestCase):

@@ -35,7 +35,7 @@ def parse(chars, rules, start='S'):  # TODO: add start to the rule conversion
                             right_side = table[span - partition - 1, span_start + partition + 1, rhs[1]]
                             if left_side and right_side:
                                 table[span, span_start, key] = 1
-                                # TODO: check if a break here helps
+                                # TODO: check if rule_a break here helps
     return table[-1, 0, 0] == 1
 
 
