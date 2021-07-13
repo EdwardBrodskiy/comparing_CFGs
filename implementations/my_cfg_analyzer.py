@@ -1,17 +1,68 @@
-from cfg import cnf_10palindrome, alphabet10, convert_rules_to_list, cfg_rhs
+from typing import List, Tuple, Set
+
 import numpy as np
-from typing import List
+import heapq
+from dataclasses import dataclass, field
+
+from cfg import cnf_10palindrome, alphabet10, convert_rules_to_list, cfg_rhs
 
 
 class UnknownValueError(Exception):
     pass
 
 
+@dataclass(order=True)
+class Node:
+    similarity: float
+    string: Tuple = field(compare=False)
+    difference_values: Tuple = field(compare=False)
+    # parent: Optional[Tuple] = field(compare=False)
+
+
 def is_matching_cfg(a, b, alphabet, max_depth: int):
-    memo_a = {}
     memo_b = {}
     a = convert_rules_to_list(a)
     b = convert_rules_to_list(b)
+    table = generate_similarity_table(a, b)
+
+    a_max_list = table.max(axis=0)
+
+    forest: List[Node] = [Node(table[0, 0], tuple([0]), get_similarity_values(a_max_list, tuple([0])))]  # start with S
+
+    heap = forest.copy()
+
+    difference_found = False
+
+    while not difference_found and len(heap):
+        smallest_match = 2
+        sm_match_index = -1
+        for i, diff in enumerate(heap[0].difference_values):
+            if diff is not None and diff < smallest_match:
+                smallest_match = diff
+                sm_match_index = i
+        if sm_match_index == -1:
+            heapq.heappop(heap)
+        else:
+            rule = heap[0].string[sm_match_index]
+            # TODO: add all the new string derivations
+
+    return not difference_found
+
+
+def get_similarity_values(best_matches, string):
+    output = []
+    for rule in string:
+        if type(rule) is int:
+            output.append(best_matches[rule])
+        else:
+            output.append(None)
+    return tuple(output)
+
+
+def generate_similarity_table(a, b):
+    """
+    Calculate values by assuming undefined values to be 1 when in cheat mode
+    """
     table = np.ones([len(a), len(b)], dtype=np.float16) * -1  # table of -1's
     successful_comparison = True
     cheat_on_next = False  # TODO: should really cheat on the one with least undefined rules not the first one
@@ -32,35 +83,24 @@ def is_matching_cfg(a, b, alphabet, max_depth: int):
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
 
-    return table[0, 0] == 1
+    return table
 
 
-def is_matching_cfg_nikos(a, b, alphabet, max_depth: int):
-    memo_a = {}
-    memo_b = {}
-    a = convert_rules_to_list(a)
-    b = convert_rules_to_list(b)
+def generate_similarity_table_by_value_approach(a, b):
+    """
+    Approach solution by continuously re calculating the similarity table starting with everything at 0
+    """
     table = np.zeros([len(a), len(b)], dtype=np.float16)
-    successful_comparison = True
-    cheat_on_next = False  # TODO: should really cheat on the one with least undefined rules not the first one
-    for _ in range(100):
-        cheat_on_next = not successful_comparison
-        successful_comparison = False
+    for _ in range(100):  # TODO: change this to check for how much the change happened
         for rule_a_index in range(1, len(a)):
             for rule_b_index in range(1, len(b)):
-
                 rhs_a = a[rule_a_index]
                 rhs_b = b[rule_b_index]
-                try:
-                    table[rule_a_index, rule_b_index] = get_match_score(table, rhs_a, rhs_b, cheat_on_next)
-                    successful_comparison = True
-                    cheat_on_next = False
-                except UnknownValueError:
-                    pass
+                table[rule_a_index, rule_b_index] = get_match_score(table, rhs_a, rhs_b, False)
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
-    print(table)
-    return table[0, 0] == 1
+
+    return table
 
 
 def get_match_score(table, rule_a: cfg_rhs, rule_b: cfg_rhs, cheat: bool) -> float:
