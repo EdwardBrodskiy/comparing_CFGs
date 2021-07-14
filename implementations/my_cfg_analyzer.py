@@ -1,10 +1,11 @@
-from typing import List, Tuple, Set
+from typing import List, Tuple
 
 import numpy as np
 import heapq
 from dataclasses import dataclass, field
 
 from cfg import cnf_10palindrome, alphabet10, convert_rules_to_list, cfg_rhs
+from implementations.my_cyk_numpy import parse
 
 
 class UnknownValueError(Exception):
@@ -15,7 +16,7 @@ class UnknownValueError(Exception):
 class Node:
     similarity: float
     string: Tuple = field(compare=False)
-    difference_values: Tuple = field(compare=False)
+    difference_values: List = field(compare=False)
     # parent: Optional[Tuple] = field(compare=False)
 
 
@@ -27,36 +28,51 @@ def is_matching_cfg(a, b, alphabet, max_depth: int):
 
     a_max_list = table.max(axis=0)
 
-    forest: List[Node] = [Node(table[0, 0], tuple([0]), get_similarity_values(a_max_list, tuple([0])))]  # start with S
+    forest = {(0,)}
 
-    heap = forest.copy()
+    heap: List[Node] = [Node(table[0, 0], (0,), get_similarity_values(a_max_list, (0,)))]  # start with S
 
     difference_found = False
 
     while not difference_found and len(heap):
+        current_node = heap[0]
         smallest_match = 2
         sm_match_index = -1
-        for i, diff in enumerate(heap[0].difference_values):
+        for i, diff in enumerate(current_node.difference_values):
             if diff is not None and diff < smallest_match:
                 smallest_match = diff
                 sm_match_index = i
         if sm_match_index == -1:
             heapq.heappop(heap)
         else:
-            rule = heap[0].string[sm_match_index]
-            # TODO: add all the new string derivations
-
+            rule = a[current_node.string[sm_match_index]]
+            current_node.difference_values[sm_match_index] = None  # Mark as path traversed
+            for rhs in rule:
+                if type(rhs) is tuple:
+                    new_string = current_node.string[:sm_match_index] + rhs + current_node.string[sm_match_index + 1:]
+                else:
+                    new_string = current_node.string[:sm_match_index] + (rhs,) + current_node.string[sm_match_index + 1:]
+                    if all(map(lambda x: type(x) is str, new_string)):  # if all terminated
+                        if not parse(new_string, b):
+                            difference_found = True
+                            break
+                if len(new_string) <= max_depth:  # TODO: that may be one too deep
+                    if new_string not in forest:  # TODO: this shouldn't happen right but it does!?
+                        heapq.heappush(heap, Node(current_node.similarity + smallest_match, new_string,
+                                                  get_similarity_values(a_max_list, new_string)))
+                        forest.add(new_string)
+        # print(heap[0])
     return not difference_found
 
 
 def get_similarity_values(best_matches, string):
     output = []
     for rule in string:
-        if type(rule) is int:
+        if type(rule) is not str:
             output.append(best_matches[rule])
         else:
             output.append(None)
-    return tuple(output)
+    return output
 
 
 def generate_similarity_table(a, b):

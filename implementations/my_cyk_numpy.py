@@ -7,7 +7,8 @@ def parse(chars, rules, start='S'):  # TODO: add start to the rule conversion
     """
     CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
     """
-    rules = convert_rules_to_list(rules)
+    if type(rules) is dict:
+        rules = convert_rules_to_list(rules)
 
     n = len(chars)
     no_rules = len(rules)
