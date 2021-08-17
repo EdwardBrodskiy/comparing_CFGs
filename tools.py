@@ -1,4 +1,16 @@
-from typing import Iterator, List
+from typing import Iterator, List, Tuple, Union
+from cfg import cfg_type
+import copy
+
+'''
+CFG structure note to self:
+
+<key> -> <rhs>
+
+<rhs> == <rule> | <rule> | <rule> ...
+
+<rule> == <sub_rule> <sub_rule> ...
+'''
 
 
 class TerminalString(str):
@@ -6,8 +18,8 @@ class TerminalString(str):
 
 
 def main():
-    cfg = read_gram_file('benchmarks\\AntlrJavaGrammar-1-1.gram')
-    print(type(cfg['interfaceBodyDeclaration'][1][0]))
+    start, cfg = read_gram_file('benchmarks\\AntlrJavaGrammar-1-1.gram')
+    print(convert_to_cnf(cfg, start))
 
 
 def words_of_length(length, alphabet) -> Iterator[List[str]]:
@@ -21,11 +33,17 @@ def words_of_length(length, alphabet) -> Iterator[List[str]]:
                 yield [letter, *sub_word]  # TODO: surely this is not the best way
 
 
-def read_gram_file(name):
-    cfg = {}
+def read_gram_file(name) -> (str, cfg_type):
+    cfg: cfg_type = {}
+    first = True
+    start = ''
     with open(name) as file:
         for line in file:
             key, rhs = line.split(' -> ')  # TODO: should use a safe split in the case that ' -> ' is in the rhs
+            if first:
+                start = key
+                first = False
+
             cfg[key] = []
             rhs = rhs.split(' | ')
             for rule in rhs:
@@ -43,7 +61,107 @@ def read_gram_file(name):
                 if sub_rule not in cfg:
                     cfg[key][rule_index][sub_rule_index] = TerminalString(sub_rule)
 
-    return cfg
+    return start, cfg
+
+
+def convert_to_cnf(cfg: cfg_type, start: str):
+    name_generator = NameGenerator(cfg)
+    cnf: cfg_type = copy.deepcopy(cfg)
+
+    # START
+    cnf_start = name_generator.generate_extension(start)
+    cnf[cnf_start] = [[start]]  # S0 -> S
+
+    # TERM
+    new_terminal_rules: cfg_type = {}
+    terminal_to_key_mapping = {}
+    for key, rhs in cnf.items():  # identify existing terminals
+        if len(rhs) == 1 and len(rhs[0]) == 1 and type(rhs[0][0]) is TerminalString:
+            new_terminal_rules[key] = rhs
+            terminal_to_key_mapping[str(rhs[0][0])] = key
+
+    for key, rhs in cnf.items():  # create new terminals
+        for rule in rhs:
+            for sub_rule in rule:
+                if type(sub_rule) is TerminalString and sub_rule not in terminal_to_key_mapping:
+                    new_terminal_key = name_generator.generate_key(sub_rule)
+                    new_terminal_rules[new_terminal_key] = [[str(sub_rule)]]
+                    terminal_to_key_mapping[sub_rule] = new_terminal_key
+
+    for key, rhs in cnf.items():  # replace strings with terminals
+        for rule_index, rule in enumerate(rhs):
+            for sub_rule_index, sub_rule in enumerate(rule):
+                if type(sub_rule) is TerminalString:
+                    cnf[key][rule_index][sub_rule_index] = terminal_to_key_mapping[str(sub_rule)]
+    cnf = cnf | new_terminal_rules
+
+    # BIN
+    new_extension_rules = {}
+    for key, rhs in cnf.items():
+        for rule_index, rule in enumerate(rhs):
+            if len(rule) > 2:
+                extension_rule_key = name_generator.generate_extension(key)
+                cnf[key][rule_index] = [rule[0], extension_rule_key]
+
+                for i in range(1, len(rule) - 2):
+                    next_extension_rule_key = name_generator.generate_extension(key)
+                    new_extension_rules[extension_rule_key] = [rule[i], next_extension_rule_key]
+                    extension_rule_key = next_extension_rule_key
+                new_extension_rules[extension_rule_key] = rule[-2:]
+    cnf = cnf | new_extension_rules
+
+    # DEL
+    '''
+    I think we are ok to skip this step for now as what is meant to be an empty string is being treated as
+    "" hence we don't have empty strings.
+    '''
+
+    # UNIT
+    unit_rules = {'first': 'run'}
+    while len(unit_rules):  # TODO: runs for ever seems to not be doing anything
+        unit_rules = {}
+        for key, rhs in cnf.items():
+            for rule in rhs:
+                if len(rule) == 1 and key not in new_terminal_rules and rule[0] not in new_terminal_rules:
+                    if key not in unit_rules:
+                        unit_rules[key] = []
+                    unit_rules[key].append(rule[0])
+        changed_rules: cfg_type = {}
+        for key, rhs in cnf.items():
+            for rule_index, rule in enumerate(rhs):
+                for sub_rule_index, sub_rule in enumerate(rule):
+                    if sub_rule in unit_rules:
+                        changed_rules[key] = cnf[key]
+                        changed_rules[key][rule_index].pop(sub_rule_index)
+                        changed_rules[key][rule_index] += unit_rules[sub_rule]
+        cnf = cnf | changed_rules
+
+    return cnf
+
+
+class NameGenerator:
+    def __init__(self, cfg: dict, append_div='_'):
+        self.cfg_name_count = {key: 0 for key in cfg.keys()}
+        self.append_div = append_div
+
+    def generate_extension(self, parent_key):
+        while True:
+            new_key = parent_key + self.append_div + str(self.cfg_name_count[parent_key])
+            self.cfg_name_count[parent_key] += 1
+            if new_key not in self.cfg_name_count:
+                self.cfg_name_count[new_key] = 0
+                return new_key
+
+    def generate_key(self, name):
+        modifier_counter = 0
+        modifier = ''
+        while True:
+            new_key = self.append_div + name + self.append_div + modifier
+            if new_key not in self.cfg_name_count:
+                self.cfg_name_count[new_key] = 0
+                return new_key
+            modifier = str(modifier_counter)
+            modifier_counter += 1
 
 
 if __name__ == '__main__':

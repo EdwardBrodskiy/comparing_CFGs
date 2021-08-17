@@ -1,6 +1,6 @@
 from typing import Dict, List, Union, Tuple
 
-cfg_rhs = List[Union[Tuple, str]]
+cfg_rhs = List[Union[Tuple, str, List]]
 
 cfg_type = Dict[str, cfg_rhs]
 
