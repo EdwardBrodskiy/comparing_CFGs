@@ -117,26 +117,32 @@ def convert_to_cnf(cfg: cfg_type, start: str):
     '''
 
     # UNIT
-    unit_rules = {'first': 'run'}
-    while len(unit_rules):  # TODO: runs for ever seems to not be doing anything
-        unit_rules = {}
-        for key, rhs in cnf.items():
-            for rule in rhs:
-                if len(rule) == 1 and key not in new_terminal_rules and rule[0] not in new_terminal_rules:
-                    if key not in unit_rules:
-                        unit_rules[key] = []
-                    unit_rules[key].append(rule[0])
-        changed_rules: cfg_type = {}
-        for key, rhs in cnf.items():
-            for rule_index, rule in enumerate(rhs):
-                for sub_rule_index, sub_rule in enumerate(rule):
-                    if sub_rule in unit_rules:
-                        changed_rules[key] = cnf[key]
-                        changed_rules[key][rule_index].pop(sub_rule_index)
-                        changed_rules[key][rule_index] += unit_rules[sub_rule]
-        cnf = cnf | changed_rules
+    self_pointing = set()
+    for key, rhs in cnf.items():  # remove pointless loops e.g A -> A
+        for rule_index, rule in enumerate(rhs):
+            if len(rule) == 1 and key == rule[0]:
+                self_pointing.add(key)
+    for self_pointing_key in self_pointing:
+        cnf[self_pointing_key] = list(filter(([self_pointing_key]).__ne__, cnf[self_pointing_key]))
 
-    return cnf
+    unit_rule_violations = {'rhs_violation_key': ['location_of_violation']}
+    while len(unit_rule_violations):  # TODO: runs for ever seems to not be doing anything
+        unit_rule_violations = {}
+        for key, rhs in cnf.items():
+            if key not in unit_rule_violations and key not in new_terminal_rules:
+                for rule in rhs:
+                    violating_key = rule[0]
+                    if len(rule) == 1 and violating_key not in new_terminal_rules:
+                        if violating_key not in unit_rule_violations:
+                            unit_rule_violations[violating_key] = []
+                        unit_rule_violations[violating_key].append(key)
+
+        for violating_key, violation_locations in unit_rule_violations.items():
+            for key in violation_locations:
+                cnf[key].remove([violating_key])
+                cnf[key] += cnf[violating_key]
+
+    return cnf_start, cnf
 
 
 class NameGenerator:
