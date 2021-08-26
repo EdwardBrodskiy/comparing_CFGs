@@ -1,4 +1,4 @@
-from typing import Iterator, List, Tuple, Union
+from typing import Iterator, List
 from cfg import cfg_type
 import copy
 
@@ -14,12 +14,17 @@ CFG structure note to self:
 
 
 class TerminalString(str):
-    pass
+    def __repr__(self):
+        string = super().__repr__().strip('\'')
+        return f'Terminal:"{string}"'
 
 
 def main():
     start, cfg = read_gram_file('benchmarks\\AntlrJavaGrammar-1-1.gram')
-    print(convert_to_cnf(cfg, start))
+    cnf_start, cnf = convert_to_cnf(start, cfg)
+    print(is_cnf(cnf_start, cnf))
+    print(len(cfg))
+    print(len(cnf))
 
 
 def words_of_length(length, alphabet) -> Iterator[List[str]]:
@@ -64,7 +69,7 @@ def read_gram_file(name) -> (str, cfg_type):
     return start, cfg
 
 
-def convert_to_cnf(cfg: cfg_type, start: str):
+def convert_to_cnf(start: str, cfg: cfg_type):
     name_generator = NameGenerator(cfg)
     cnf: cfg_type = copy.deepcopy(cfg)
 
@@ -77,15 +82,15 @@ def convert_to_cnf(cfg: cfg_type, start: str):
     terminal_to_key_mapping = {}
     for key, rhs in cnf.items():  # identify existing terminals
         if len(rhs) == 1 and len(rhs[0]) == 1 and type(rhs[0][0]) is TerminalString:
-            new_terminal_rules[key] = rhs
-            terminal_to_key_mapping[str(rhs[0][0])] = key
+            new_terminal_rules[key] = copy.deepcopy(rhs)
+            terminal_to_key_mapping[rhs[0][0]] = key
 
     for key, rhs in cnf.items():  # create new terminals
         for rule in rhs:
             for sub_rule in rule:
                 if type(sub_rule) is TerminalString and sub_rule not in terminal_to_key_mapping:
                     new_terminal_key = name_generator.generate_key(sub_rule)
-                    new_terminal_rules[new_terminal_key] = [[str(sub_rule)]]
+                    new_terminal_rules[new_terminal_key] = [[sub_rule]]
                     terminal_to_key_mapping[sub_rule] = new_terminal_key
 
     for key, rhs in cnf.items():  # replace strings with terminals
@@ -105,9 +110,9 @@ def convert_to_cnf(cfg: cfg_type, start: str):
 
                 for i in range(1, len(rule) - 2):
                     next_extension_rule_key = name_generator.generate_extension(key)
-                    new_extension_rules[extension_rule_key] = [rule[i], next_extension_rule_key]
+                    new_extension_rules[extension_rule_key] = [[rule[i], next_extension_rule_key]]
                     extension_rule_key = next_extension_rule_key
-                new_extension_rules[extension_rule_key] = rule[-2:]
+                new_extension_rules[extension_rule_key] = [rule[-2:]]
     cnf = cnf | new_extension_rules
 
     # DEL
@@ -143,6 +148,46 @@ def convert_to_cnf(cfg: cfg_type, start: str):
                 cnf[key] += cnf[violating_key]
 
     return cnf_start, cnf
+
+
+def is_cnf(start: str, cfg: cfg_type) -> bool:
+    # START
+    for key, rhs in cfg.items():
+        for rule in rhs:
+            if any(map(lambda sub_rule: sub_rule == start, rule)):
+                print(f'START : {key} -> {rhs}')
+                return False
+
+    # TERM
+    terminals = {}
+    for key, rhs in cfg.items():
+        for rule in rhs:
+            if any(map(lambda sub_rule: type(sub_rule) is TerminalString, rule)):
+                if len(rhs) != 1 or len(rule) != 1:
+                    print(f'TERM : {key} -> {rhs}')
+                    return False
+                else:
+                    terminals[key] = rule[0][0]
+
+    # BIN
+    for key, rhs in cfg.items():
+        if any(map(lambda r: len(r) > 2, rhs)):
+            print(f'BIN : {key} -> {rhs}')
+            return False
+
+    # DEL
+    '''
+    I think we are ok to skip this step for now as what is meant to be an empty string is being treated as
+    "" hence we don't have empty strings.
+    '''
+
+    # UNIT
+    for key, rhs in cfg.items():
+        for rule in rhs:
+            if len(rule) == 1 and rule[0] not in terminals and type(rule[0]) is not TerminalString:
+                print(f'UNIT : {key} -> {rule}')
+                return False
+    return True
 
 
 class NameGenerator:
