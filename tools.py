@@ -20,7 +20,7 @@ class TerminalString(str):
 
 
 def main():
-    start, cfg = read_gram_file('benchmarks\\AntlrJavaGrammar-1-1.gram')
+    start, cfg = read_gram_file('benchmarks\\C11Grammar1-1-1.gram')
     cnf_start, cnf = convert_to_cnf(start, cfg)
     print(is_cnf(cnf_start, cnf))
     print(len(cfg))
@@ -44,13 +44,14 @@ def read_gram_file(name) -> (str, cfg_type):
     start = ''
     with open(name) as file:
         for line in file:
-            key, rhs = line.split(' -> ')  # TODO: should use a safe split in the case that ' -> ' is in the rhs
+            key, *rhs = line.split(' -> ')
+            rhs = ' -> '.join(rhs)  # undo any unintended splitting due to ' -> ' appearing later on
             if first:
                 start = key
                 first = False
 
             cfg[key] = []
-            rhs = rhs.split(' | ')
+            rhs = rhs.split(' | ')  # TODO: this may cause errors if there is a terminal "\' | \'"
             for rule in rhs:
                 rule = rule.strip()
                 sub_rules = rule.split()
