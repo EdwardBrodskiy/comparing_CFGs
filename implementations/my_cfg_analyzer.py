@@ -4,7 +4,7 @@ import numpy as np
 import heapq
 from dataclasses import dataclass, field
 
-from cfg import cnf_10palindrome, alphabet10, convert_rules_to_list, cfg_rhs
+from cfg import cnf_10palindrome, alphabet10, convert_cnf_to_list, cfg_rhs
 from implementations.my_cyk_numpy import parse
 
 
@@ -22,8 +22,8 @@ class Node:
 
 def is_matching_cfg(a, b, alphabet, max_depth: int):
     memo_b = {}
-    a = convert_rules_to_list(a)
-    b = convert_rules_to_list(b)
+    a = convert_cnf_to_list(a)
+    b = convert_cnf_to_list(b)
     table = generate_similarity_table(a, b)
 
     a_max_list = table.max(axis=0)

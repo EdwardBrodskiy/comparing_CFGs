@@ -1,5 +1,5 @@
 from tools import words_of_length
-from cfg import convert_rules_to_list, cnf_10palindrome, alphabet10
+from cfg import convert_cnf_to_list, cnf_10palindrome, alphabet10
 from typing import Dict
 import numpy as np
 
@@ -20,7 +20,7 @@ def parse(chars, rules, memo: Dict[str, np.array], start='S'):
     """
     CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
     """
-    rules = convert_rules_to_list(rules)
+    rules = convert_cnf_to_list(rules)
 
     n = len(chars)
     no_rules = len(rules)

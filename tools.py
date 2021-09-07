@@ -138,7 +138,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
             if key not in unit_rule_violations and key not in new_terminal_rules:
                 for rule in rhs:
                     violating_key = rule[0]
-                    if len(rule) == 1 and violating_key not in new_terminal_rules:
+                    if type(rule) is not str and len(rule) == 1:
                         if violating_key not in unit_rule_violations:
                             unit_rule_violations[violating_key] = []
                         unit_rule_violations[violating_key].append(key)
@@ -184,7 +184,7 @@ def is_cnf(start: str, cfg: cfg_type) -> bool:
     # UNIT
     for key, rhs in cfg.items():
         for rule in rhs:
-            if len(rule) == 1 and type(rule) is not str and rule[0] not in terminals:
+            if type(rule) is not str and len(rule) == 1:
                 print(f'UNIT : {key} -> {rule}')
                 print(terminals)
                 return False
