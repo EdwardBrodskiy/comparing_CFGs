@@ -83,7 +83,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
     terminal_to_key_mapping = {}
     for key, rhs in cnf.items():  # identify existing terminals
         if len(rhs) == 1 and len(rhs[0]) == 1 and type(rhs[0][0]) is TerminalString:
-            new_terminal_rules[key] = copy.deepcopy(rhs)
+            new_terminal_rules[key] = [str(rhs[0][0])]
             terminal_to_key_mapping[rhs[0][0]] = key
 
     for key, rhs in cnf.items():  # create new terminals
@@ -91,7 +91,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
             for sub_rule in rule:
                 if type(sub_rule) is TerminalString and sub_rule not in terminal_to_key_mapping:
                     new_terminal_key = name_generator.generate_key(sub_rule)
-                    new_terminal_rules[new_terminal_key] = [[sub_rule]]
+                    new_terminal_rules[new_terminal_key] = [str(sub_rule)]
                     terminal_to_key_mapping[sub_rule] = new_terminal_key
 
     for key, rhs in cnf.items():  # replace strings with terminals
@@ -105,7 +105,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
     new_extension_rules = {}
     for key, rhs in cnf.items():
         for rule_index, rule in enumerate(rhs):
-            if len(rule) > 2:
+            if type(rule) is not str and len(rule) > 2:
                 extension_rule_key = name_generator.generate_extension(key)
                 cnf[key][rule_index] = [rule[0], extension_rule_key]
 
@@ -163,16 +163,15 @@ def is_cnf(start: str, cfg: cfg_type) -> bool:
     terminals = {}
     for key, rhs in cfg.items():
         for rule in rhs:
-            if any(map(lambda sub_rule: type(sub_rule) is TerminalString, rule)):
-                if len(rhs) != 1 or len(rule) != 1:
-                    print(f'TERM : {key} -> {rhs}')
-                    return False
-                else:
-                    terminals[key] = rule[0][0]
+            if type(rule) is str:
+                terminals[key] = rule[0][0]
+            elif not all(map(lambda sub_rule: sub_rule in cfg, rule)):
+                print(f'TERM : {key} -> {rhs}')
+                return False
 
     # BIN
     for key, rhs in cfg.items():
-        if any(map(lambda r: len(r) > 2, rhs)):
+        if any(map(lambda r: type(r) is not str and len(r) > 2, rhs)):
             print(f'BIN : {key} -> {rhs}')
             return False
 
@@ -185,8 +184,9 @@ def is_cnf(start: str, cfg: cfg_type) -> bool:
     # UNIT
     for key, rhs in cfg.items():
         for rule in rhs:
-            if len(rule) == 1 and rule[0] not in terminals and type(rule[0]) is not TerminalString:
+            if len(rule) == 1 and type(rule) is not str and rule[0] not in terminals:
                 print(f'UNIT : {key} -> {rule}')
+                print(terminals)
                 return False
     return True
 
