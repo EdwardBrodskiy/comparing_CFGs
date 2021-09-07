@@ -45,7 +45,8 @@ class Timer:
                     for algorithm_name, algorithm in self.algorithms.items():
                         testable_method = self.algorithm_wrapper(algorithm, **input_data_for_test, **varying_input_data_for_test)
                         result = self._time(algorithm_name, testable_method)
-                        self.add_result_to_results(algorithm_name, result, **varying_input_data_for_test)
+                        self.add_result_to_results(run_index, algorithm_name, result, **varying_input_data_for_test)
+        self._save_data()
 
     @classmethod
     def set_up_class(cls):
@@ -57,11 +58,11 @@ class Timer:
 
     @staticmethod
     def generate_varying_input_date_for_test() -> Iterator[Tuple[int, Dict[str, Any]]]:
-        for i in range(10):
+        for i in range(6):
             yield i, {'depth': i}
 
     @staticmethod
-    def add_result_to_results(algorithm_name: str, result: Union[str, float], **input_data):
+    def add_result_to_results(run_index: int, algorithm_name: str, result: Union[str, float], **input_data):
         pass
 
     @staticmethod
@@ -117,7 +118,7 @@ class Timer:
             return self.settings.timeout_key
         return timeit(method, number=1)
 
-    def _save_data(self):
+    def _save_data(self):  # TODO: fix saving location
         saved = False
         while not saved:
             try:
@@ -126,8 +127,8 @@ class Timer:
 
                     csv_writer.writerow(self.generate_header())
 
-                    for name, results in results.items():
-                        csv_writer.writerow([name, *results])
+                    for name, data in self.results.items():
+                        csv_writer.writerow([name, *data])
                 saved = True
             except PermissionError:
                 input('Permission Denied PRESS ENTER TO TRY AGAIN')
