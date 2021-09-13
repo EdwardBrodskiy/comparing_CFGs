@@ -100,6 +100,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                 if type(sub_rule) is TerminalString:
                     cnf[key][rule_index][sub_rule_index] = terminal_to_key_mapping[str(sub_rule)]
     cnf = cnf | new_terminal_rules
+    alphabet = list(map(lambda terminal_key: new_terminal_rules[terminal_key][0], new_terminal_rules))
 
     # BIN
     new_extension_rules = {}
@@ -148,7 +149,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                 cnf[key].remove([violating_key])
                 cnf[key] += cnf[violating_key]
 
-    return cnf_start, cnf
+    return cnf_start, cnf, alphabet
 
 
 def is_cnf(start: str, cfg: cfg_type) -> bool:

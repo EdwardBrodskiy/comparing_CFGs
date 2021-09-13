@@ -2,6 +2,9 @@ from typing import Dict, Tuple, Any, Iterator, List, Callable, Union
 from dataclasses import dataclass
 from timeit import timeit
 import csv
+from os import path
+
+from timing_test.print_out import PrintOut
 
 
 @dataclass
@@ -17,16 +20,19 @@ class TimerSettings:
 
     re_build_table: bool = False
 
+    save_location: Tuple[str, ...] = tuple(['results'])
+
 
 def main():
     pass
 
 
 class Timer:
-    def __init__(self, settings: TimerSettings, tests: List[str], algorithms: Dict[str, Callable]):
+    def __init__(self, settings: TimerSettings, tests: List[str], algorithms: Dict[str, Callable], printer: PrintOut = PrintOut()):
         self.settings = settings
         self.tests = tests
         self.algorithms = algorithms
+        self.printer = printer
 
         self.past_header: List[str] = []
         self.past_results: Dict[str, List[str]] = {}
@@ -38,14 +44,18 @@ class Timer:
         self._load_past_results()
         self._merge_past_results()
 
+        self.printer.start_up()
         for run_index in range(self.settings.re_runs):  # this is done instead of changing the number on timeit to spread out the tests
             for test in self.tests:
                 input_data_for_test = self.set_up(test)
-                for index, varying_input_data_for_test in self.generate_varying_input_date_for_test():
+                for index, varying_input_data_for_test in self.generate_varying_input_data_for_test():
                     for algorithm_name, algorithm in self.algorithms.items():
                         testable_method = self.algorithm_wrapper(algorithm, **input_data_for_test, **varying_input_data_for_test)
                         result = self._time(algorithm_name, testable_method)
                         self.add_result_to_results(run_index, algorithm_name, result, **varying_input_data_for_test)
+                    self.printer.depth(2)
+                self.printer.depth(1)
+            self.printer.depth(0)
         self._save_data()
 
     @classmethod
@@ -57,7 +67,7 @@ class Timer:
         return {}
 
     @staticmethod
-    def generate_varying_input_date_for_test() -> Iterator[Tuple[int, Dict[str, Any]]]:
+    def generate_varying_input_data_for_test() -> Iterator[Tuple[int, Dict[str, Any]]]:
         for i in range(6):
             yield i, {'depth': i}
 
@@ -122,7 +132,7 @@ class Timer:
         saved = False
         while not saved:
             try:
-                with open(f'{self.settings.test_name}_results.csv', 'w', newline='') as file:
+                with open(path.join(*self.settings.save_location, f'{self.settings.test_name}_results.csv'), 'w', newline='') as file:
                     csv_writer = csv.writer(file)
 
                     csv_writer.writerow(self.generate_header())
