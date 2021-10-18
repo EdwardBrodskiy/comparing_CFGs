@@ -21,10 +21,10 @@ class TerminalString(str):
 
 def main():
     start, cfg = read_gram_file('benchmarks\\C11Grammar1-1-1.gram')
-    cnf_start, cnf = convert_to_cnf(start, cfg)
+    cnf_start, cnf, alphabet = convert_to_cnf(start, cfg)
     print(is_cnf(cnf_start, cnf))
     print(len(cfg))
-    print(len(cnf))
+    print(alphabet)
 
 
 def words_of_length(length, alphabet) -> Iterator[List[str]]:
@@ -100,7 +100,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                 if type(sub_rule) is TerminalString:
                     cnf[key][rule_index][sub_rule_index] = terminal_to_key_mapping[str(sub_rule)]
     cnf = cnf | new_terminal_rules
-    alphabet = list(map(lambda terminal_key: new_terminal_rules[terminal_key][0], new_terminal_rules))
+    alphabet = set(map(lambda terminal_key: new_terminal_rules[terminal_key][0], new_terminal_rules))
 
     # BIN
     new_extension_rules = {}
