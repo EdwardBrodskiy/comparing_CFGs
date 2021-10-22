@@ -33,6 +33,7 @@ class Timer:
         self.tests = tests
         self.algorithms = algorithms
         self.printer = printer
+        self.printer.show_key()
 
         self.past_header: List[str] = []
         self.past_results: Dict[str, List[str]] = {}
@@ -68,7 +69,7 @@ class Timer:
 
     @staticmethod
     def generate_varying_input_data_for_test() -> Iterator[Tuple[int, Dict[str, Any]]]:
-        for i in range(6):
+        for i in range(1, 3):
             yield i, {'depth': i}
 
     @staticmethod

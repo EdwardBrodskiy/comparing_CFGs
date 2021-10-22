@@ -1,6 +1,14 @@
 class PrintOut:
-    def __init__(self, depths=('|', '-', '.')):
+    def __init__(self, depths=('|', '-', '.'), key=None):
+        if key is None:
+            key = dict()
         self.__depths = depths
+        self.key = key
+
+    def show_key(self):
+        print('Key:')
+        for key, value in self.key.items():
+            print(f'  {key} : [{value}]')
 
     @staticmethod
     def start_up():
