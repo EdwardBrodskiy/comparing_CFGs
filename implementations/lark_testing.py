@@ -11,7 +11,7 @@ def is_accepted(lark_cfg: Lark, word_to_parse):
 
 
 def is_matching_cfg(a: Lark, b: Lark, alphabet, max_depth: int):
-    for depth in range(max_depth):
+    for depth in range(max_depth + 1):
         for word in words_of_length(depth, alphabet):
             word = ''.join(word)
             if is_accepted(a, word) != is_accepted(b, word):

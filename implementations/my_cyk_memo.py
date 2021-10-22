@@ -58,7 +58,7 @@ def parse(chars, rules, memo: Dict[str, np.array], start='S'):
 def is_matching_cfg(a, b, alphabet, max_depth: int):
     memo_a = {}
     memo_b = {}  # TODO: Note the way we are looking at it we only need to store the words of length - 1
-    for depth in range(max_depth):
+    for depth in range(max_depth + 1):
         for word in words_of_length(depth, alphabet):
             if parse(word, a, memo_a) != parse(word, b, memo_b):
                 return False

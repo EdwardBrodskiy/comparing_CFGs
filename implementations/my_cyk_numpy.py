@@ -41,7 +41,7 @@ def parse(chars, rules, start='S'):  # TODO: add start to the rule conversion
 
 
 def is_matching_cfg(a, b, alphabet, max_depth: int):
-    for depth in range(max_depth):
+    for depth in range(max_depth + 1):
         for word in words_of_length(depth, alphabet):
             if parse(word, a) != parse(word, b):
                 return False
