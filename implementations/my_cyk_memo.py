@@ -1,6 +1,6 @@
 from tools import words_of_length
-from cfg import convert_cnf_to_list, cnf_10palindrome, alphabet10
-from typing import Dict
+from cfg import convert_cnf_to_list, cnf_10palindrome, alphabet10, cnf_10palindrome_start
+from typing import Dict, Tuple
 import numpy as np
 
 
@@ -9,22 +9,22 @@ def main():
     import pstats
 
     with cProfile.Profile() as pr:
-        is_matching_cfg_wrapper_10palindrome(15)
+        is_matching_cfg(cnf_10palindrome, cnf_10palindrome_start, cnf_10palindrome,
+                        cnf_10palindrome_start, alphabet10, 10)
 
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
     stats.dump_stats(filename='memo_profiling.prof')
 
 
-def parse(chars, rules, memo: Dict[str, np.array], start='S'):
+def parse(chars, rules, memo: Dict[Tuple, np.array]):
     """
     CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
     """
-    rules = convert_cnf_to_list(rules)
 
     n = len(chars)
     no_rules = len(rules)
-    memo_key = ''.join(chars)
+    memo_key = tuple(chars)
 
     # table = [[set() for _ in range(n - depth)] for depth in range(n)]
     table = np.zeros((n, n, no_rules), dtype=np.uint8)
@@ -55,9 +55,12 @@ def parse(chars, rules, memo: Dict[str, np.array], start='S'):
     return table[-1, 0, 0] == 1
 
 
-def is_matching_cfg(a, b, alphabet, max_depth: int):
+def is_matching_cfg(a, a_start, b, b_start, alphabet, max_depth: int):
     memo_a = {}
     memo_b = {}  # TODO: Note the way we are looking at it we only need to store the words of length - 1
+
+    a = convert_cnf_to_list(a, a_start)
+    b = convert_cnf_to_list(b, b_start)
     for depth in range(max_depth + 1):
         for word in words_of_length(depth, alphabet):
             if parse(word, a, memo_a) != parse(word, b, memo_b):

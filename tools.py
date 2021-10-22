@@ -32,7 +32,7 @@ def words_of_length(length, alphabet) -> Iterator[List[str]]:
         if length < 1:
             break
         elif length == 1:
-            yield letter
+            yield [letter]
         else:
             for sub_word in words_of_length(length - 1, alphabet):
                 yield [letter, *sub_word]  # TODO: surely this is not the best way

@@ -4,12 +4,16 @@ cfg_rhs = List[Union[Tuple, str, List]]
 
 cfg_type = Dict[str, cfg_rhs]
 
-type_is_matching_cfg = Callable[[cfg_type, cfg_type, List[str], int], bool]
+type_is_matching_cfg = Callable[[cfg_type, str, cfg_type, str, List[str], int], bool]
 
 
-def convert_cnf_to_list(cnf: cfg_type):
+def convert_cnf_to_list(cnf: cfg_type, start: str):
     new_rules = [[] for _ in cnf]
-    mapping = {key: index for index, key in enumerate(cnf.keys())}
+
+    keys = list(cnf.keys())
+    keys[keys.index(start)], keys[0] = keys[0], start
+
+    mapping = {key: index for index, key in enumerate(keys)}
 
     for key, rhs in cnf.items():
         new_rules[mapping[key]] = list(map(lambda rule: convert_rhs_rule(rule, mapping), rhs))
@@ -30,6 +34,8 @@ def convert_value(value, mapping):
 
 
 alphabet10 = ['1', '0']
+
+cnf_10palindrome_start = 'S'
 
 cnf_10palindrome: cfg_type = {
     # start
