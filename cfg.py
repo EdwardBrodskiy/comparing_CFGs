@@ -1,21 +1,30 @@
 from typing import Dict, List, Union, Tuple, Callable
+from dataclasses import dataclass
 
 cfg_rhs = List[Union[Tuple, str, List]]
 
 cfg_type = Dict[str, cfg_rhs]
 
-type_is_matching_cfg = Callable[[cfg_type, str, cfg_type, str, List[str], int], bool]
+
+@dataclass
+class CFG:
+    rules: cfg_type
+    alphabet: List[str]
+    start: str = 'S'
 
 
-def convert_cnf_to_list(cnf: cfg_type, start: str):
-    new_rules = [[] for _ in cnf]
+type_is_matching_cfg = Callable[[CFG, CFG, int], bool]
 
-    keys = list(cnf.keys())
-    keys[keys.index(start)], keys[0] = keys[0], start
+
+def convert_cnf_to_list(cnf: CFG):
+    new_rules = [[] for _ in cnf.rules]
+
+    keys = list(cnf.rules.keys())
+    keys[keys.index(cnf.start)], keys[0] = keys[0], cnf.start
 
     mapping = {key: index for index, key in enumerate(keys)}
 
-    for key, rhs in cnf.items():
+    for key, rhs in cnf.rules.items():
         new_rules[mapping[key]] = list(map(lambda rule: convert_rhs_rule(rule, mapping), rhs))
 
     return new_rules
@@ -33,21 +42,20 @@ def convert_value(value, mapping):
     return value
 
 
-alphabet10 = ['1', '0']
-
-cnf_10palindrome_start = 'S'
-
-cnf_10palindrome: cfg_type = {
-    # start
-    'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
-    # base
-    'D': [('X', 'A'), ('Y', 'B'), '1', '0'],
-    # alterone
-    'A': [('D', 'X')],
-    # alterzero
-    'B': [('D', 'Y')],
-    # one
-    'X': ['1'],
-    # zero
-    'Y': ['0']
-}
+cnf_10palindrome = CFG(
+    rules={
+        # start
+        'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
+        # base
+        'D': [('X', 'A'), ('Y', 'B'), '1', '0'],
+        # alterone
+        'A': [('D', 'X')],
+        # alterzero
+        'B': [('D', 'Y')],
+        # one
+        'X': ['1'],
+        # zero
+        'Y': ['0']
+    },
+    alphabet=['1', '0']
+)

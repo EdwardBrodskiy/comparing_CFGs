@@ -24,5 +24,6 @@ class TestTools(unittest.TestCase):
     def test_cnf_correctness_for_all_cfgs(self):
         os.chdir(os.path.join('..', 'benchmarks'))
         gram_files = list(filter(lambda f: '.gram' == f[-5:], os.listdir()))
-        for file_name in gram_files:
-            self.assertTrue(tools.is_cnf(*tools.convert_to_cnf(*tools.read_gram_file(file_name))), msg=f'failed for file {file_name}')
+        for file_name in gram_files:  # TODO: fix
+            start, cnf, alphabet = tools.convert_to_cnf(*tools.read_gram_file(file_name))
+            self.assertTrue(tools.is_cnf(start, cnf), msg=f'failed for file {file_name}')

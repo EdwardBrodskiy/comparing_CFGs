@@ -4,7 +4,7 @@ import numpy as np
 import heapq
 from dataclasses import dataclass, field
 
-from cfg import cnf_10palindrome, alphabet10, convert_cnf_to_list, cfg_rhs
+from cfg import convert_cnf_to_list, cfg_rhs, cnf_10palindrome, CFG
 from implementations.my_cyk_numpy import parse
 
 
@@ -20,11 +20,15 @@ class Node:
     # parent: Optional[Tuple] = field(compare=False)
 
 
-def is_matching_cfg(a, b, alphabet, max_depth: int):
+def main():
+    pass
+
+
+def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
     memo_b = {}
-    a = convert_cnf_to_list(a)
-    b = convert_cnf_to_list(b)
-    table = generate_similarity_table(a, b)
+    a_rule_set = convert_cnf_to_list(a)
+    b_rule_set = convert_cnf_to_list(b)
+    table = generate_similarity_table(a_rule_set, b_rule_set)
 
     a_max_list = table.max(axis=0)
 
@@ -45,7 +49,7 @@ def is_matching_cfg(a, b, alphabet, max_depth: int):
         if sm_match_index == -1:
             heapq.heappop(heap)
         else:
-            rule = a[current_node.string[sm_match_index]]
+            rule = a_rule_set[current_node.string[sm_match_index]]
             current_node.difference_values[sm_match_index] = None  # Mark as path traversed
             for rhs in rule:
                 if type(rhs) is tuple:
@@ -53,7 +57,7 @@ def is_matching_cfg(a, b, alphabet, max_depth: int):
                 else:
                     new_string = current_node.string[:sm_match_index] + (rhs,) + current_node.string[sm_match_index + 1:]
                     if all(map(lambda x: type(x) is str, new_string)):  # if all terminated
-                        if not parse(new_string, b):
+                        if not parse(new_string, b_rule_set):
                             difference_found = True
                             break
                 if len(new_string) <= max_depth:  # TODO: that may be one too deep
@@ -151,9 +155,5 @@ def get_rhs_rule_match_score(table, rule_a, rule_b, cheat) -> float:
     return 0
 
 
-def is_matching_cfg_wrapper_10palindrome(max_depth):
-    return is_matching_cfg(cnf_10palindrome, cnf_10palindrome, alphabet10, max_depth)
-
-
 if __name__ == '__main__':
-    print(is_matching_cfg_wrapper_10palindrome(3))
+    main()

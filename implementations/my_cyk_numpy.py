@@ -1,14 +1,12 @@
 from tools import words_of_length
-from cfg import convert_cnf_to_list, cnf_10palindrome, alphabet10
+from cfg import convert_cnf_to_list, cnf_10palindrome, CFG
 import numpy as np
 
 
-def parse(chars, rules, start='S'):  # TODO: add start to the rule conversion
+def parse(chars, rules):
     """
     CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
     """
-    if type(rules) is dict:
-        rules = convert_cnf_to_list(rules)
 
     n = len(chars)
     no_rules = len(rules)
@@ -40,16 +38,14 @@ def parse(chars, rules, start='S'):  # TODO: add start to the rule conversion
     return table[-1, 0, 0] == 1
 
 
-def is_matching_cfg(a, b, alphabet, max_depth: int):
+def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+    a_rule_set = convert_cnf_to_list(a)
+    b_rule_set = convert_cnf_to_list(b)
     for depth in range(max_depth + 1):
-        for word in words_of_length(depth, alphabet):
-            if parse(word, a) != parse(word, b):
+        for word in words_of_length(depth, a.alphabet):
+            if parse(word, a_rule_set) != parse(word, b_rule_set):
                 return False
     return True
-
-
-def is_matching_cfg_wrapper_10palindrome(max_depth):
-    return is_matching_cfg(cnf_10palindrome, cnf_10palindrome, alphabet10, max_depth)
 
 
 if __name__ == '__main__':

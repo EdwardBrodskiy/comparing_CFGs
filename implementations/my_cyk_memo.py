@@ -1,5 +1,5 @@
 from tools import words_of_length
-from cfg import convert_cnf_to_list, cnf_10palindrome, alphabet10, cnf_10palindrome_start
+from cfg import convert_cnf_to_list, cnf_10palindrome, CFG
 from typing import Dict, Tuple
 import numpy as np
 
@@ -9,8 +9,9 @@ def main():
     import pstats
 
     with cProfile.Profile() as pr:
-        is_matching_cfg(cnf_10palindrome, cnf_10palindrome_start, cnf_10palindrome,
-                        cnf_10palindrome_start, alphabet10, 10)
+        # is_matching_cfg(cnf_10palindrome, cnf_10palindrome_start, cnf_10palindrome,
+        #                 cnf_10palindrome_start, alphabet10, 10)
+        pass
 
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
@@ -55,21 +56,19 @@ def parse(chars, rules, memo: Dict[Tuple, np.array]):
     return table[-1, 0, 0] == 1
 
 
-def is_matching_cfg(a, a_start, b, b_start, alphabet, max_depth: int):
+def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
     memo_a = {}
     memo_b = {}  # TODO: Note the way we are looking at it we only need to store the words of length - 1
 
-    a = convert_cnf_to_list(a, a_start)
-    b = convert_cnf_to_list(b, b_start)
+    a_rule_set = convert_cnf_to_list(a)
+    b_rule_set = convert_cnf_to_list(b)
     for depth in range(max_depth + 1):
-        for word in words_of_length(depth, alphabet):
-            if parse(word, a, memo_a) != parse(word, b, memo_b):
+        for word in words_of_length(depth, a.alphabet):
+            if parse(word, a_rule_set, memo_a) != parse(word, b_rule_set, memo_b):
                 return False
     return True
 
 
-def is_matching_cfg_wrapper_10palindrome(max_depth):
-    return is_matching_cfg(cnf_10palindrome, cnf_10palindrome, alphabet10, max_depth)
 
 
 if __name__ == '__main__':

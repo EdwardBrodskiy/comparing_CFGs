@@ -2,6 +2,7 @@ from tools import words_of_length
 from implementations.lark_testing import is_accepted, cnf_10palindrome as lark_cnf
 from typing import Iterator, Tuple, List
 from copy import deepcopy
+from cfg import CFG
 
 
 def word_and_result_from_nltk_10palindrome(max_depth) -> Iterator[Tuple[List[str], bool]]:
@@ -28,9 +29,10 @@ by N0 in the production P.
 '''
 
 
-def inject_type_1_errors(cfg):
-    for key, rhs in cfg.items():
+def inject_type_1_errors(cfg: CFG):
+    bad_cfg = deepcopy(cfg)
+    for key, rhs in cfg.rules.items():
         for i in range(len(rhs)):
-            bad_cfg = deepcopy(cfg)
-            bad_cfg[key].pop(i)
+            temp = bad_cfg.rules[key].pop(i)
             yield bad_cfg
+            bad_cfg.rules[key].insert(i, temp)
