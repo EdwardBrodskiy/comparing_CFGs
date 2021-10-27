@@ -1,5 +1,5 @@
-from typing import Iterator, List
-from cfg import cfg_type
+from typing import Iterator, List, Set
+from cfg import cfg_type, CFG
 import copy
 
 '''
@@ -100,7 +100,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                 if type(sub_rule) is TerminalString:
                     cnf[key][rule_index][sub_rule_index] = terminal_to_key_mapping[str(sub_rule)]
     cnf = cnf | new_terminal_rules
-    alphabet = set(map(lambda terminal_key: new_terminal_rules[terminal_key][0], new_terminal_rules))
+    alphabet: Set[str] = set(map(lambda terminal_key: new_terminal_rules[terminal_key][0], new_terminal_rules))
 
     # BIN
     new_extension_rules = {}
@@ -149,20 +149,20 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                 cnf[key].remove([violating_key])
                 cnf[key] += cnf[violating_key]
 
-    return cnf_start, cnf, alphabet
+    return CFG(start=cnf_start, rules=cnf, alphabet=alphabet)
 
 
-def is_cnf(start: str, cfg: cfg_type) -> bool:
+def is_cnf(cfg: CFG) -> bool:
     # START
-    for key, rhs in cfg.items():
+    for key, rhs in cfg.rules.items():
         for rule in rhs:
-            if any(map(lambda sub_rule: sub_rule == start, rule)):
+            if any(map(lambda sub_rule: sub_rule == cfg.start, rule)):
                 print(f'START : {key} -> {rhs}')
                 return False
 
     # TERM
     terminals = {}
-    for key, rhs in cfg.items():
+    for key, rhs in cfg.rules.items():
         for rule in rhs:
             if type(rule) is str:
                 terminals[key] = rule[0][0]
@@ -171,7 +171,7 @@ def is_cnf(start: str, cfg: cfg_type) -> bool:
                 return False
 
     # BIN
-    for key, rhs in cfg.items():
+    for key, rhs in cfg.rules.items():
         if any(map(lambda r: type(r) is not str and len(r) > 2, rhs)):
             print(f'BIN : {key} -> {rhs}')
             return False
@@ -183,7 +183,7 @@ def is_cnf(start: str, cfg: cfg_type) -> bool:
     '''
 
     # UNIT
-    for key, rhs in cfg.items():
+    for key, rhs in cfg.rules.items():
         for rule in rhs:
             if type(rule) is not str and len(rule) == 1:
                 print(f'UNIT : {key} -> {rule}')

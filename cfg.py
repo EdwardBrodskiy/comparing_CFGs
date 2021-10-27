@@ -1,4 +1,4 @@
-from typing import Dict, List, Union, Tuple, Callable
+from typing import Dict, List, Union, Tuple, Callable, Set
 from dataclasses import dataclass
 
 cfg_rhs = List[Union[Tuple, str, List]]
@@ -9,7 +9,7 @@ cfg_type = Dict[str, cfg_rhs]
 @dataclass
 class CFG:
     rules: cfg_type
-    alphabet: List[str]
+    alphabet: Set[str]
     start: str = 'S'
 
 
@@ -57,5 +57,5 @@ cnf_10palindrome = CFG(
         # zero
         'Y': ['0']
     },
-    alphabet=['1', '0']
+    alphabet={'1', '0'}
 )
