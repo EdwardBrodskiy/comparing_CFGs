@@ -7,16 +7,24 @@ from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
 
 # Global test settings
-MAX_DEPTH = 2
-NUMBER_OF_CFGS_TO_TEST = 3
-USE_PAST_RESULTS = False
+MAX_DEPTH: int = 1
+NUMBER_OF_CFGS_TO_TEST: int = 1
+RE_RUNS: int = 1
+USE_PAST_RESULTS: bool = False
 
 
 def main():
-    timing_test_time_all = TimeAll(
-        printer=PrintOut(key={'|': 'completed a test cycle', '-': 'completed all tests of a given test case',
-                              '.': 'completed a depth for all algorithms'}))
-    timing_test_time_all.run()
+    import cProfile
+    import pstats
+    with cProfile.Profile() as pr:
+        timing_test_time_all = TimeAll(
+            printer=PrintOut(key={'|': 'completed a test cycle', '-': 'completed all tests of a given test case',
+                                  '.': 'completed a depth for all algorithms'}))
+        timing_test_time_all.run()
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.print_stats()
+    stats.dump_stats(filename='timing_test_all_PROFILE.prof')
 
 
 class TimeAll(Timer):
@@ -31,11 +39,11 @@ class TimeAll(Timer):
         algorithms: Dict[str, type_is_matching_cfg] = {
             'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
             'my_cyk_memo': my_cyk_memo.is_matching_cfg,
-            # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg
+            'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg
         }
 
         super().__init__(TimerSettings(F'time_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS), gram_files,
+                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS), gram_files,
                          algorithms, *args, **kwargs)
 
     @staticmethod

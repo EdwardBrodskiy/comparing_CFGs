@@ -21,10 +21,10 @@ class TerminalString(str):
 
 def main():
     start, cfg = read_gram_file('benchmarks\\C11Grammar1-1-1.gram')
-    cnf_start, cnf, alphabet = convert_to_cnf(start, cfg)
-    print(is_cnf(cnf_start, cnf))
+    cnf = convert_to_cnf(start, cfg)
+    print(is_cnf(cnf))
     print(len(cfg))
-    print(alphabet)
+    print(cnf.alphabet)
 
 
 def words_of_length(length, alphabet) -> Iterator[List[str]]:

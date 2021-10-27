@@ -11,7 +11,6 @@ def parse(chars, rules):
     n = len(chars)
     no_rules = len(rules)
 
-    table = [[set() for _ in range(n - depth)] for depth in range(n)]
     table = np.zeros((n, n, no_rules), dtype=np.uint8)
 
     # Identify terminal rules
