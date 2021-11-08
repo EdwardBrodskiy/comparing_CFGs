@@ -31,8 +31,18 @@ by N0 in the production P.
 
 def inject_type_1_errors(cfg: CFG):
     bad_cfg = deepcopy(cfg)
+    alphabet = {key: 0 for key in bad_cfg.alphabet}
+    for key, rhs in cfg.rules.items():
+        for rule in rhs:
+            if type(rule) is str:
+                alphabet[rule] += 1
+
     for key, rhs in cfg.rules.items():
         for i in range(len(rhs)):
             temp = bad_cfg.rules[key].pop(i)
+            if type(temp) is str and alphabet[temp] == 1:
+                bad_cfg.alphabet.remove(temp)
             yield bad_cfg
             bad_cfg.rules[key].insert(i, temp)
+            if type(temp) is str:
+                bad_cfg.alphabet.add(temp)
