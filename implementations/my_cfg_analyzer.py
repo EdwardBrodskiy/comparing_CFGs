@@ -27,17 +27,21 @@ def main():
     start, cfg = read_gram_file(r'..\benchmarks\C11Grammar1-1-1.gram')
     cnf = convert_to_cnf(start, cfg)
     with cProfile.Profile() as pr:
-        is_matching_cfg(cnf, cnf, 1, generate_similarity_table_by_value_approach)
+        is_matching_cfg_test(cnf, cnf, 1, generate_similarity_table_by_value_approach)
     stats = pstats.Stats(pr)
     stats.dump_stats(filename='analyzer.prof')
 
     with cProfile.Profile() as pr:
-        is_matching_cfg(cnf, cnf, 1, modified)
+        is_matching_cfg_test(cnf, cnf, 1, modified)
     stats = pstats.Stats(pr)
     stats.dump_stats(filename='analyzer.prof')
 
 
-def is_matching_cfg(a: CFG, b: CFG, max_depth: int, table_generator):
+def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+    return is_matching_cfg_test(a, b, max_depth, modified)
+
+
+def is_matching_cfg_test(a: CFG, b: CFG, max_depth: int, table_generator):
     memo_b = {}
     a_rule_set = convert_cnf_to_list(a)
     b_rule_set = convert_cnf_to_list(b)
