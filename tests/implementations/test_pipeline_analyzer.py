@@ -1,5 +1,5 @@
 import unittest
-import implementations.pipeline_analyzer as my_cyk
+import implementations.pipeline.pipeline_analyzer as my_cyk
 
 from tests.implementations.general_tester import GeneralTester, RequiredItems
 

@@ -1,10 +1,10 @@
 from timing_test.timer import Timer, TimerSettings
 from timing_test.print_out import PrintOut
 import os
-from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy, pipeline_analyzer
+from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy
+from implementations.pipeline import pipeline_analyzer
 from cfg import type_is_matching_cfg, cnf_10palindrome
 from typing import Dict, Callable, Union, Any
-from tools import read_gram_file, convert_to_cnf
 
 # Global test settings
 MAX_DEPTH: int = 7
