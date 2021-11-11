@@ -9,6 +9,7 @@ from implementations.pipeline.analyzers.rhs_lengths import match_rhs_lengths
 from implementations.pipeline.analyzers.subrule_match import match_subrules
 from implementations.pipeline.analyzers.subrule_match_optimized import match_subrules as match_subrules_opt
 
+from implementations.pipeline.comparators.analysis_aggregator import search_tree_from_tables
 from implementations.pipeline.comparators.alphabet_match import is_matching_alphabet
 
 
@@ -29,10 +30,12 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
                                      (
                                          is_matching_alphabet,
                                          match_rhs_lengths,
-                                         match_subrules,
+                                         search_tree_from_tables,
+                                         # match_subrules,
                                          match_subrules_opt,
-                                         sanity_check_method,
-                                         lambda *args: numpy_is_matching_cfg(*args[:-1])
+                                         # sanity_check_method,
+                                         search_tree_from_tables,
+                                         # lambda *args: numpy_is_matching_cfg(*args[:-1])
                                      ))
 
 
@@ -40,14 +43,15 @@ def is_matching_cfg_pipelined(a: CFG, b: CFG, max_depth: int, pipeline: Tuple[pi
     data = Pipeline(a, b, max_depth)
     for pipe in pipeline:
         decision = pipe(a, b, max_depth, data)
+        print(f'pipe {pipe.__name__} returned {decision}\n')
         if decision is not None:
             return decision
     return True
 
 
 def sanity_check_method(a: CFG, b: CFG, max_depth: int, pipeline: Pipeline) -> Optional[bool]:
-    table_diff = pipeline.data['sub-rules'] - pipeline.data['sub-rules-opt'][:-1, :-1]
-    print('average difference between sub rule analyzer and the optimized version', abs(table_diff).mean())
+    print(f"{abs(pipeline.data['rhs_lengths'] - pipeline.data['sub-rules-opt'][:-1, :-1]).mean()=}")
+
     return None
 
 

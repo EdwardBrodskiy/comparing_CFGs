@@ -2,12 +2,13 @@ from timing_test.timer import Timer, TimerSettings
 from timing_test.print_out import PrintOut
 import os
 from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy
+from implementations.pipeline import pipeline_analyzer
 from cfg import type_is_matching_cfg
 from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
 
 # Global test settings
-MAX_DEPTH: int = 1
+MAX_DEPTH: int = 9
 NUMBER_OF_CFGS_TO_TEST: int = 1
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = False
@@ -37,9 +38,10 @@ class TimeAll(Timer):
             gram_files = list(filter(lambda f: '.gram' == f[-5:], os.listdir()))
             NUMBER_OF_CFGS_TO_TEST = 'all'
         algorithms: Dict[str, type_is_matching_cfg] = {
-            'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
-            'my_cyk_memo': my_cyk_memo.is_matching_cfg,
-            'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg
+            # 'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
+            # 'my_cyk_memo': my_cyk_memo.is_matching_cfg,
+            # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg
+            'pipeline_analyzer': pipeline_analyzer.is_matching_cfg
         }
 
         super().__init__(TimerSettings(F'time_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
