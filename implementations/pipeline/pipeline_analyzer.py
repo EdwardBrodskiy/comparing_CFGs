@@ -29,8 +29,8 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
     return is_matching_cfg_pipelined(a, b, max_depth,
                                      (
                                          is_matching_alphabet,
-                                         match_rhs_lengths,
-                                         search_tree_from_tables,
+                                         # match_rhs_lengths,
+                                         # search_tree_from_tables,
                                          # match_subrules,
                                          match_subrules_opt,
                                          # sanity_check_method,
