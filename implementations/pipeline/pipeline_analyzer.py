@@ -26,7 +26,7 @@ def main():
 def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
     pipeline = Pipeline(a, b, max_depth,
                         (
-                            alphabet_match.method,
+                            alphabet_match.method,  # TODO: are all the terminals reachable
                             rhs_lengths.method,
                             analysis_aggregator.method,
                             subrule_match_optimized.method,

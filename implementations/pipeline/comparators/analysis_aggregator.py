@@ -85,6 +85,9 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
                         checked_strings.add(new_string)
     if difference_found:
         return False, 1
+    # TODO: needs to be done with respect of B to A for this to properly work as we may miss strings accepted by B but not by A
+    elif len(heap) == 0:
+        return True, 1
     pipeline.data[method.key_word] = checked_strings, heap
     return True, certainty
 
