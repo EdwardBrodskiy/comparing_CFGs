@@ -1,6 +1,8 @@
 .idea
 venv/
 
-./*.csv
+*.log
+*.prof
+*.csv
 
 __pycache__/
