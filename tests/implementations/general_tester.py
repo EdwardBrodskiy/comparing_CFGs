@@ -2,6 +2,7 @@ import unittest
 from dataclasses import dataclass
 from cfg import type_is_matching_cfg, CFG
 from tests.implementations.tools_for_testing import inject_type_1_errors
+import logging
 
 
 @dataclass
@@ -23,3 +24,7 @@ class GeneralTester(unittest.TestCase):
             raise NotImplementedError
         for bad_cnf in inject_type_1_errors(self.items.basic_cnf):
             self.assertFalse(self.items.is_matching_cfg(self.items.basic_cnf, bad_cnf, 7))
+
+
+logging.basicConfig(filename='main.log', filemode='w',
+                    format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)

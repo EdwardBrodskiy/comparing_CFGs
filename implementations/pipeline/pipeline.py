@@ -1,5 +1,5 @@
 from typing import Dict, Tuple, List
-
+import logging
 from cfg import convert_cnf_to_list, CFG
 from implementations.pipeline.pipeline_tools import PipelineMethodData, PipelineDataManager
 
@@ -23,11 +23,11 @@ class Pipeline:
     def evaluate(self) -> bool:
         threshold = 1
         last_decision = True
-        print()
+        logging.info('starting pipeline:')
         for i, pipe in enumerate(self.methods):
             self.current_method_index = i
             decision, certainty = pipe.method(self._a, self._b, self._max_depth, self.data_manager)
-            print(' ' * i + f'pipe {pipe.method.__name__} returned {decision} with a certainty of {certainty}')
+            logging.info(' ' * i + f'pipe {pipe.method.__name__} returned {decision} with a certainty of {certainty}')
             if certainty >= threshold:
                 return decision
             last_decision = decision

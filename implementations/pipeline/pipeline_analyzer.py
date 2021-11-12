@@ -1,5 +1,5 @@
 from typing import Tuple, Optional
-
+import logging
 from cfg import CFG, cnf_10palindrome
 
 from implementations.my_cyk_numpy import is_matching_cfg as numpy_is_matching_cfg
@@ -44,4 +44,6 @@ def sanity_check_method(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataMa
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='main.log', filemode='w',
+                        format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     main()
