@@ -1,6 +1,6 @@
 import numpy as np
 from dataclasses import dataclass
-from typing import Callable, Optional, Dict
+from typing import Callable, Optional, Dict, Tuple
 
 from cfg import convert_cnf_to_list, CFG
 
@@ -29,7 +29,7 @@ class PipelineDataManager:
 INPUT: 2 CFGs that are to be compared a maximum depth and work of prior pipes
 RETURN: Give back True or False if analysis was decisive otherwise return None 
 '''
-pipeline_function = Callable[[CFG, CFG, int, PipelineDataManager], Optional[bool]]
+pipeline_function = Callable[[CFG, CFG, int, PipelineDataManager], Tuple[bool, float]]
 
 complexity_function = Callable[[CFG, CFG, int], int]
 

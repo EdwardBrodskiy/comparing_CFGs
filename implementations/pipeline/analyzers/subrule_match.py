@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Tuple
 import numpy as np
 
 from cfg import cfg_rhs, CFG
@@ -10,10 +10,10 @@ class UnknownValueError(Exception):
     pass
 
 
-def match_subrules(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Optional[bool]:
+def match_subrules(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Tuple[bool, float]:
     list_rules_a, list_rules_b = pipeline.list_rules
     pipeline.data[method.key_word] = generate_similarity_table_by_value_approach(list_rules_a, list_rules_b)
-    return None
+    return True, 0
 
 
 def complexity_of_match_subrules(a: CFG, b: CFG, max_depth: int) -> int:

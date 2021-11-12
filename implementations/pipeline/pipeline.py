@@ -21,10 +21,13 @@ class Pipeline:
         return None
 
     def evaluate(self) -> bool:
+        threshold = 1
+        last_decision = True
         for i, pipe in enumerate(self.methods):
             self.current_method_index = i
-            decision = pipe.method(self._a, self._b, self._max_depth, self.data_manager)
+            decision, certainty = pipe.method(self._a, self._b, self._max_depth, self.data_manager)
             print(f'pipe {pipe.method.__name__} returned {decision}\n')
-            if decision is not None:
+            if certainty >= threshold:
                 return decision
-        return True
+            last_decision = decision
+        return last_decision

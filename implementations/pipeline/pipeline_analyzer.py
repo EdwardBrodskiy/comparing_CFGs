@@ -3,7 +3,8 @@ from typing import Tuple, Optional
 from cfg import CFG, cnf_10palindrome
 
 from implementations.my_cyk_numpy import is_matching_cfg as numpy_is_matching_cfg
-from implementations.pipeline.pipeline import Pipeline, PipelineMethodData
+from implementations.pipeline.pipeline import Pipeline
+from implementations.pipeline.pipeline_tools import PipelineDataManager
 
 from implementations.pipeline.analyzers import rhs_lengths, subrule_match, subrule_match_optimized
 
@@ -33,8 +34,8 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
     return pipeline.evaluate()
 
 
-def sanity_check_method(a: CFG, b: CFG, max_depth: int, pipeline: Pipeline) -> Optional[bool]:
-    print(f"{abs(pipeline.data['rhs_lengths'] - pipeline.data['sub-rules-opt'][:-1, :-1]).mean()=}")
+def sanity_check_method(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Optional[bool]:
+    print(f"{abs(pipeline.data[rhs_lengths.method.key_word] - pipeline.data[subrule_match_optimized.method.key_word][:-1, :-1]).mean()=}")
 
     return None
 

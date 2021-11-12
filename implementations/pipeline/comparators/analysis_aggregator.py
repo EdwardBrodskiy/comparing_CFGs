@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple
+from typing import List, Tuple
 import heapq
 from dataclasses import dataclass, field
 
@@ -17,19 +17,22 @@ class Node:
     # parent: Optional[Tuple] = field(compare=False)
 
 
-def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Optional[bool]:
+def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Tuple[bool, float]:
     a_rule_set, b_rule_set = pipeline.list_rules
 
     # which algorithms table output we prefer to use in descending order
     priority_list = [subrule_match.method.key_word, subrule_match_optimized.method.key_word, rhs_lengths.method.key_word]
     # decide what table to use
     table = None
-    for option in priority_list:
+    chosen_index = len(priority_list) - 1
+    for i, option in enumerate(priority_list):
         if option in pipeline.data:
             table = pipeline.data[option]
+            chosen_index = i
             break
     if table is None:
         raise ModuleNotFoundError
+    certainty = (len(priority_list) - chosen_index) / len(priority_list)
 
     # get the best similarity value for each rule in A out of all the rules in b
     a_max_list = table.max(axis=0)
@@ -74,7 +77,9 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
                         heapq.heappush(heap, Node(current_node.similarity + smallest_match, new_string,
                                                   get_similarity_values(a_max_list, new_string)))
                         checked_strings.add(new_string)
-    return not difference_found
+    if difference_found:
+        return False, 1
+    return True, certainty
 
 
 def complexity_of_search_tree_from_tables(a: CFG, b: CFG, max_depth: int) -> int:
