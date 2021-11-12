@@ -27,6 +27,8 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
     pipeline = Pipeline(a, b, max_depth,
                         (
                             alphabet_match.method,
+                            rhs_lengths.method,
+                            analysis_aggregator.method,
                             subrule_match_optimized.method,
                             analysis_aggregator.method,
                             # lambda *args: numpy_is_matching_cfg(*args[:-1])
@@ -35,7 +37,8 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
 
 
 def sanity_check_method(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Optional[bool]:
-    print(f"{abs(pipeline.data[rhs_lengths.method.key_word] - pipeline.data[subrule_match_optimized.method.key_word][:-1, :-1]).mean()=}")
+    print(
+        f"{abs(pipeline.tables[rhs_lengths.method.key_word] - pipeline.tables[subrule_match_optimized.method.key_word][:-1, :-1]).mean()=}")
 
     return None
 

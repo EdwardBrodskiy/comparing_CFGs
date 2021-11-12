@@ -1,21 +1,28 @@
 import numpy as np
+from math import inf
 from dataclasses import dataclass
-from typing import Callable, Optional, Dict, Tuple
+from typing import Callable, Optional, Dict, Tuple, Any, Union
 
 from cfg import convert_cnf_to_list, CFG
 
 
 class PipelineDataManager:
-    def __init__(self, a: CFG, b: CFG, get_next_method):
+    def __init__(self, a: CFG, b: CFG, max_depth: int, get_next_method):
         self._a = a
         self._b = b
+        self._max_depth = max_depth
+
         self._list_rules = None
         self._get_next_method = get_next_method
 
-        self.data: Dict[str, np.ndarray] = {}
+        self.tables: Dict[str, np.ndarray] = {}
+        self.data: Dict[str, Any] = {}
 
-    def get_next_method(self):
-        return self._get_next_method()
+    def get_next_method_complexity(self) -> Union[float, int]:
+        next_method = self._get_next_method()
+        if next_method is not None:
+            return next_method.complexity(self._a, self._b, self._max_depth)
+        return inf
 
     @property
     def list_rules(self):

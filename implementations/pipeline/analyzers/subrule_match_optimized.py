@@ -12,7 +12,7 @@ class UnknownValueError(Exception):
 
 def match_subrules(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Tuple[bool, float]:
     list_rules_a, list_rules_b = pipeline.list_rules
-    pipeline.data[method.key_word] = generate_similarity_table_by_value_approach(list_rules_a, list_rules_b)
+    pipeline.tables[method.key_word] = generate_similarity_table_by_value_approach(list_rules_a, list_rules_b)
     return True, 0
 
 

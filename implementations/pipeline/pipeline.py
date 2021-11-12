@@ -10,23 +10,24 @@ class Pipeline:
         self._b = b
         self._max_depth = max_depth
 
-        self.data_manager = PipelineDataManager(self._a, self._b, self._get_next_method_in_pipeline)
+        self.data_manager = PipelineDataManager(self._a, self._b, self._max_depth, self._get_next_method_in_pipeline)
 
         self.methods = pipeline_methods
         self.current_method_index = -1
 
     def _get_next_method_in_pipeline(self):
         if self.current_method_index + 1 < len(self.methods):
-            return self.methods[self.current_method_index]
+            return self.methods[self.current_method_index + 1]
         return None
 
     def evaluate(self) -> bool:
         threshold = 1
         last_decision = True
+        print()
         for i, pipe in enumerate(self.methods):
             self.current_method_index = i
             decision, certainty = pipe.method(self._a, self._b, self._max_depth, self.data_manager)
-            print(f'pipe {pipe.method.__name__} returned {decision}\n')
+            print(' ' * i + f'pipe {pipe.method.__name__} returned {decision} with a certainty of {certainty}')
             if certainty >= threshold:
                 return decision
             last_decision = decision

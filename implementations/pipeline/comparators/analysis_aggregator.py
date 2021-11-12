@@ -1,5 +1,6 @@
 from typing import List, Tuple
 import heapq
+from math import factorial
 from dataclasses import dataclass, field
 
 from cfg import CFG
@@ -26,8 +27,8 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
     table = None
     chosen_index = len(priority_list) - 1
     for i, option in enumerate(priority_list):
-        if option in pipeline.data:
-            table = pipeline.data[option]
+        if option in pipeline.tables:
+            table = pipeline.tables[option]
             chosen_index = i
             break
     if table is None:
@@ -42,8 +43,13 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
     # the heap is used to determine which should be the next Node to look at based on the lowest similarity
     heap: List[Node] = [Node(table[0, 0], (0,), get_similarity_values(a_max_list, (0,)))]  # start with S
 
+    if method.key_word in pipeline.data:  # results from search tree run earlier in the pipeline
+        checked_strings, heap = pipeline.data[method.key_word]
+
     difference_found = False
-    while not difference_found and len(heap):
+    computation_counter = 0
+    next_method_complexity = pipeline.get_next_method_complexity()
+    while not difference_found and len(heap) and computation_counter * 2 < next_method_complexity:
         current_node = heap[0]
 
         # TODO: there must be a better way to get the min
@@ -67,7 +73,7 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
                 else:
                     new_string = current_node.string[:sm_match_index] + (sub_rule,) + current_node.string[sm_match_index + 1:]
                     if all(map(lambda x: type(x) is str, new_string)):  # if all terminals i.e. final string
-
+                        computation_counter += len(new_string) ** 2
                         if not parse(new_string, b_rule_set):  # check if rule set B accepts the found string
                             difference_found = True
                             break
@@ -79,6 +85,7 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
                         checked_strings.add(new_string)
     if difference_found:
         return False, 1
+    pipeline.data[method.key_word] = checked_strings, heap
     return True, certainty
 
 

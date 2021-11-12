@@ -15,7 +15,7 @@ def match_rhs_lengths(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataMana
             match = min(len(rhs_a), len(rhs_b)) / max(len(rhs_a), len(rhs_b))
             table[rule_a_index, rule_b_index] = match
 
-    pipeline.data[method.key_word] = table
+    pipeline.tables[method.key_word] = table
     return True, 0
 
 
