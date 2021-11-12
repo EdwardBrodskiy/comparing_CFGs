@@ -3,17 +3,28 @@ import numpy as np
 
 from cfg import cfg_rhs, CFG
 
-from implementations.pipeline.pipeline import Pipeline
+from implementations.pipeline.pipeline_tools import PipelineDataManager, PipelineMethodData
 
 
 class UnknownValueError(Exception):
     pass
 
 
-def match_subrules(a: CFG, b: CFG, max_depth: int, pipeline: Pipeline) -> Optional[bool]:
+def match_subrules(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Optional[bool]:
     list_rules_a, list_rules_b = pipeline.list_rules
-    pipeline.data['sub-rules'] = generate_similarity_table_by_value_approach(list_rules_a, list_rules_b)
+    pipeline.data[method.key_word] = generate_similarity_table_by_value_approach(list_rules_a, list_rules_b)
     return None
+
+
+def complexity_of_match_subrules(a: CFG, b: CFG, max_depth: int) -> int:
+    return len(a.rules) * len(b.rules) * 3 * 12  # arbitrary for now
+
+
+method = PipelineMethodData(
+    match_subrules,
+    complexity_of_match_subrules,
+    'sub-rules'
+)
 
 
 def generate_similarity_table_by_value_approach(a, b):

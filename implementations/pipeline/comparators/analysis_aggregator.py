@@ -3,8 +3,10 @@ import heapq
 from dataclasses import dataclass, field
 
 from cfg import CFG
-from implementations.pipeline.pipeline import Pipeline
+from implementations.pipeline.pipeline_tools import PipelineDataManager, PipelineMethodData
 from implementations.my_cyk_numpy import parse
+
+from implementations.pipeline.analyzers import rhs_lengths, subrule_match, subrule_match_optimized
 
 
 @dataclass(order=True)
@@ -15,11 +17,12 @@ class Node:
     # parent: Optional[Tuple] = field(compare=False)
 
 
-def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: Pipeline) -> Optional[bool]:
+def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Optional[bool]:
     a_rule_set, b_rule_set = pipeline.list_rules
 
+    # which algorithms table output we prefer to use in descending order
+    priority_list = [subrule_match.method.key_word, subrule_match_optimized.method.key_word, rhs_lengths.method.key_word]
     # decide what table to use
-    priority_list = ['sub-rules', 'sub-rules-opt', 'rhs_lengths']
     table = None
     for option in priority_list:
         if option in pipeline.data:
@@ -72,6 +75,17 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: Pipeline) 
                                                   get_similarity_values(a_max_list, new_string)))
                         checked_strings.add(new_string)
     return not difference_found
+
+
+def complexity_of_search_tree_from_tables(a: CFG, b: CFG, max_depth: int) -> int:
+    return 1
+
+
+method = PipelineMethodData(
+    search_tree_from_tables,
+    complexity_of_search_tree_from_tables,
+    'search_tree_from_tables'
+)
 
 
 def get_similarity_values(best_matches, string):

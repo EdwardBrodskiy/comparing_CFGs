@@ -1,29 +1,30 @@
-import numpy as np
+from typing import Dict, Tuple, List
 
-from typing import Callable, Dict, Optional
 from cfg import convert_cnf_to_list, CFG
+from implementations.pipeline.pipeline_tools import PipelineMethodData, PipelineDataManager
 
 
 class Pipeline:
-    def __init__(self, a: CFG, b: CFG, max_depth: int):
+    def __init__(self, a: CFG, b: CFG, max_depth: int, pipeline_methods: Tuple[PipelineMethodData, ...]):
         self._a = a
         self._b = b
-        self.max_depth = max_depth
+        self._max_depth = max_depth
 
-        self._list_rules = None
+        self.data_manager = PipelineDataManager(self._a, self._b, self._get_next_method_in_pipeline)
 
-        self.data: Dict[str, np.ndarray] = {}
+        self.methods = pipeline_methods
+        self.current_method_index = -1
 
-    @property
-    def list_rules(self):
-        if self._list_rules is not None:
-            return self._list_rules
-        self._list_rules = convert_cnf_to_list(self._a), convert_cnf_to_list(self._b)
-        return self._list_rules
+    def _get_next_method_in_pipeline(self):
+        if self.current_method_index + 1 < len(self.methods):
+            return self.methods[self.current_method_index]
+        return None
 
-
-'''
-INPUT: 2 CFGs that are to be compared a maximum depth and work of prior pipes
-RETURN: Give back True or False if analysis was decisive otherwise return None 
-'''
-pipeline_function = Callable[[CFG, CFG, int, Pipeline], Optional[bool]]
+    def evaluate(self) -> bool:
+        for i, pipe in enumerate(self.methods):
+            self.current_method_index = i
+            decision = pipe.method(self._a, self._b, self._max_depth, self.data_manager)
+            print(f'pipe {pipe.method.__name__} returned {decision}\n')
+            if decision is not None:
+                return decision
+        return True

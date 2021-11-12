@@ -3,14 +3,11 @@ from typing import Tuple, Optional
 from cfg import CFG, cnf_10palindrome
 
 from implementations.my_cyk_numpy import is_matching_cfg as numpy_is_matching_cfg
-from implementations.pipeline.pipeline import pipeline_function, Pipeline
+from implementations.pipeline.pipeline import Pipeline, PipelineMethodData
 
-from implementations.pipeline.analyzers.rhs_lengths import match_rhs_lengths
-from implementations.pipeline.analyzers.subrule_match import match_subrules
-from implementations.pipeline.analyzers.subrule_match_optimized import match_subrules as match_subrules_opt
+from implementations.pipeline.analyzers import rhs_lengths, subrule_match, subrule_match_optimized
 
-from implementations.pipeline.comparators.analysis_aggregator import search_tree_from_tables
-from implementations.pipeline.comparators.alphabet_match import is_matching_alphabet
+from implementations.pipeline.comparators import alphabet_match, analysis_aggregator
 
 
 def main():
@@ -26,27 +23,14 @@ def main():
 
 
 def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
-    return is_matching_cfg_pipelined(a, b, max_depth,
-                                     (
-                                         is_matching_alphabet,
-                                         # match_rhs_lengths,
-                                         # search_tree_from_tables,
-                                         # match_subrules,
-                                         match_subrules_opt,
-                                         # sanity_check_method,
-                                         search_tree_from_tables,
-                                         # lambda *args: numpy_is_matching_cfg(*args[:-1])
-                                     ))
-
-
-def is_matching_cfg_pipelined(a: CFG, b: CFG, max_depth: int, pipeline: Tuple[pipeline_function, ...]):
-    data = Pipeline(a, b, max_depth)
-    for pipe in pipeline:
-        decision = pipe(a, b, max_depth, data)
-        print(f'pipe {pipe.__name__} returned {decision}\n')
-        if decision is not None:
-            return decision
-    return True
+    pipeline = Pipeline(a, b, max_depth,
+                        (
+                            alphabet_match.method,
+                            subrule_match_optimized.method,
+                            analysis_aggregator.method,
+                            # lambda *args: numpy_is_matching_cfg(*args[:-1])
+                        ))
+    return pipeline.evaluate()
 
 
 def sanity_check_method(a: CFG, b: CFG, max_depth: int, pipeline: Pipeline) -> Optional[bool]:
