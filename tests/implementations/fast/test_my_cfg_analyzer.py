@@ -1,7 +1,7 @@
 import unittest
-import implementations.my_cyk as my_cyk
-from tests.implementations.general_tester import GeneralTester, RequiredItems
+import implementations.my_cfg_analyzer as my_cyk
 
+from tests.implementations.fast.general_tester import GeneralTester, RequiredItems
 
 
 if __name__ == '__main__':

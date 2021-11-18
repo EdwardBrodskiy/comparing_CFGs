@@ -1,7 +1,6 @@
 import unittest
-import implementations.my_cyk_memo as my_cyk
-
-from tests.implementations.general_tester import GeneralTester, RequiredItems
+import implementations.my_cyk as my_cyk
+from tests.implementations.fast.general_tester import GeneralTester, RequiredItems
 
 if __name__ == '__main__':
     GeneralTester.items = RequiredItems(
