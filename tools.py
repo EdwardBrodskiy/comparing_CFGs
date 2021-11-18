@@ -1,6 +1,7 @@
 from typing import Iterator, List, Set
-from cfg import cfg_type, CFG
+from cfg import cfg_type, CFG, list_cnf_type, cnf_10palindrome, convert_cnf_to_list
 import copy
+import numpy as np
 
 '''
 CFG structure note to self:
@@ -20,11 +21,8 @@ class TerminalString(str):
 
 
 def main():
-    start, cfg = read_gram_file('benchmarks\\C11Grammar1-1-1.gram')
-    cnf = convert_to_cnf(start, cfg)
-    print(is_cnf(cnf))
-    print(len(cfg))
-    print(cnf.alphabet)
+    rules = convert_cnf_to_list(cnf_10palindrome)
+    print(get_distance_to_terminal(rules))
 
 
 def words_of_length(length, alphabet) -> Iterator[List[str]]:
@@ -215,6 +213,50 @@ class NameGenerator:
                 return new_key
             modifier = str(modifier_counter)
             modifier_counter += 1
+
+
+def get_distance_to_terminal(rules: list_cnf_type):
+    distances = np.ones([len(rules), 1]) * -1
+
+    backwards_reference = {i: [] for i in range(len(rules))}
+    distance_sets = [set() for _ in range(len(rules))]
+    found_distance_for = set()
+
+    for key, rhs in enumerate(rules):
+        for sub_rule in rhs:
+            if type(sub_rule) is str:
+                if sub_rule not in backwards_reference:
+                    backwards_reference[sub_rule] = [key]
+                else:
+                    backwards_reference[sub_rule].append(key)
+            else:
+                # if you are pointing to yourself this is not a productive sub_rule in the aim of getting to a terminal
+                if key not in sub_rule:
+                    backwards_reference[sub_rule[0]].append((key, sub_rule[1]))
+                    backwards_reference[sub_rule[1]].append((key, sub_rule[0]))
+
+    print(*backwards_reference.items(), sep='\n')
+
+    distance_sets[0] = (set(filter(lambda x: type(x) is str, backwards_reference)))
+
+    for level in range(len(rules) - 1):
+        for key in distance_sets[level]:
+            for referencer in backwards_reference[key]:
+                if type(referencer) is int:
+                    distance_sets[level + 1].add(referencer)
+                    found_distance_for.add(referencer)
+                elif referencer[1] in found_distance_for and referencer[0] not in found_distance_for:
+                    distance_sets[level + 1].add(referencer[0])
+                    found_distance_for.add(referencer)
+
+    print('\n', found_distance_for, '\n')
+    print(*distance_sets, sep='\n')
+
+    for level, group in enumerate(distance_sets[1:]):
+        for key in group:
+            distances[key, 0] = level
+
+    return distances
 
 
 if __name__ == '__main__':

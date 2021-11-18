@@ -5,6 +5,7 @@ cfg_rhs = List[Union[Tuple, str, List]]
 
 cfg_type = Dict[str, cfg_rhs]
 
+list_cnf_type = List[List[Union[Tuple[int, int], str]]]
 
 @dataclass
 class CFG:
@@ -16,7 +17,7 @@ class CFG:
 type_is_matching_cfg = Callable[[CFG, CFG, int], bool]
 
 
-def convert_cnf_to_list(cnf: CFG):
+def convert_cnf_to_list(cnf: CFG) -> list_cnf_type:
     new_rules = [[] for _ in cnf.rules]
 
     keys = list(cnf.rules.keys())
