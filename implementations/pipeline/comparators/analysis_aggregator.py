@@ -1,6 +1,8 @@
 from typing import List, Tuple
 import heapq
 from dataclasses import dataclass, field
+import logging
+from math import inf
 
 from cfg import CFG
 from implementations.pipeline.pipeline_tools import PipelineDataManager, PipelineMethodData
@@ -11,7 +13,8 @@ from implementations.pipeline.analyzers import rhs_lengths, subrule_match, subru
 
 @dataclass(order=True)
 class Node:
-    similarity: float  # sum of all best match value scores for all rules used to construct the string
+    priority: float
+    similarity: float = field(compare=False)  # sum of all best match value scores for all rules used to construct the string
     used_rules: Tuple[int, ...] = field(compare=False)
     string: Tuple = field(compare=False)  # combination of rules and terminals basically the current construction
     difference_values: List = field(compare=False)  # a parallel list to "string" containing best match scores for each rule in "string"
@@ -19,11 +22,15 @@ class Node:
 
 
 def symmetric_tree_search(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager) -> Tuple[bool, float]:
+    # if either found a difference means we found a counter example
     a_decision, a_certainty = search_tree_from_tables(a, b, max_depth, pipeline, True)
-    b_decision, b_certainty = search_tree_from_tables(a, b, max_depth, pipeline, False)
-    # if either found a difference
-    if a_decision is False or b_decision is False:
+    if a_decision is False:
         return False, 1
+
+    b_decision, b_certainty = search_tree_from_tables(a, b, max_depth, pipeline, False)
+    if b_decision is False:
+        return False, 1
+
     # if both are certain of equivalence (both have completed an exhaustive search)
     if a_certainty == 1 and b_certainty == 1:
         return True, 1
@@ -32,11 +39,15 @@ def symmetric_tree_search(a: CFG, b: CFG, max_depth: int, pipeline: PipelineData
 
 
 def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager, use_a_as_base) -> Tuple[bool, float]:
+    TEST_checked = [0 for _ in range(max_depth + 1)]
+    COUNTER = 0
     memory_key = method.key_word + str(use_a_as_base)
     if use_a_as_base:
         a_rule_set, b_rule_set = pipeline.list_rules
+        proximity_to_terminal, _ = pipeline.terminal_distances
     else:
         b_rule_set, a_rule_set = pipeline.list_rules
+        _, proximity_to_terminal = pipeline.terminal_distances
 
     # which algorithms table output we prefer to use in descending order
     priority_list = [subrule_match.method.key_word, subrule_match_optimized.method.key_word, rhs_lengths.method.key_word]
@@ -55,18 +66,20 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
     if not use_a_as_base:
         table = table.transpose()
     # get the best similarity value for each rule in A out of all the rules in b
-    a_max_list = table.max(axis=0)
+    max_list = table.max(axis=0)
+
+    combined_weight = max_list * (proximity_to_terminal * 10)
 
     checked_strings = {(0,)}  # keeps track of "string"s that were already looked at including ones that were removed from the heap
 
     # the heap is used to determine which should be the next Node to look at based on the lowest similarity
-    heap: List[Node] = [Node(table[0, 0], (0,), (0,), get_similarity_values(a_max_list, (0,)))]  # start with S
+    heap: List[Node] = [Node(table[0, 0], table[0, 0], (0,), (0,), get_similarity_values(combined_weight, (0,)))]  # start with S
 
     if memory_key in pipeline.data:  # results from search tree run earlier in the pipeline
         checked_strings, heap = pipeline.data[memory_key]
         # re do all of the calculations for similarity using the new table
         for node in heap:
-            node.similarity = sum(map(lambda x: a_max_list[x], node.used_rules))
+            node.similarity = sum(map(lambda x: combined_weight[x], node.used_rules))
         heapq.heapify(heap)
 
     difference_found = False
@@ -75,8 +88,8 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
     while not difference_found and len(heap) and computation_counter * 2 < next_method_complexity:
         current_node = heap[0]
 
-        # TODO: there must be a better way to get the min
-        smallest_match = 2
+        # TODO: there must be a neater way to get the min
+        smallest_match = inf
         sm_match_index = -1
         for i, diff in enumerate(current_node.difference_values):
             if diff is not None and diff < smallest_match:
@@ -97,19 +110,26 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
                     new_string = current_node.string[:sm_match_index] + (sub_rule,) + current_node.string[sm_match_index + 1:]
                     if all(map(lambda x: type(x) is str, new_string)):  # if all terminals i.e. final string
                         computation_counter += len(new_string) ** 2
+                        TEST_checked[len(new_string)] += 1
+                        COUNTER += 1
+                        if COUNTER % 1 == 0:
+                            print(*TEST_checked, sep='\t\t')
                         if not parse(new_string, b_rule_set):  # check if rule set B accepts the found string
                             difference_found = True
+                            logging.info(f'tree search found counter example: {" ".join(new_string)}')
                             break
                 # add the new string to the heap for further development
                 if len(new_string) <= max_depth:  # TODO: that may be one too deep
-                    if new_string not in checked_strings:  # TODO: this shouldn't happen right but it does!? or should it?
-                        heapq.heappush(heap, Node(current_node.similarity + smallest_match,
+                    if new_string not in checked_strings:
+                        similarity = current_node.similarity + smallest_match
+                        number_of_terminals = len(tuple(filter(lambda x: type(x) is str, new_string))) + 1
+                        computation_counter += len(new_string)
+                        heapq.heappush(heap, Node(similarity / number_of_terminals, similarity,
                                                   (*current_node.used_rules, current_node.string[sm_match_index]), new_string,
-                                                  get_similarity_values(a_max_list, new_string)))
+                                                  get_similarity_values(combined_weight, new_string)))
                         checked_strings.add(new_string)
     if difference_found:
         return False, 1
-    # TODO: needs to be done with respect of B to A for this to properly work as we may miss strings accepted by B but not by A
     elif len(heap) == 0:
         return True, 1
     pipeline.data[memory_key] = checked_strings, heap
@@ -127,11 +147,11 @@ method = PipelineMethodData(
 )
 
 
-def get_similarity_values(best_matches, string):
+def get_similarity_values(weightings, string):
     output = []
     for rule in string:
-        if type(rule) is not str:  # if not a terminal
-            output.append(best_matches[rule])
+        if type(rule) is not str and weightings[rule] >= 0:  # if not a terminal
+            output.append(weightings[rule])
         else:
             output.append(None)
     return output

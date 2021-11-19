@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Callable, Optional, Dict, Tuple, Any, Union
 
 from cfg import convert_cnf_to_list, CFG
+from tools import get_distance_to_terminal
 
 
 class PipelineDataManager:
@@ -13,6 +14,7 @@ class PipelineDataManager:
         self._max_depth = max_depth
 
         self._list_rules = None
+        self._terminal_distances = None
         self._get_next_method = get_next_method
 
         self.tables: Dict[str, np.ndarray] = {}
@@ -30,6 +32,13 @@ class PipelineDataManager:
             return self._list_rules
         self._list_rules = convert_cnf_to_list(self._a), convert_cnf_to_list(self._b)
         return self._list_rules
+
+    @property
+    def terminal_distances(self):
+        if self._terminal_distances is not None:
+            return self._terminal_distances
+        self._terminal_distances = tuple(map(get_distance_to_terminal, self.list_rules))
+        return self._terminal_distances
 
 
 '''

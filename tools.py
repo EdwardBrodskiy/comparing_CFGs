@@ -216,7 +216,7 @@ class NameGenerator:
 
 
 def get_distance_to_terminal(rules: list_cnf_type):
-    distances = np.ones([len(rules), 1]) * -1
+    distances = np.ones([len(rules)]) * -1
 
     backwards_reference = {i: [] for i in range(len(rules))}
     distance_sets = [set() for _ in range(len(rules))]
@@ -235,8 +235,6 @@ def get_distance_to_terminal(rules: list_cnf_type):
                     backwards_reference[sub_rule[0]].append((key, sub_rule[1]))
                     backwards_reference[sub_rule[1]].append((key, sub_rule[0]))
 
-    print(*backwards_reference.items(), sep='\n')
-
     distance_sets[0] = (set(filter(lambda x: type(x) is str, backwards_reference)))
 
     for level in range(len(rules) - 1):
@@ -249,12 +247,9 @@ def get_distance_to_terminal(rules: list_cnf_type):
                     distance_sets[level + 1].add(referencer[0])
                     found_distance_for.add(referencer)
 
-    print('\n', found_distance_for, '\n')
-    print(*distance_sets, sep='\n')
-
     for level, group in enumerate(distance_sets[1:]):
         for key in group:
-            distances[key, 0] = level
+            distances[key] = level
 
     return distances
 

@@ -44,7 +44,7 @@ def generate_similarity_table_by_value_approach(a, b):
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
 
-    return table
+    return table[:-1, :-1]
 
 
 def get_match_score(table, rule_a: cfg_rhs, rule_b: cfg_rhs, cheat: bool) -> float:
