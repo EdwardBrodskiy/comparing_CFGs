@@ -5,11 +5,19 @@ import numpy as np
 
 
 def main():
-    parse(['1', '1'], cnf_10palindrome)
+    cfg = CFG(
+        rules={
+            'S': [('F',), ('(', 'S', '+', 'F', ')')],
+            'F': ['a']
+        },
+        alphabet={'(', ')', 'a', '+'},
+        start='S'
+    )
+    parse(list('(a+a)'), cfg)
 
 
 def parse(chars: List[str], cfg: CFG):
-    terminals_ref = list(cfg.alphabet)
+    terminals_ref = list('()a+')  # list(cfg.alphabet)
     rules_ordered_ref = list(cfg.rules.keys())
     table = generate_parsing_table(rules_ordered_ref, terminals_ref, cfg)
     print(table)
@@ -21,28 +29,31 @@ def generate_parsing_table(rules_list, terminals, cfg: CFG):
     print(table)
     for key_i, key in enumerate(rules_list):
         for term_i, term in enumerate(terminals):
-            compute_loc(key_i, key, term_i, term, 100, table, cfg, rules_list)
+            compute_loc(key_i, key, 0, term_i, term, 100, table, cfg, rules_list)
 
     return table
 
 
-def compute_loc(key_i: int, key: str, term_i: int, term: str, depth: int, table: np.array, cfg: CFG, rules_list: List[str]):
+def compute_loc(key_i: int, key: str, sub_rule_index: int, term_i: int, term: str, depth: int, table: np.array, cfg: CFG,
+                rules_list: List[str]):
     if table[key_i, term_i] != -1 or depth == 0:
         return
 
     if key in cfg.alphabet:
         if key == term:
-            table[key_i, term_i] = key_i
+            table[key_i, term_i] = sub_rule_index
     else:
-        for rule in cfg.rules[key]:
-            if type(rule) is str:
-                compute_loc(key_i, rule, term_i, term, depth - 1, table, cfg, rules_list)
-            else:  # TODO: currently assuming CNF fix
-                sub_rule_key = rule[0]
-                sub_rule_key_i = rules_list.index(rule[0])
-                compute_loc(sub_rule_key_i, sub_rule_key, term_i, term, depth - 1, table, cfg, rules_list)
+        for index, rule in enumerate(cfg.rules[key]):
+            if type(rule) is tuple:
+                rule = rule[0]
+            if rule in cfg.alphabet:
+                compute_loc(key_i, rule, index, term_i, term, depth - 1, table, cfg, rules_list)
+            else:
+                sub_rule_key = rule
+                sub_rule_key_i = rules_list.index(rule)
+                compute_loc(sub_rule_key_i, sub_rule_key, index, term_i, term, depth - 1, table, cfg, rules_list)
                 if table[sub_rule_key_i, term_i] != -1:
-                    table[key_i, term_i] = sub_rule_key_i
+                    table[key_i, term_i] = index
                     break
 
 
