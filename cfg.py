@@ -7,6 +7,7 @@ cfg_type = Dict[str, cfg_rhs]
 
 list_cnf_type = List[List[Union[Tuple[int, int], str]]]
 
+
 @dataclass
 class CFG:
     rules: cfg_type
@@ -41,6 +42,10 @@ def convert_value(value, mapping):
     if value in mapping:
         return mapping[value]
     return value
+
+
+def count_cfg_rules(rules: cfg_type):
+    return sum(map(lambda x: len(x), rules))
 
 
 cnf_10palindrome = CFG(

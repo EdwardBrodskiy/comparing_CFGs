@@ -1,5 +1,5 @@
 from tools import words_of_length
-from cfg import convert_cnf_to_list, cnf_10palindrome, CFG
+from cfg import count_cfg_rules, CFG
 from typing import Dict, Tuple, List
 import numpy as np
 
@@ -13,23 +13,41 @@ def main():
         alphabet={'(', ')', 'a', '+'},
         start='S'
     )
-    parse(list('(a+a)'), cfg)
+    print(parse(list('(a+a)'), cfg))
 
 
 def parse(chars: List[str], cfg: CFG):
-    terminals_ref = list('()a+')  # list(cfg.alphabet)
+    # we need ordered data structures to reference them in the table by index
+    terminals_ref = list(cfg.alphabet)
     rules_ordered_ref = list(cfg.rules.keys())
+
     table = generate_parsing_table(rules_ordered_ref, terminals_ref, cfg)
-    print(table)
-    return True
+
+    stack = [cfg.start]
+    pos_in_chars = 0
+    while stack:
+        top = stack.pop()
+        # Deal with a terminal
+        if top in cfg.alphabet:
+            if top == chars[pos_in_chars]:
+                pos_in_chars += 1
+                continue
+            return False
+        # Try to expand a non terminal
+        top_index = rules_ordered_ref.index(top)
+        next_index = table[top_index, terminals_ref.index(chars[pos_in_chars])]
+        if next_index == -1:
+            return False
+        stack += reversed(cfg.rules[top][next_index])
+
+    return len(chars) == pos_in_chars
 
 
 def generate_parsing_table(rules_list, terminals, cfg: CFG):
     table = np.ones((len(rules_list), len(terminals)), dtype=np.int16) * -1
-    print(table)
     for key_i, key in enumerate(rules_list):
         for term_i, term in enumerate(terminals):
-            compute_loc(key_i, key, 0, term_i, term, 100, table, cfg, rules_list)
+            compute_loc(key_i, key, 0, term_i, term, count_cfg_rules(cfg.rules) + 1, table, cfg, rules_list)
 
     return table
 
