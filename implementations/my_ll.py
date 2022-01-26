@@ -1,31 +1,48 @@
-from tools import words_of_length
-from cfg import count_cfg_rules, CFG
+from tools import words_of_length, is_input_string_legal
+from cfg import count_cfg_rules, CFG, cnf_10palindrome
 from typing import Dict, Tuple, List
 import numpy as np
+import logging
+from dataclasses import dataclass
+
+ll_cfg = CFG(
+    rules={
+        'S': [('F',), ('(', 'S', '+', 'F', ')')],
+        'F': ['a']
+    },
+    alphabet={'(', ')', 'a', '+'},
+    start='S'
+)
+
+
+@dataclass
+class PreCalculatedData:
+    terminals_ref: List[str]
+    rules_ordered_ref: List[str]
+    table: np.array
+
+
+def generate_pre_calculated_data(cfg: CFG):
+    # we need ordered data structures to reference them in the table by index
+    data = PreCalculatedData(
+        terminals_ref=list(cfg.alphabet),
+        rules_ordered_ref=list(cfg.rules.keys()),
+        table=np.array([1])
+    )
+    data.table = generate_parsing_table(data.rules_ordered_ref, data.terminals_ref, cfg)
+    return data
 
 
 def main():
-    cfg = CFG(
-        rules={
-            'S': [('F',), ('(', 'S', '+', 'F', ')')],
-            'F': ['a']
-        },
-        alphabet={'(', ')', 'a', '+'},
-        start='S'
-    )
-    print(parse(list('(a+a)'), cfg))
+    pass
 
 
-def parse(chars: List[str], cfg: CFG):
-    # we need ordered data structures to reference them in the table by index
-    terminals_ref = list(cfg.alphabet)
-    rules_ordered_ref = list(cfg.rules.keys())
-
-    table = generate_parsing_table(rules_ordered_ref, terminals_ref, cfg)
-
+def parse(chars: List[str], cfg: CFG, data: PreCalculatedData):
+    if not is_input_string_legal(chars, cfg):
+        return False
     stack = [cfg.start]
     pos_in_chars = 0
-    while stack:
+    while stack and pos_in_chars < len(chars):
         top = stack.pop()
         # Deal with a terminal
         if top in cfg.alphabet:
@@ -34,8 +51,8 @@ def parse(chars: List[str], cfg: CFG):
                 continue
             return False
         # Try to expand a non terminal
-        top_index = rules_ordered_ref.index(top)
-        next_index = table[top_index, terminals_ref.index(chars[pos_in_chars])]
+        top_index = data.rules_ordered_ref.index(top)
+        next_index = data.table[top_index, data.terminals_ref.index(chars[pos_in_chars])]
         if next_index == -1:
             return False
         stack += reversed(cfg.rules[top][next_index])
@@ -76,9 +93,11 @@ def compute_loc(key_i: int, key: str, sub_rule_index: int, term_i: int, term: st
 
 
 def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+    a_data = generate_pre_calculated_data(a)
+    b_data = generate_pre_calculated_data(b)
     for depth in range(max_depth + 1):
         for word in words_of_length(depth, a.alphabet):
-            if parse(word, a) != parse(word, b):
+            if parse(word, a, a_data) != parse(word, b, b_data):
                 return False
     return True
 

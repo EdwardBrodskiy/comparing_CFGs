@@ -23,7 +23,8 @@ class GeneralTester(unittest.TestCase):
         if self.items is None:
             raise NotImplementedError
         for bad_cnf in inject_type_1_errors(self.items.basic_cnf, sample_size=100):
-            self.assertFalse(self.items.is_matching_cfg(self.items.basic_cnf, bad_cnf, 7))
+            self.assertFalse(self.items.is_matching_cfg(self.items.basic_cnf, bad_cnf, 7),
+                             msg=f'{self.items.basic_cnf}\nBad cnf:\n{bad_cnf}')
 
 
 logging.basicConfig(filename='main.log', filemode='w',

@@ -254,5 +254,9 @@ def get_distance_to_terminal(rules: list_cnf_type):
     return distances
 
 
+def is_input_string_legal(chars: List[str], cfg: CFG):
+    return all(map(lambda x: x in cfg.alphabet, chars))
+
+
 if __name__ == '__main__':
     main()
