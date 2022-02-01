@@ -34,15 +34,25 @@ def generate_pre_calculated_data(cfg: CFG):
 
 
 def main():
-    pass
+    import cProfile
+    import pstats
+
+    logging.basicConfig(filename='my_ll.log', filemode='w',
+                        format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+    data = generate_pre_calculated_data(ll_cfg)
+    with cProfile.Profile() as pr:
+        # is_matching_cfg(ll_cfg, ll_cfg, 2)
+        parse(list('(((a+a)+a)+a)'), ll_cfg, data)
+    stats = pstats.Stats(pr)
+    stats.dump_stats(filename='my_ll.prof')
 
 
 def parse(chars: List[str], cfg: CFG, data: PreCalculatedData):
-    if not is_input_string_legal(chars, cfg):
+    if not is_input_string_legal(chars, cfg):  # TODO: more efficient to make sure it can't happen at an earlier stage
         return False
     stack = [cfg.start]
     pos_in_chars = 0
-    while stack and pos_in_chars < len(chars):
+    while stack and pos_in_chars < len(chars) and len(chars) - pos_in_chars >= len(stack):
         top = stack.pop()
         # Deal with a terminal
         if top in cfg.alphabet:
@@ -56,7 +66,6 @@ def parse(chars: List[str], cfg: CFG, data: PreCalculatedData):
         if next_index == -1:
             return False
         stack += reversed(cfg.rules[top][next_index])
-
     return len(chars) == pos_in_chars
 
 

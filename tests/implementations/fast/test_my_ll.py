@@ -7,4 +7,4 @@ if __name__ == '__main__':
         is_matching_cfg=my_ll.is_matching_cfg,
         basic_cnf=my_ll.ll_cfg
     )
-    unittest.main(verbosity=3)
+    unittest.main()
