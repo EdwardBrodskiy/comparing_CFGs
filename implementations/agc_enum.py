@@ -31,7 +31,8 @@ def enum(root: Tuple[str, ...], index: int, depth=100, cfg: CFG = None) -> Union
 
         selected_path = expanded[index % len(expanded)]
 
-        return enum(tuple(selected_path), index // len(expanded), cfg=cfg)
+        # return enum(tuple(selected_path), index // len(expanded), cfg=cfg)
+        return enum(*choose(key, index, depth, cfg=cfg), cfg=cfg)
 
     sub_enums = list(map(lambda sub_rule: enum((sub_rule,), index, cfg=cfg), root))
     if not all(sub_enums):
@@ -39,8 +40,37 @@ def enum(root: Tuple[str, ...], index: int, depth=100, cfg: CFG = None) -> Union
     return tuple(item for sublist in sub_enums for item in sublist)
 
 
+def choose(key: str, index: int, depth: int, cfg: CFG = None) -> Tuple[Tuple[str, ...], int]:
+    expanded: cfg_rhs = cfg.rules[key]
+
+    sentential_forms = list(map(lambda rule: (rule,) if type(rule) is str else rule, expanded))
+    n = len(sentential_forms)
+
+    trees: Tuple[int, ...] = (0, *list(map(lambda sentential_form: get_no_trees(tuple(sentential_form), depth, cfg=cfg), sentential_forms)))
+
+    # wrap helper to better fit original definition
+    def i(bound):
+        return helper_index(bound, n, trees)
+
+    # let k be such that 0 ≤ k ≤ n − 1 and i[k] ≤ index < i[k]+1
+    k = 0
+    while k < n and i(k) <= index:
+        k += 1
+    k -= 1
+
+    # let q = floor((index − i[k])/(n − k)) and r = (index − ik)%(n − k)
+    q = (index - i(k)) // (n - k)
+    r = (index - i(k)) % (n - k)
+
+    return tuple(sentential_forms[k + r]), trees[k] + q
+
+
+def helper_index(m: int, n: int, b: Tuple[int]) -> int:
+    return b[m] * (n - m + 1) + sum(b[: m])
+
+
 @memory
-def get_no_trees(root: Tuple[str, ...], max_depth, cfg: CFG = None) -> int:
+def get_no_trees(root: Tuple[str, ...], max_depth: int, cfg: CFG = None) -> int:
     if max_depth == 1:
         return 1
     if len(root) == 1:
