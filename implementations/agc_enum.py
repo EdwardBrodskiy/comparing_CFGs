@@ -27,12 +27,7 @@ def enum(root: Tuple[str, ...], index: int, depth=100, cfg: CFG = None) -> Union
                 return tuple((key,))
             return None
 
-        expanded: cfg_rhs = cfg.rules[key]
-
-        selected_path = expanded[index % len(expanded)]
-
-        # return enum(tuple(selected_path), index // len(expanded), cfg=cfg)
-        return enum(*choose(key, index, depth, cfg=cfg), cfg=cfg)
+        return enum(*choose(key, index, depth=depth - 1, cfg=cfg), depth=depth - 1, cfg=cfg)
 
     sub_enums = list(map(lambda sub_rule: enum((sub_rule,), index, cfg=cfg), root))
     if not all(sub_enums):
@@ -58,7 +53,7 @@ def choose(key: str, index: int, depth: int, cfg: CFG = None) -> Tuple[Tuple[str
         k += 1
     k -= 1
 
-    # let q = floor((index − i[k])/(n − k)) and r = (index − ik)%(n − k)
+    # let q = floor((index − i[k])/(n − k)) and r = (index − i[k])%(n − k)
     q = (index - i(k)) // (n - k)
     r = (index - i(k)) % (n - k)
 
@@ -67,6 +62,14 @@ def choose(key: str, index: int, depth: int, cfg: CFG = None) -> Tuple[Tuple[str
 
 def helper_index(m: int, n: int, b: Tuple[int]) -> int:
     return b[m] * (n - m + 1) + sum(b[: m])
+
+
+def sort_cfg_tree_wise(cfg: CFG, depth):
+    for key, rhs in cfg.rules.items():
+        cfg.rules[key] = sorted(rhs,
+                                key=lambda rule: get_no_trees((rule,), depth, cfg=cfg) if type(rule) is str else get_no_trees(tuple(rule),
+                                                                                                                              depth,
+                                                                                                                              cfg=cfg))
 
 
 @memory
@@ -97,7 +100,9 @@ def main():
         alphabet={'a', 'b'}
     )
     results = dict()
-    for i in range(40):
+    sort_cfg_tree_wise(cfg, 100)
+    print(cfg)
+    for i in range(10):
         key = str(enum((cfg.start,), i, cfg=cfg))
         if key not in results:
             results[key] = 0
