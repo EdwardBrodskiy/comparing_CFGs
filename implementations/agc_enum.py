@@ -1,6 +1,8 @@
-from cfg import CFG, cfg_rhs, cnf_10palindrome
+from cfg import CFG, cfg_rhs, cnf_10palindrome, convert_cnf_to_list
+from tools import words_of_length, read_gram_file, convert_to_cnf
 from typing import Union, Tuple
-from math import prod
+from math import prod, floor, sqrt
+from implementations.my_cyk_numpy import parse
 
 memo = {}
 
@@ -28,19 +30,25 @@ def enum(root: Tuple[str, ...], index: int, depth=100, cfg: CFG = None) -> Union
             return None
 
         return enum(*choose(key, index, depth=depth - 1, cfg=cfg), depth=depth - 1, cfg=cfg)
-
-    sub_enums = list(map(lambda sub_rule: enum((sub_rule,), index, cfg=cfg), root))
+    # ['A', 'B']
+    sub_enums = []  # TODO: this is not how it is done in the paper
+    for sub_rule in root:
+        t = get_no_trees((sub_rule,), depth, cfg=cfg)
+        sub_enums.append(enum((sub_rule,), index % t, cfg=cfg))
     if not all(sub_enums):
         return None
     return tuple(item for sublist in sub_enums for item in sublist)
 
 
 def choose(key: str, index: int, depth: int, cfg: CFG = None) -> Tuple[Tuple[str, ...], int]:
-    expanded: cfg_rhs = cfg.rules[key]
+    # '#t' is used to denote the number of parse trees belonging to the right-hand-sides calculated by function 'get_no_trees'
 
-    sentential_forms = list(map(lambda rule: (rule,) if type(rule) is str else rule, expanded))
+    # extract all sentential forms which are the rhs of the given key
+    # NOTE: in ascending order of #t (sorted prior)
+    sentential_forms = list(map(lambda rule: (rule,) if type(rule) is str else rule, cfg.rules[key]))
     n = len(sentential_forms)
 
+    # let b0 = 0, and b1, · · · , bn = #t(α0), · · · , #t(αn−1)
     trees: Tuple[int, ...] = (0, *list(map(lambda sentential_form: get_no_trees(tuple(sentential_form), depth, cfg=cfg), sentential_forms)))
 
     # wrap helper to better fit original definition
@@ -76,7 +84,7 @@ def sort_cfg_tree_wise(cfg: CFG, depth):
 def get_no_trees(root: Tuple[str, ...], max_depth: int, cfg: CFG = None) -> int:
     if max_depth == 1:
         return 1
-    if len(root) == 1:
+    if len(root) == 1:  # ['a'] or ['B']
         key: str = root[0]
         if key in cfg.alphabet:
             return 1
@@ -85,14 +93,49 @@ def get_no_trees(root: Tuple[str, ...], max_depth: int, cfg: CFG = None) -> int:
 
         sentential_forms = map(lambda rule: (rule,) if type(rule) is str else rule, expanded)
         return sum(map(lambda sentential_form: get_no_trees(tuple(sentential_form), max_depth - 1, cfg=cfg), sentential_forms))
+    # root possible options : ['A'] ['A', 'B'] ['a'] ['a', 'S']
+    return prod(map(lambda sub_tree: get_no_trees((sub_tree,), max_depth, cfg=cfg), root))
 
-    return prod(map(lambda sub_tree: get_no_trees(sub_tree, max_depth, cfg=cfg), root))
+
+def map_to_space(index: int, sub_trees: Tuple[int]):
+    dunno = 0
+    z = index
+    zb = dunno
+    zx = dunno
+    zy = dunno
+    if z > zb:
+        t, w = bskip(z)
+    elif zx <= z < zb:
+        t, w = xskip(z)
+    elif zy <= z < zb:
+        t, w = yskip(z)
+    else:
+        t, w = simple(z)
+    y = z - t
+    x = w - y
+    return x, y
+
+
+def bskip(z):
+    return 1, 1
+
+
+def xskip(z):
+    return 1, 1
+
+
+def yskip(z):
+    return 1, 1
+
+
+def simple(z):
+    return 1, 1
 
 
 def main():
-    cfg = CFG(
+    agc_cfg = CFG(
         rules={
-            'S': [['A', ], ['A', 'B']],
+            'S': [['A', ], ['B', 'A']],
             'A': ['a', ['a', 'S']],
             'B': ['b']
         },
@@ -100,15 +143,23 @@ def main():
         alphabet={'a', 'b'}
     )
     results = dict()
-    sort_cfg_tree_wise(cfg, 100)
-    print(cfg)
-    for i in range(10):
-        key = str(enum((cfg.start,), i, cfg=cfg))
+
+    start, cfg = read_gram_file(r'..\benchmarks\AntlrJavaGrammar-1-1.gram')
+    cnf = convert_to_cnf(start, cfg)
+
+    cfg = cnf
+    sort_cfg_tree_wise(cfg, 10)
+    for i in range(50):
+        key = ''.join(enum((cfg.start,), i, depth=30, cfg=cfg))
         if key not in results:
             results[key] = 0
         results[key] += 1
-    print(results, len(results))
-    print(get_no_trees(('S',), 166, cfg=cfg))
+    rules = convert_cnf_to_list(cfg)
+    print('dn')
+    for depth in range(5):
+        for word in words_of_length(depth, cfg.alphabet):
+            if ''.join(word) not in results and parse(word, rules):
+                print(f'missed: {word}')
 
 
 if __name__ == '__main__':
