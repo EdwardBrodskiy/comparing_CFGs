@@ -1,5 +1,5 @@
 from typing import Iterator, List, Set
-from cfg import cfg_type, CFG, list_cnf_type, cnf_10palindrome, convert_cnf_to_list
+from cfg import cfg_type, cfg_rhs, CFG, list_cnf_type, cnf_10palindrome, convert_cnf_to_list
 import copy
 import numpy as np
 
@@ -256,6 +256,61 @@ def get_distance_to_terminal(rules: list_cnf_type):
 
 def is_input_string_legal(chars: List[str], cfg: CFG):
     return all(map(lambda x: x in cfg.alphabet, chars))
+
+
+def convert_cnf_to_limited_word_size(cnf: CFG, size: int):
+    new_rules: cfg_type = {}
+    new_start: str = ''
+    # create all size respecting rules
+    for key, rhs in cnf.rules.items():
+        for i in range(size):
+            new_rhs = generate_rhs_for_size(rhs, i)
+            new_key = create_key(key, i)
+            if len(new_rhs):  # TODO: can we stop at this size for this key?
+                new_rules[new_key] = new_rhs
+                if key == cnf.start:
+                    new_start = new_key
+
+    # cleanup stage removing keys with empty right-hand-sides and rules with undefined non-terminals
+    changes = True  # used to track if anything was removed
+    while changes:
+        changes = False
+        to_remove = []
+        for key, rhs in new_rules.items():
+            updated_rhs: cfg_rhs = []
+            for i, rule in enumerate(rhs):
+                # check if legal rule (terminal or has no undefined sub rules)
+                if type(rule) is str or not any(map(lambda sub_rule: sub_rule not in new_rules, rule)):
+                    updated_rhs.append(rule)
+            if updated_rhs:
+                new_rules[key] = updated_rhs
+            else:
+                to_remove.append(key)
+
+            if updated_rhs != rhs:
+                changes = True
+        # remove keys marked empty in the prior stage
+        for key in to_remove:  # TODO: we do not deal with a grammar with an empty language
+            changes = True
+            del new_rules[key]
+
+    return CFG(rules=new_rules, start=new_start, alphabet=cnf.alphabet.copy())
+
+
+def create_key(prev_key: str, index: int) -> str:
+    return prev_key + '~SizeLimit=' + str(index)  # TODO should change keys to tuples to ensure add-ons do not interfere existing keys
+
+
+def generate_rhs_for_size(rhs: cfg_rhs, size) -> cfg_rhs:
+    if size == 0:
+        return list(filter(lambda r: type(r) is str, rhs))
+    new_rhs: cfg_rhs = []
+    for rule in rhs:
+        if type(rule) is not str:
+            for i in range(size):
+                new_rhs.append((create_key(rule[0], i), create_key(rule[1], size - 1 - i)))
+
+    return new_rhs
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 from cfg import CFG, cfg_rhs, cnf_10palindrome, convert_cnf_to_list
-from tools import words_of_length, read_gram_file, convert_to_cnf
+from tools import words_of_length, read_gram_file, convert_to_cnf, convert_cnf_to_limited_word_size
 from typing import Union, Tuple
 from math import prod, floor, sqrt
 from implementations.my_cyk_numpy import parse
@@ -34,7 +34,7 @@ def enum(root: Tuple[str, ...], index: int, depth=100, cfg: CFG = None) -> Union
     sub_enums = []  # TODO: this is not how it is done in the paper
     for sub_rule in root:
         t = get_no_trees((sub_rule,), depth, cfg=cfg)
-        sub_enums.append(enum((sub_rule,), index % t, cfg=cfg))
+        sub_enums.append(enum((sub_rule,), index % t, depth=depth, cfg=cfg))
     if not all(sub_enums):
         return None
     return tuple(item for sublist in sub_enums for item in sublist)
@@ -98,11 +98,11 @@ def get_no_trees(root: Tuple[str, ...], max_depth: int, cfg: CFG = None) -> int:
 
 
 def map_to_space(index: int, sub_trees: Tuple[int]):
-    dunno = 0
+    TEMPORARY = 0
     z = index
-    zb = dunno
-    zx = dunno
-    zy = dunno
+    zb = TEMPORARY
+    zx = TEMPORARY
+    zy = TEMPORARY
     if z > zb:
         t, w = bskip(z)
     elif zx <= z < zb:
@@ -147,16 +147,21 @@ def main():
     start, cfg = read_gram_file(r'..\benchmarks\AntlrJavaGrammar-1-1.gram')
     cnf = convert_to_cnf(start, cfg)
 
-    cfg = cnf
+    cfg = convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
     sort_cfg_tree_wise(cfg, 10)
     for i in range(50):
         key = ''.join(enum((cfg.start,), i, depth=30, cfg=cfg))
         if key not in results:
             results[key] = 0
         results[key] += 1
-    rules = convert_cnf_to_list(cfg)
+
     print('dn')
-    for depth in range(5):
+
+    print(f'Sample \n{results}')
+    rules = convert_cnf_to_list(cfg)
+
+    for depth in range(max(map(lambda x: len(x), results.keys()))):
+        print(f'checking length {depth}')
         for word in words_of_length(depth, cfg.alphabet):
             if ''.join(word) not in results and parse(word, rules):
                 print(f'missed: {word}')
