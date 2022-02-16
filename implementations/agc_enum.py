@@ -1,8 +1,10 @@
 from cfg import CFG, cfg_rhs, cnf_10palindrome, convert_cnf_to_list
 from tools import words_of_length, read_gram_file, convert_to_cnf, convert_cnf_to_limited_word_size
 from typing import Union, Tuple
-from math import prod, floor, sqrt
+from math import prod, floor, sqrt, ceil
 from implementations.my_cyk_numpy import parse
+
+from misc.recursion_decorator import recviz
 
 memo = {}
 
@@ -17,7 +19,7 @@ def memory(f):
     return helper
 
 
-@memory
+@recviz
 def enum(root: Tuple[str, ...], index: int, depth=100, cfg: CFG = None) -> Union[Tuple[str, ...], None]:
     if len(root) == 1:
         key: str = root[0]
@@ -30,11 +32,17 @@ def enum(root: Tuple[str, ...], index: int, depth=100, cfg: CFG = None) -> Union
             return None
 
         return enum(*choose(key, index, depth=depth - 1, cfg=cfg), depth=depth - 1, cfg=cfg)
-    # ['A', 'B']
+
     sub_enums = []  # TODO: this is not how it is done in the paper
-    for sub_rule in root:
-        t = get_no_trees((sub_rule,), depth, cfg=cfg)
-        sub_enums.append(enum((sub_rule,), index % t, depth=depth, cfg=cfg))
+    if len(root) != 2:  # root is expected to be size to as all expansions of a CNF are size 2 or 1
+        raise Exception('Ensure grammar is in CNF')
+    x_rhs, y_rhs = get_no_trees((root[0],), depth, cfg=cfg), get_no_trees((root[1],), depth, cfg=cfg)
+    if x_rhs * y_rhs <= index:
+        return None
+    cartesian_expansion_coords = map_to_space(index, x_rhs, y_rhs)
+    print(f'{index=} {x_rhs=} {y_rhs=} {cartesian_expansion_coords=}')
+    for m, sub_rule in enumerate(root):
+        sub_enums.append(enum((sub_rule,), cartesian_expansion_coords[m], depth=depth, cfg=cfg))
     if not all(sub_enums):
         return None
     return tuple(item for sublist in sub_enums for item in sublist)
@@ -97,18 +105,28 @@ def get_no_trees(root: Tuple[str, ...], max_depth: int, cfg: CFG = None) -> int:
     return prod(map(lambda sub_tree: get_no_trees((sub_tree,), max_depth, cfg=cfg), root))
 
 
-def map_to_space(index: int, sub_trees: Tuple[int]):
-    TEMPORARY = 0
+def map_to_space(index: int, x_bound, y_bound):  # wrap the original algorithm to make both bounds exclusive
+    return cantors_extended_pi(index, x_bound - 1, y_bound)
+
+
+def cantors_extended_pi(index: int, x_bound, y_bound):
     z = index
-    zb = TEMPORARY
-    zx = TEMPORARY
-    zy = TEMPORARY
-    if z > zb:
-        t, w = bskip(z)
+
+    # number of indices until x space is filled i.e (x, 0) is not available
+    zx = (x_bound + 1) * (x_bound + 2) // 2
+
+    # number of indices until y space is filled i.e (0, y) is not available
+    zy = y_bound * (y_bound + 1) // 2
+
+    # NOT 100% SURE: when to begin closing the bottom right corner
+    zb = get_zb(y_bound, x_bound, zx, zy)
+
+    if z >= zb:
+        t, w = b_skip(z, x_bound, y_bound)
     elif zx <= z < zb:
-        t, w = xskip(z)
+        t, w = x_skip(z, x_bound)
     elif zy <= z < zb:
-        t, w = yskip(z)
+        t, w = y_skip(z, y_bound)
     else:
         t, w = simple(z)
     y = z - t
@@ -116,23 +134,59 @@ def map_to_space(index: int, sub_trees: Tuple[int]):
     return x, y
 
 
-def bskip(z):
-    return 1, 1
+def get_zb(yb, xb, zx, zy):
+    if xb > yb - 1:
+        return yb * (xb - yb + 1) + zy
+    elif yb - 1 > xb:
+        return (xb + 1) * (yb - xb - 1) + zx
+    else:
+        return zy
 
 
-def xskip(z):
-    return 1, 1
+def b_skip(z, xb, yb):
+    sb = xb ** 2 + yb ** 2
+    wb = xb + yb
+    r = 2 * wb + 1
+
+    in_w_sqrt = r ** 2 - 8 * z - 4 * sb + 4 * yb - 4 * xb
+    w = (r - ceil(sqrt(in_w_sqrt))) // 2
+
+    t = ((2 * wb - 1) * w - w ** 2 - sb + wb) // 2
+    return t, w
 
 
-def yskip(z):
-    return 1, 1
+def x_skip(z, xb):  # Checked
+    w = (2 * z + xb ** 2 + xb) // (2 * (xb + 1))
+    t = (2 * w * xb - xb ** 2 + xb) // 2
+    return t, w
+
+
+def y_skip(z, yb):  # Checked
+    w = (2 * z + yb ** 2 - yb) // (2 * yb)
+    t = (2 * w * yb - yb ** 2 + yb) // 2
+    return t, w
 
 
 def simple(z):
-    return 1, 1
+    w = (floor(sqrt(8 * z + 1)) - 1) // 2
+    t = w * (w + 1) // 2
+    return t, w
 
 
 def main():
+    # import numpy as np
+    # dim = (4, 2)
+    # locs = np.ones(dim) * -1
+    # missed = set()
+    # for i in range(dim[0] * dim[1]):
+    #     coords = map_to_space(i, *dim)
+    #     try:
+    #         locs[coords] = i
+    #     except IndexError:
+    #         missed.add((coords, i))
+    # print(locs)
+    # print(missed)
+    # return
     agc_cfg = CFG(
         rules={
             'S': [['A', ], ['B', 'A']],
@@ -147,10 +201,14 @@ def main():
     start, cfg = read_gram_file(r'..\benchmarks\AntlrJavaGrammar-1-1.gram')
     cnf = convert_to_cnf(start, cfg)
 
-    cfg = convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
+    cfg = cnf_10palindrome  # convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
     sort_cfg_tree_wise(cfg, 10)
-    for i in range(50):
-        key = ''.join(enum((cfg.start,), i, depth=30, cfg=cfg))
+    for i in range(14):
+        result = enum((cfg.start,), i, depth=30, cfg=cfg)
+        if result is not None:
+            key = ''.join(result)
+        else:
+            key = result
         if key not in results:
             results[key] = 0
         results[key] += 1
@@ -160,11 +218,11 @@ def main():
     print(f'Sample \n{results}')
     rules = convert_cnf_to_list(cfg)
 
-    for depth in range(max(map(lambda x: len(x), results.keys()))):
+    for depth in range(max(map(lambda x: len(x) if x is not None else 0, results.keys())) + 1):
         print(f'checking length {depth}')
         for word in words_of_length(depth, cfg.alphabet):
             if ''.join(word) not in results and parse(word, rules):
-                print(f'missed: {word}')
+                print(f'missed: {"".join(word)}')
 
 
 if __name__ == '__main__':
