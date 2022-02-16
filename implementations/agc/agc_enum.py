@@ -4,109 +4,116 @@ from typing import Union, Tuple
 from math import prod
 from implementations.my_cyk_numpy import parse
 from implementations.agc.index_mapper import map_to_space
-
-memo = {}  # TODO: memo should not be global
+from copy import deepcopy
 
 
 def memory(f):
-    def helper(*args, **kwargs):
+    def helper(self, *args, **kwargs):
         key = (f.__name__, args)
-        if key not in memo:
-            memo[key] = f(*args, **kwargs)
-        return memo[key]
+        if key not in self.memo:
+            self.memo[key] = f(self, *args, **kwargs)
+        return self.memo[key]
 
     return helper
 
 
-@memory
-def enum(root: Tuple[str, ...], index: int, depth=100, cfg: CFG = None) -> Union[Tuple[str, ...], None]:
-    if len(root) == 1:
-        key: str = root[0]
-        """
-        For a terminal a belonging to a grammar, Enum[a] is defined as {0 → leaf (a)}.
-        """
-        if key in cfg.alphabet:
-            if index == 0:
-                return tuple((key,))
+class Enum:
+    def __init__(self, cfg: CFG, max_depth):
+        self.memo = {}
+        self.max_depth = max_depth
+        self.cfg = deepcopy(cfg)
+        self.sort_cfg_tree_wise()
+
+    def generate(self, index: int):
+        return self.enum((self.cfg.start,), index, self.max_depth)
+
+    @memory
+    def enum(self, root: Tuple[str, ...], index: int, depth=100) -> Union[Tuple[str, ...], None]:
+        if len(root) == 1:
+            key: str = root[0]
+            """
+            For a terminal a belonging to a grammar, Enum[a] is defined as {0 → leaf (a)}.
+            """
+            if key in self.cfg.alphabet:
+                if index == 0:
+                    return tuple((key,))
+                return None
+
+            return self.enum(*self.choose(key, index, depth=depth - 1), depth=depth - 1)
+
+        if len(root) != 2:  # root is expected to be size to as all expansions of a CNF are size 2 or 1
+            raise Exception('Ensure grammar is in CNF')
+
+        # get the index space required for A and B in AB
+        a_trees, b_trees = self.get_no_trees((root[0],), depth), self.get_no_trees((root[1],), depth)
+        if a_trees * b_trees <= index:
+            return None  # index is past all possible derivations
+
+        cartesian_expansion_coords = map_to_space(index, a_trees, b_trees)
+
+        # derive enum(A)[j1] and enum(B)[j2] from enum(AB)[i]
+        sub_enums = tuple(map(lambda j, sub_rule: self.enum((sub_rule,), j, depth=depth),
+                              cartesian_expansion_coords, root))
+
+        if not all(sub_enums):  # TODO: maybe redundant
             return None
 
-        return enum(*choose(key, index, depth=depth - 1, cfg=cfg), depth=depth - 1, cfg=cfg)
+        return tuple(item for sublist in sub_enums for item in sublist)
 
-    if len(root) != 2:  # root is expected to be size to as all expansions of a CNF are size 2 or 1
-        raise Exception('Ensure grammar is in CNF')
+    def choose(self, key: str, index: int, depth: int) -> Tuple[Tuple[str, ...], int]:
+        # '#t' is used to denote the number of parse trees belonging to the right-hand-sides calculated by function 'get_no_trees'
 
-    # get the index space required for A and B in AB
-    a_trees, b_trees = get_no_trees((root[0],), depth, cfg=cfg), get_no_trees((root[1],), depth, cfg=cfg)
-    if a_trees * b_trees <= index:
-        return None  # index is past all possible derivations
+        # extract all sentential forms which are the rhs of the given key
+        # NOTE: in ascending order of #t (sorted prior)
+        sentential_forms = list(map(lambda rule: (rule,) if type(rule) is str else rule, self.cfg.rules[key]))
+        n = len(sentential_forms)
 
-    cartesian_expansion_coords = map_to_space(index, a_trees, b_trees)
+        # let b0 = 0, and b1, · · · , bn = #t(α0), · · · , #t(αn−1)
+        trees: Tuple[int, ...] = (
+            0, *list(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form), depth), sentential_forms)))
 
-    # derive enum(A)[j1] and enum(B)[j2] from enum(AB)[i]
-    sub_enums = tuple(map(lambda j, sub_rule: enum((sub_rule,), j, depth=depth, cfg=cfg),
-                          cartesian_expansion_coords, root))
+        # wrap helper to better fit original definition
+        def i(bound):
+            return self.helper_index(bound, n, trees)
 
-    if not all(sub_enums):  # TODO: maybe redundant
-        return None
+        # let k be such that 0 ≤ k ≤ n − 1 and i[k] ≤ index < i[k]+1
+        k = 0
+        while k < n and i(k) <= index:
+            k += 1
+        k -= 1
 
-    return tuple(item for sublist in sub_enums for item in sublist)
+        # let q = floor((index − i[k])/(n − k)) and r = (index − i[k])%(n − k)
+        q = (index - i(k)) // (n - k)
+        r = (index - i(k)) % (n - k)
 
+        return tuple(sentential_forms[k + r]), trees[k] + q
 
-def choose(key: str, index: int, depth: int, cfg: CFG = None) -> Tuple[Tuple[str, ...], int]:
-    # '#t' is used to denote the number of parse trees belonging to the right-hand-sides calculated by function 'get_no_trees'
+    @staticmethod
+    def helper_index(m: int, n: int, b: Tuple[int]) -> int:
+        return b[m] * (n - m + 1) + sum(b[: m])
 
-    # extract all sentential forms which are the rhs of the given key
-    # NOTE: in ascending order of #t (sorted prior)
-    sentential_forms = list(map(lambda rule: (rule,) if type(rule) is str else rule, cfg.rules[key]))
-    n = len(sentential_forms)
+    def sort_cfg_tree_wise(self):
+        for key, rhs in self.cfg.rules.items():
+            self.cfg.rules[key] = sorted(rhs,
+                                         key=lambda rule: self.get_no_trees((rule,), self.max_depth) if type(
+                                             rule) is str else self.get_no_trees(
+                                             tuple(rule), self.max_depth))
 
-    # let b0 = 0, and b1, · · · , bn = #t(α0), · · · , #t(αn−1)
-    trees: Tuple[int, ...] = (0, *list(map(lambda sentential_form: get_no_trees(tuple(sentential_form), depth, cfg=cfg), sentential_forms)))
-
-    # wrap helper to better fit original definition
-    def i(bound):
-        return helper_index(bound, n, trees)
-
-    # let k be such that 0 ≤ k ≤ n − 1 and i[k] ≤ index < i[k]+1
-    k = 0
-    while k < n and i(k) <= index:
-        k += 1
-    k -= 1
-
-    # let q = floor((index − i[k])/(n − k)) and r = (index − i[k])%(n − k)
-    q = (index - i(k)) // (n - k)
-    r = (index - i(k)) % (n - k)
-
-    return tuple(sentential_forms[k + r]), trees[k] + q
-
-
-def helper_index(m: int, n: int, b: Tuple[int]) -> int:
-    return b[m] * (n - m + 1) + sum(b[: m])
-
-
-def sort_cfg_tree_wise(cfg: CFG, depth):
-    for key, rhs in cfg.rules.items():
-        cfg.rules[key] = sorted(rhs,
-                                key=lambda rule: get_no_trees((rule,), depth, cfg=cfg) if type(rule) is str else get_no_trees(tuple(rule),
-                                                                                                                              depth,
-                                                                                                                              cfg=cfg))
-
-
-@memory
-def get_no_trees(root: Tuple[str, ...], max_depth: int, cfg: CFG = None) -> int:
-    if max_depth == 1:
-        return 1
-    if len(root) == 1:  # ['a'] or ['B']
-        key: str = root[0]
-        if key in cfg.alphabet:
+    @memory
+    def get_no_trees(self, root: Tuple[str, ...], max_depth: int) -> int:
+        if max_depth <= 1:
             return 1
+        if len(root) == 1:  # ['a'] or ['B']
+            key: str = root[0]
+            if key in self.cfg.alphabet:
+                return 1
 
-        expanded: cfg_rhs = cfg.rules[key]
+            expanded: cfg_rhs = self.cfg.rules[key]
 
-        sentential_forms = map(lambda rule: (rule,) if type(rule) is str else rule, expanded)
-        return sum(map(lambda sentential_form: get_no_trees(tuple(sentential_form), max_depth - 1, cfg=cfg), sentential_forms))
-    # root possible options : ['A'] ['A', 'B'] ['a'] ['a', 'S']
-    return prod(map(lambda sub_tree: get_no_trees((sub_tree,), max_depth, cfg=cfg), root))
+            sentential_forms = map(lambda rule: (rule,) if type(rule) is str else rule, expanded)
+            return sum(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form), max_depth - 1), sentential_forms))
+        # root possible options : ['A'] ['A', 'B'] ['a'] ['a', 'S']
+        return prod(map(lambda sub_tree: self.get_no_trees((sub_tree,), max_depth), root))
 
 
 def main():
@@ -121,13 +128,13 @@ def main():
     )
     results = dict()
 
-    start, cfg = read_gram_file(r'..\benchmarks\AntlrJavaGrammar-1-1.gram')
+    start, cfg = read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar-1-1.gram')
     cnf = convert_to_cnf(start, cfg)
 
     cfg = cnf_10palindrome  # convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
-    sort_cfg_tree_wise(cfg, 10)
+    enum = Enum(cfg, 30)
     for i in range(14):
-        result = enum((cfg.start,), i, depth=30, cfg=cfg)
+        result = enum.generate(i)
         if result is not None:
             key = ''.join(result)
         else:
