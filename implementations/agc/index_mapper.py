@@ -78,7 +78,7 @@ def simple(z):  # Cantor's expansion for before bounds are reached
 
 def main():
     import numpy as np
-    dim = (5, 5)
+    dim = (6, 4)
     locs = np.ones(dim) * -1
     missed = set()
     for i in range(dim[0] * dim[1]):

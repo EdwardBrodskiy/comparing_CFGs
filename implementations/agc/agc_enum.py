@@ -20,7 +20,7 @@ def memory(f):
 class Enum:
     def __init__(self, cfg: CFG, max_depth):
         self.memo = {}
-        self.max_depth = max_depth
+        self.max_depth = max_depth + 1  # make it inclusive
         self.cfg = deepcopy(cfg)
         self.sort_cfg_tree_wise()
 
@@ -101,17 +101,18 @@ class Enum:
 
     @memory
     def get_no_trees(self, root: Tuple[str, ...], max_depth: int) -> int:
-        if max_depth <= 1:
-            return 1
         if len(root) == 1:  # ['a'] or ['B']
             key: str = root[0]
             if key in self.cfg.alphabet:
                 return 1
-
+            if max_depth <= 1:
+                return 1
             expanded: cfg_rhs = self.cfg.rules[key]
 
             sentential_forms = map(lambda rule: (rule,) if type(rule) is str else rule, expanded)
             return sum(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form), max_depth - 1), sentential_forms))
+        if max_depth <= 1:
+            return 0
         # root possible options : ['A'] ['A', 'B'] ['a'] ['a', 'S']
         return prod(map(lambda sub_tree: self.get_no_trees((sub_tree,), max_depth), root))
 
@@ -132,8 +133,8 @@ def main():
     cnf = convert_to_cnf(start, cfg)
 
     cfg = cnf_10palindrome  # convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
-    enum = Enum(cfg, 30)
-    for i in range(14):
+    enum = Enum(cfg, 7)
+    for i in range(100):
         result = enum.generate(i)
         if result is not None:
             key = ''.join(result)
@@ -141,7 +142,7 @@ def main():
             key = result
         if key not in results:
             results[key] = 0
-        results[key] += 1
+        results[key] += i
 
     print('done')
 

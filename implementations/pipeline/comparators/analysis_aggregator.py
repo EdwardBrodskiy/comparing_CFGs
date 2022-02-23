@@ -63,7 +63,7 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
         raise ModuleNotFoundError
     certainty = (len(priority_list) - chosen_index) / len(priority_list)
 
-    if not use_a_as_base:
+    if use_a_as_base:
         table = table.transpose()
     # get the best similarity value for each rule in A out of all the rules in b
     max_list = table.max(axis=0)
@@ -87,7 +87,7 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
     next_method_complexity = pipeline.get_next_method_complexity()
     while not difference_found and len(heap) and computation_counter * 2 < next_method_complexity:
         current_node = heap[0]
-
+        heapq.heappop(heap)
         # TODO: there must be a neater way to get the min
         smallest_match = inf
         sm_match_index = -1
@@ -95,39 +95,41 @@ def search_tree_from_tables(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDa
             if diff is not None and diff < smallest_match:
                 smallest_match = diff
                 sm_match_index = i
+        if sm_match_index == -1:
+            continue
+        rhs = a_rule_set[current_node.string[sm_match_index]]
+        current_node.difference_values[sm_match_index] = None  # Mark as path traversed
+        for sub_rule in rhs:
+            # insert sub_rule into string
+            if type(sub_rule) is tuple:
+                new_string = current_node.string[:sm_match_index] + sub_rule + current_node.string[sm_match_index + 1:]
 
-        if sm_match_index == -1:  # if all branches have been looked at remove it
-            heapq.heappop(heap)
-        else:
-            rhs = a_rule_set[current_node.string[sm_match_index]]
-            current_node.difference_values[sm_match_index] = None  # Mark as path traversed
-            for sub_rule in rhs:
-                # insert sub_rule into string
-                if type(sub_rule) is tuple:
-                    new_string = current_node.string[:sm_match_index] + sub_rule + current_node.string[sm_match_index + 1:]
-
-                else:
-                    new_string = current_node.string[:sm_match_index] + (sub_rule,) + current_node.string[sm_match_index + 1:]
-                    if all(map(lambda x: type(x) is str, new_string)):  # if all terminals i.e. final string
-                        computation_counter += len(new_string) ** 2
-                        TEST_checked[len(new_string)] += 1
-                        COUNTER += 1
-                        if COUNTER % 1 == 0:
-                            print(*TEST_checked, sep='\t\t')
-                        if not parse(new_string, b_rule_set):  # check if rule set B accepts the found string
-                            difference_found = True
-                            logging.info(f'tree search found counter example: {" ".join(new_string)}')
-                            break
-                # add the new string to the heap for further development
-                if len(new_string) <= max_depth:  # TODO: that may be one too deep
-                    if new_string not in checked_strings:
-                        similarity = current_node.similarity + smallest_match
-                        number_of_terminals = len(tuple(filter(lambda x: type(x) is str, new_string))) + 1
-                        computation_counter += len(new_string)
-                        heapq.heappush(heap, Node(similarity / number_of_terminals, similarity,
-                                                  (*current_node.used_rules, current_node.string[sm_match_index]), new_string,
-                                                  get_similarity_values(combined_weight, new_string)))
-                        checked_strings.add(new_string)
+            else:
+                # TODO: should be insert
+                new_string = current_node.string[:sm_match_index] + (sub_rule,) + current_node.string[sm_match_index + 1:]
+                if all(map(lambda x: type(x) is str, new_string)):  # if all terminals i.e. final string
+                    computation_counter += len(new_string) ** 2
+                    TEST_checked[len(new_string)] += 1
+                    COUNTER += 1
+                    if COUNTER % 1 == 0:
+                        print(*TEST_checked, sep='\t\t')
+                    # TODO: can save words checked so that cfgb does not check them again
+                    if not parse(new_string, b_rule_set):  # check if rule set B accepts the found string
+                        difference_found = True
+                        logging.info(f'tree search found counter example: {" ".join(new_string)}')
+                        break
+                    checked_strings.add(new_string)
+                    continue  # don't add word to heap
+            # add the new string to the heap for further development
+            if len(new_string) <= max_depth:  # TODO: that may be one too deep
+                if new_string not in checked_strings:
+                    similarity = current_node.similarity + smallest_match
+                    number_of_terminals = len(tuple(filter(lambda x: type(x) is str, new_string))) + 1
+                    computation_counter += len(new_string)
+                    heapq.heappush(heap, Node(similarity / number_of_terminals, similarity,
+                                              (*current_node.used_rules, current_node.string[sm_match_index]), new_string,
+                                              get_similarity_values(combined_weight, new_string)))
+                    checked_strings.add(new_string)
     if difference_found:
         return False, 1
     elif len(heap) == 0:
