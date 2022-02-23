@@ -52,6 +52,6 @@ complexity_function = Callable[[CFG, CFG, int], int]
 
 @dataclass
 class PipelineMethodData:
-    method: pipeline_function  # the method for the pipeline to call
+    method: Optional[pipeline_function]  # the method for the pipeline to call
     complexity: complexity_function  # a method to approximate how long a function will take to run
     key_word: Optional[str]  # key used to store information on the pipeline

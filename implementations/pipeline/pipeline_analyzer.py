@@ -24,15 +24,19 @@ def main():
 
 
 def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+    analyser = analysis_aggregator.Analyzer(a, b, max_depth)
+    dynamic_method = analysis_aggregator.method
+    dynamic_method.method = analyser.symmetric_tree_search
     pipeline = Pipeline(a, b, max_depth,
                         (
                             alphabet_match.method,  # TODO: are all the terminals reachable
                             rhs_lengths.method,
-                            analysis_aggregator.method,
+                            dynamic_method,
                             subrule_match_optimized.method,
-                            analysis_aggregator.method,
+                            dynamic_method,
                             # lambda *args: numpy_is_matching_cfg(*args[:-1])
                         ))
+    analyser.set_pipeline(pipeline.data_manager)
     return pipeline.evaluate()
 
 
