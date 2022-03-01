@@ -164,7 +164,7 @@ def is_cnf(cfg: CFG) -> bool:
         for rule in rhs:
             if type(rule) is str:
                 terminals[key] = rule[0][0]
-            elif not all(map(lambda sub_rule: sub_rule in cfg, rule)):
+            elif not all(map(lambda sub_rule: sub_rule in cfg.rules, rule)):
                 print(f'TERM : {key} -> {rhs}')
                 return False
 
@@ -175,10 +175,10 @@ def is_cnf(cfg: CFG) -> bool:
             return False
 
     # DEL
-    '''
-    I think we are ok to skip this step for now as what is meant to be an empty string is being treated as
-    "" hence we don't have empty strings.
-    '''
+    for key, rhs in cfg.rules.items():
+        if key != cfg.start and any(map(lambda r: r == '""', rhs)):
+            print(f'DEL : {key} -> {rhs}')
+            return False
 
     # UNIT
     for key, rhs in cfg.rules.items():
