@@ -25,5 +25,6 @@ class TestTools(unittest.TestCase):
         os.chdir(os.path.join('..', 'benchmarks'))
         gram_files = list(filter(lambda f: '.gram' == f[-5:], os.listdir()))
         for file_name in gram_files:  # TODO: fix
+            print(f'Checking file {file_name}')
             cnf = tools.convert_to_cnf(*tools.read_gram_file(file_name))
             self.assertTrue(tools.is_cnf(cnf), msg=f'failed for file {file_name}')

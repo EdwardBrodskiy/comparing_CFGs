@@ -2,6 +2,7 @@ from typing import Iterator, List, Set
 from cfg import cfg_type, cfg_rhs, CFG, list_cnf_type, cnf_10palindrome, convert_cnf_to_list
 import copy
 import numpy as np
+from ordered_set import OrderedSet
 
 '''
 CFG structure note to self:
@@ -20,9 +21,9 @@ class TerminalString(str):
         return f'Terminal:"{string}"'
 
 
-def main():
-    rules = convert_cnf_to_list(cnf_10palindrome)
-    print(get_distance_to_terminal(rules))
+class EpsilonString(TerminalString):
+    def __repr__(self):
+        return 'Epsilon'
 
 
 def words_of_length(length, alphabet) -> Iterator[List[str]]:
@@ -38,6 +39,7 @@ def words_of_length(length, alphabet) -> Iterator[List[str]]:
 
 def read_gram_file(name) -> (str, cfg_type):
     cfg: cfg_type = {}
+    epsilon_key = '""'
     first = True
     start = ''
     with open(name) as file:
@@ -63,7 +65,10 @@ def read_gram_file(name) -> (str, cfg_type):
         for rule_index, rule in enumerate(rhs):
             for sub_rule_index, sub_rule in enumerate(rule):
                 if sub_rule not in cfg:
-                    cfg[key][rule_index][sub_rule_index] = TerminalString(sub_rule)
+                    if sub_rule == epsilon_key:
+                        cfg[key][rule_index][sub_rule_index] = EpsilonString(sub_rule)
+                    else:
+                        cfg[key][rule_index][sub_rule_index] = TerminalString(sub_rule)
 
     return start, cfg
 
@@ -76,11 +81,44 @@ def convert_to_cnf(start: str, cfg: cfg_type):
     cnf_start = name_generator.generate_extension(start)
     cnf[cnf_start] = [[start]]  # S0 -> S
 
+    # DEL
+
+    # find all nullable rules
+    nullable = OrderedSet()
+    found_nullable = True
+    while found_nullable:
+        found_nullable = False
+        for key, rhs in cnf.items():
+            if key not in nullable and key != cnf_start:
+                has_sub_rule_consisting_of_epsilons_at_index = -1
+                for rule_index, rule in enumerate(rhs):
+                    rule = list(filter(lambda sr: not isinstance(sr, EpsilonString), rule))
+                    if len(rule) == 0:
+                        has_sub_rule_consisting_of_epsilons_at_index = rule_index
+                        nullable.add(key)
+                        found_nullable = True
+                        continue  # TODO: assuming there is only one rule made up fully of epsilons. Maybe fix?
+                    # rule may have hand some stray epsilons e.g A epsilon B which is equivalent to A B
+                    cnf[key][rule_index] = rule
+                    if not found_nullable:
+                        if all(map(lambda sr: sr in nullable, rule)):
+                            nullable.add(key)
+                            found_nullable = True
+
+                if has_sub_rule_consisting_of_epsilons_at_index != -1:
+                    del cnf[key][has_sub_rule_consisting_of_epsilons_at_index]
+
+    for key, rhs in cnf.items():
+        new_sub_rules = [generate_all_non_nullable_combinations(rule, nullable) for rule in rhs]
+        new_sub_rules = {sub_item for item in new_sub_rules for sub_item in item}
+        rhs = {tuple(r) for r in rhs}
+        cnf[key] = [list(r) for r in (rhs | new_sub_rules)]
+
     # TERM
     new_terminal_rules: cfg_type = {}
     terminal_to_key_mapping = {}
     for key, rhs in cnf.items():  # identify existing terminals
-        if len(rhs) == 1 and len(rhs[0]) == 1 and type(rhs[0][0]) is TerminalString:
+        if len(rhs) == 1 and len(rhs[0]) == 1 and isinstance(rhs[0][0], TerminalString):
             new_terminal_rules[key] = [str(rhs[0][0])]
             terminal_to_key_mapping[rhs[0][0]] = key
 
@@ -115,12 +153,6 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                 new_extension_rules[extension_rule_key] = [rule[-2:]]
     cnf = cnf | new_extension_rules
 
-    # DEL
-    '''
-    I think we are ok to skip this step for now as what is meant to be an empty string is being treated as
-    "" hence we don't have empty strings.
-    '''
-
     # UNIT
     self_pointing = set()
     for key, rhs in cnf.items():  # remove pointless loops e.g A -> A
@@ -131,10 +163,10 @@ def convert_to_cnf(start: str, cfg: cfg_type):
         cnf[self_pointing_key] = list(filter(([self_pointing_key]).__ne__, cnf[self_pointing_key]))
 
     unit_rule_violations = {'rhs_violation_key': ['location_of_violation']}
-    while len(unit_rule_violations):  # TODO: runs for ever seems to not be doing anything
+    while len(unit_rule_violations):  # TODO: runs for ever seems to not be doing anything. Is this todo outdated?
         unit_rule_violations = {}
         for key, rhs in cnf.items():
-            if key not in unit_rule_violations and key not in new_terminal_rules:
+            if key not in unit_rule_violations and key not in new_terminal_rules:  # TODO: new terminal rules have other rules in rhs
                 for rule in rhs:
                     violating_key = rule[0]
                     if type(rule) is not str and len(rule) == 1:
@@ -148,6 +180,30 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                 cnf[key] += cnf[violating_key]
 
     return CFG(start=cnf_start, rules=cnf, alphabet=alphabet)
+
+
+def generate_all_non_nullable_combinations(rule, nullable):
+    new_rules = []
+    # extract the locations of nullable non terminals
+    nullables_at = list(filter(lambda sr_i: rule[sr_i] in nullable, range(len(rule))))
+
+    no_nullables = len(nullables_at)
+    for i in range(2 ** no_nullables):
+        new_rule = []
+        # create a unique string of ones and zeros representing a unique combination of nullables to use
+        nullables_to_use = '0' * no_nullables + f'{i:b}'  # convert to binary and add preceding zeros
+        nullable_index = 0
+        for sub_rule_index, sub_rule in enumerate(rule):
+            # if we are at a nullable skip if binary digit is 0 else add it
+            if nullable_index < len(nullables_at) and sub_rule_index == nullables_at[nullable_index]:
+                nullable_index += 1
+                if nullables_to_use[-nullable_index] == '0':
+                    continue
+            new_rule.append(sub_rule)
+        if new_rule:
+            new_rules.append(tuple(new_rule))
+
+    return new_rules
 
 
 def is_cnf(cfg: CFG) -> bool:
@@ -311,6 +367,18 @@ def generate_rhs_for_size(rhs: cfg_rhs, size) -> cfg_rhs:
                 new_rhs.append((create_key(rule[0], i), create_key(rule[1], size - 1 - i)))
 
     return new_rhs
+
+
+def main():
+    epsilon_test_cfg: cfg_type = {
+        'S': [['A', 'B', 'C', TerminalString('d')]],
+        'A': [['B', 'C']],
+        'B': [[TerminalString('b'), 'B'], [EpsilonString('""')]],
+        'C': [[TerminalString('c'), 'C'], [EpsilonString('""')]]
+    }
+    cnf = convert_to_cnf(*read_gram_file('.\\benchmarks\\C11Grammar1.gram'))
+    result = convert_to_cnf('S', epsilon_test_cfg)
+    print(result)
 
 
 if __name__ == '__main__':
