@@ -129,10 +129,10 @@ def main():
     )
     results = dict()
 
-    start, cfg = read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar-1-1.gram')
+    start, cfg = read_gram_file(r'..\..\benchmarks\C11Grammar1.gram')
     cnf = convert_to_cnf(start, cfg)
 
-    cfg = cnf_10palindrome  # convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
+    cfg = cnf  # convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
     enum = Enum(cfg, 7)
     for i in range(100):
         result = enum.generate(i)
@@ -149,7 +149,9 @@ def main():
     print(f'Sample \n{results}')
     rules = convert_cnf_to_list(cfg)
 
-    for depth in range(max(map(lambda x: len(x) if x is not None else 0, results.keys())) + 1):
+    max_length = max(map(lambda x: len(x) if x is not None else 0, results.keys()))
+    print(f'{max_length=}')
+    for depth in range(max_length + 1):
         print(f'checking length {depth}')
         for word in words_of_length(depth, cfg.alphabet):
             if ''.join(word) not in results and parse(word, rules):

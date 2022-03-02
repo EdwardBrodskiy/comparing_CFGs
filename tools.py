@@ -82,7 +82,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
     cnf[cnf_start] = [[start]]  # S0 -> S
 
     # DEL
-
+    # TODO: we do not have an exception for start hence we do not handle the empty word. Fix!
     # find all nullable rules
     nullable = OrderedSet()
     found_nullable = True
@@ -316,7 +316,7 @@ def is_input_string_legal(chars: List[str], cfg: CFG):
 
 def convert_cnf_to_limited_word_size(cnf: CFG, size: int):
     new_rules: cfg_type = {}
-    new_start: str = ''
+    new_start: str = cnf.start
     # create all size respecting rules
     for key, rhs in cnf.rules.items():
         for i in range(size):
@@ -340,15 +340,19 @@ def convert_cnf_to_limited_word_size(cnf: CFG, size: int):
                     updated_rhs.append(rule)
             if updated_rhs:
                 new_rules[key] = updated_rhs
+                if updated_rhs != rhs:
+                    changes = True
             else:
                 to_remove.append(key)
 
-            if updated_rhs != rhs:
-                changes = True
         # remove keys marked empty in the prior stage
         for key in to_remove:  # TODO: we do not deal with a grammar with an empty language
-            changes = True
-            del new_rules[key]
+            if key != new_start:
+                changes = True
+                del new_rules[key]
+            else:
+                # the start variable was about to be deleted return a grammar with an empty language
+                return CFG(rules={'S': [['S', 'S']]}, start='S', alphabet=set())
 
     return CFG(rules=new_rules, start=new_start, alphabet=cnf.alphabet.copy())
 
