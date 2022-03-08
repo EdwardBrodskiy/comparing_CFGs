@@ -177,7 +177,7 @@ def convert_to_cnf(start: str, cfg: cfg_type):
         for violating_key, violation_locations in unit_rule_violations.items():
             for key in violation_locations:
                 cnf[key].remove([violating_key])
-                cnf[key] += cnf[violating_key]
+                cnf[key] += cnf[violating_key]  # TODO: this could create duplicate operations
 
     return CFG(start=cnf_start, rules=cnf, alphabet=alphabet)
 

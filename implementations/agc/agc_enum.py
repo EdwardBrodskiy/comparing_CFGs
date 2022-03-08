@@ -51,7 +51,7 @@ class Enum:
 
         cartesian_expansion_coords = map_to_space(index, a_trees, b_trees)
 
-        # derive enum(A)[j1] and enum(B)[j2] from enum(AB)[i]
+        # derive enum(A)[j0] and enum(B)[j1] from enum(AB)[i]
         sub_enums = tuple(map(lambda j, sub_rule: self.enum((sub_rule,), j, depth=depth),
                               cartesian_expansion_coords, root))
 
@@ -76,14 +76,15 @@ class Enum:
         def i(bound):
             return self.helper_index(bound, n, trees)
 
-        # let k be such that 0 ≤ k ≤ n − 1 and i[k] ≤ index < i[k]+1
+        # Find the smallest rhs tree that would not return out of bounds (None)
         k = 0
         while k < n and i(k) <= index:
             k += 1
         k -= 1
 
-        # let q = floor((index − i[k])/(n − k)) and r = (index − i[k])%(n − k)
+        # get the sub index in the bound
         q = (index - i(k)) // (n - k)
+        # get the offset for which rule to choose from the remaining
         r = (index - i(k)) % (n - k)
 
         return tuple(sentential_forms[k + r]), trees[k] + q
@@ -134,19 +135,21 @@ def main():
 
     cfg = cnf  # convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
     enum = Enum(cfg, 7)
-    for i in range(100):
+    nones = ''
+    for i in range(1000):
         result = enum.generate(i)
-        if result is not None:
-            key = ''.join(result)
-        else:
-            key = result
-        if key not in results:
-            results[key] = 0
-        results[key] += i
 
-    print('done')
+        key = ''.join(result) if result is not None else result
 
-    print(f'Sample \n{results}')
+        results[key] = results[key] + i if key in results else 0
+
+        nones += ' ' + str(len(result)) if result is not None else '\n\n'
+
+    print(f'done {len(results)=}')
+
+    print(nones)
+
+    # print(f'Sample \n{results}')
     rules = convert_cnf_to_list(cfg)
 
     max_length = max(map(lambda x: len(x) if x is not None else 0, results.keys()))
