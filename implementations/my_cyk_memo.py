@@ -1,21 +1,20 @@
 from tools import words_of_length
 from cfg import convert_cnf_to_list, cnf_10palindrome, CFG
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Iterator
 import numpy as np
 
 
 def main():
-    import cProfile
-    import pstats
+    size = 10
+    test = np.zeros((size, size), dtype=np.int32)
+    for x in range(size):
+        for y in range(size):
+            if is_in_triangle((1, 1), 8, x, y, size):
+                test[y, x] = 0
+            else:
+                test[y, x] = 100_000 + x * 100 + y
 
-    with cProfile.Profile() as pr:
-        # is_matching_cfg(cnf_10palindrome, cnf_10palindrome_start, cnf_10palindrome,
-        #                 cnf_10palindrome_start, alphabet10, 10)
-        pass
-
-    stats = pstats.Stats(pr)
-    stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats(filename='memo_profiling.prof')
+    print(test)
 
 
 def parse(chars, rules, memo: Dict[Tuple, np.array]):
@@ -28,9 +27,16 @@ def parse(chars, rules, memo: Dict[Tuple, np.array]):
     memo_key = tuple(chars)
 
     # table = [[set() for _ in range(n - depth)] for depth in range(n)]
-    table = np.zeros((n, n, no_rules), dtype=np.uint8)
-    if memo_key[:-1] in memo:
-        table[:-1, :-1, :] = memo[memo_key[:-1]]
+    table = np.zeros((n, n, no_rules), dtype=np.bool8)
+
+    # load the largest available sub word from memory
+    loaded: Tuple[Tuple[int, int], int] = ((0, 0), 0)
+    for sub_word, lower_bound, upper_bound in permutations_of_cuts(memo_key):
+        if sub_word in memo:
+            table[lower_bound:upper_bound, lower_bound:upper_bound, :] = np.logical_or(
+                table[lower_bound:upper_bound, lower_bound:upper_bound, :], memo[sub_word])
+            loaded = ((lower_bound, 0), upper_bound - lower_bound)
+            break
 
     # Identify terminal rules
     for symbol_key, rule in enumerate(rules):
@@ -45,15 +51,31 @@ def parse(chars, rules, memo: Dict[Tuple, np.array]):
         for partition in range(span):  # Iterator for selecting combinations of squares for the left and right sides
             # check all the rules Ra -> Rb Rc
             for key, rule_set in enumerate(rules):
+                if is_in_triangle(*loaded, span, span_start, len(chars)):
+                    continue
                 for rhs in rule_set:
                     if type(rhs) is tuple:
                         left_side = table[partition, span_start, rhs[0]]
                         right_side = table[span - partition - 1, span_start + partition + 1, rhs[1]]
                         if left_side and right_side:
-                            table[span, span_start, key] = 1
+                            table[span, span_start, key] = True
                             # TODO: check if rule_a break here helps
     memo[memo_key] = table
     return table[-1, 0, 0] == 1
+
+
+def permutations_of_cuts(word: Tuple[str, ...]) -> Iterator[Tuple[Tuple[str, ...], int, int]]:
+    for i in reversed(range(len(word))):
+        for offset in range(len(word) - i):
+            upper_bound = i + offset + 1
+            yield word[offset:upper_bound], offset, upper_bound
+
+
+def is_in_triangle(position: Tuple[int, int], width: int, x: int, y: int, size: int):
+    if position[0] <= x <= position[0] + width and position[1] < size - y <= position[1] + width:
+        if (x - position[0]) + (width - y - position[1]) + 1 < width:
+            return True
+    return False
 
 
 def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
@@ -67,8 +89,6 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
             if parse(word, a_rule_set, memo_a) != parse(word, b_rule_set, memo_b):
                 return False
     return True
-
-
 
 
 if __name__ == '__main__':
