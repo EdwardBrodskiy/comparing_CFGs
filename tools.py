@@ -315,6 +315,7 @@ def is_input_string_legal(chars: List[str], cfg: CFG):
 
 
 def convert_cnf_to_limited_word_size(cnf: CFG, size: int):
+    # TODO: this is a shoddy implementation you can instead just generate the required keys starting with the start
     new_rules: cfg_type = {}
     new_start: str = cnf.start
     # create all size respecting rules
@@ -322,7 +323,7 @@ def convert_cnf_to_limited_word_size(cnf: CFG, size: int):
         for i in range(size):
             new_rhs = generate_rhs_for_size(rhs, i)
             new_key = create_key(key, i)
-            if len(new_rhs):  # TODO: can we stop at this size for this key?
+            if len(new_rhs):
                 new_rules[new_key] = new_rhs
                 if key == cnf.start:
                     new_start = new_key

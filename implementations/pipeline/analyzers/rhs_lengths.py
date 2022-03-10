@@ -1,6 +1,5 @@
 from typing import Tuple
 import numpy as np
-
 from cfg import CFG
 from implementations.pipeline.pipeline_tools import PipelineDataManager, PipelineMethodData
 
@@ -16,6 +15,7 @@ def match_rhs_lengths(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataMana
             table[rule_a_index, rule_b_index] = match
 
     pipeline.tables[method.key_word] = table
+    np.savetxt("rhs_lengths.csv", table, delimiter=",")
     return True, 0
 
 

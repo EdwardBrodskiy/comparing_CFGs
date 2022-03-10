@@ -32,7 +32,7 @@ def generate_similarity_table_by_value_approach(a, b):
     Approach solution by continuously re calculating the similarity table starting with everything at 0
     """
     table = np.zeros([len(a) + 1, len(b) + 1], dtype=np.float16)
-    for _ in range(3):  # TODO: change this to check for how much the change happened
+    for _ in range(100):  # TODO: change this to check for how much the change happened
         for rule_a_index in range(1, len(a)):
             for rule_b_index in range(1, len(b)):
                 if not (table[-1, rule_b_index] > .9 or table[rule_a_index, -1] > .9):
@@ -44,6 +44,7 @@ def generate_similarity_table_by_value_approach(a, b):
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
 
+    np.savetxt("subrule_match.csv", table, delimiter=",")
     return table[:-1, :-1]
 
 
@@ -77,3 +78,4 @@ def get_rhs_rule_match_score(table, rule_a, rule_b, cheat) -> float:
             if rule_a == rule_b:
                 return 1
     return 0
+

@@ -32,7 +32,7 @@ def generate_similarity_table_by_value_approach(a, b):
     Approach solution by continuously re calculating the similarity table starting with everything at 0
     """
     table = np.zeros([len(a), len(b)], dtype=np.float16)
-    for _ in range(3):  # TODO: change this to check for how much the change happened
+    for _ in range(1):  # TODO: change this to check for how much the change happened
         for rule_a_index in range(1, len(a)):
             for rule_b_index in range(1, len(b)):
                 rhs_a = a[rule_a_index]
@@ -74,3 +74,22 @@ def get_rhs_rule_match_score(table, rule_a, rule_b, cheat) -> float:
             if rule_a == rule_b:
                 return 1
     return 0
+
+
+if __name__ == '__main__':
+    from copy import deepcopy
+    from cfg import cnf_10palindrome
+
+    cnf = deepcopy(cnf_10palindrome)
+    cnf.rules['D'].remove(('Y', 'B'))
+    from matplotlib import pyplot as plt
+
+    p = PipelineDataManager(cnf_10palindrome, cnf, 190, lambda x: 1)
+    result = match_subrules(cnf_10palindrome, cnf, 190, p)
+    plt.imshow(p.tables[method.key_word], interpolation='nearest')
+
+    plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
+    cax = plt.axes([0.85, 0.1, 0.075, 0.8])
+    plt.colorbar(cax=cax)
+
+    plt.show()

@@ -51,7 +51,7 @@ def parse(chars, rules, memo: Dict[Tuple, np.array]):
         for partition in range(span):  # Iterator for selecting combinations of squares for the left and right sides
             # check all the rules Ra -> Rb Rc
             for key, rule_set in enumerate(rules):
-                if is_in_triangle(*loaded, span, span_start, len(chars)):
+                if is_in_triangle(loaded[0], loaded[1], span, span_start, len(chars)):
                     continue
                 for rhs in rule_set:
                     if type(rhs) is tuple:

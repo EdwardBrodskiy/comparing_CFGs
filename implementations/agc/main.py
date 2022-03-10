@@ -38,7 +38,7 @@ def is_matching_cfg_depth_respecting(a: CFG, b: CFG, max_depth: int):
         while any(words):
             words = (a_enum.generate(index), b_enum.generate(index))
 
-            if words[0] != words[1]:
+            if words[0] != words[1]:  # TODO: add set checking
                 logging.info(f'Checked for this length {index}.\nChecking words:\n{" ".join(words[0])}\n{" ".join(words[1])}')
                 if words[0] is not None and not parse(words[0], b_rule_set):
                     return False
