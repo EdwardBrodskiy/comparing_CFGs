@@ -41,6 +41,8 @@ def generate_similarity_table_by_value_approach(a, b):
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
 
+    np.savetxt("subrule_match_old.csv", table, delimiter=",")
+
     return table
 
 
@@ -76,20 +78,26 @@ def get_rhs_rule_match_score(table, rule_a, rule_b, cheat) -> float:
     return 0
 
 
-if __name__ == '__main__':
-    from copy import deepcopy
+def main():
+    from tools import convert_to_cnf, read_gram_file, convert_cnf_to_list
     from cfg import cnf_10palindrome
+    test_grammar = CFG(
+        rules={
+            'S': [['A', 'B'], ['B', 'B']],
+            'A': ['a', ['A', 'B']],
+            'B': ['b']
+        },
+        alphabet={'a', 'b'},
+        start='S'
+    )
 
-    cnf = deepcopy(cnf_10palindrome)
-    cnf.rules['D'].remove(('Y', 'B'))
-    from matplotlib import pyplot as plt
+    a_cnf = convert_to_cnf(*read_gram_file(r'..\..\..\benchmarks\AntlrJavaGrammar.gram'))
+    a_cnf_list = convert_cnf_to_list(a_cnf)
+    palindrome = convert_cnf_to_list(cnf_10palindrome)
+    list_grammar = palindrome
 
-    p = PipelineDataManager(cnf_10palindrome, cnf, 190, lambda x: 1)
-    result = match_subrules(cnf_10palindrome, cnf, 190, p)
-    plt.imshow(p.tables[method.key_word], interpolation='nearest')
+    generate_similarity_table_by_value_approach(list_grammar, list_grammar)
 
-    plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
-    cax = plt.axes([0.85, 0.1, 0.075, 0.8])
-    plt.colorbar(cax=cax)
 
-    plt.show()
+if __name__ == '__main__':
+    main()
