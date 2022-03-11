@@ -7,12 +7,13 @@ from implementations.agc import main as agc
 from cfg import type_is_matching_cfg
 from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
+from tests.implementations.tools_for_testing import inject_type_1_errors
 
 # Global test settings
-MAX_DEPTH: int = 9
-NUMBER_OF_CFGS_TO_TEST: int = 2
+MAX_DEPTH: int = 7
+NUMBER_OF_CFGS_TO_TEST: int = 1
 RE_RUNS: int = 1
-USE_PAST_RESULTS: bool = True
+USE_PAST_RESULTS: bool = False
 
 
 def main():
@@ -58,6 +59,7 @@ class TimeAll(Timer):
         cnf = convert_to_cnf(start, cfg)
         return {
             'cnf': cnf,
+            'bad_cnf': next(inject_type_1_errors(cnf, sample_size=1, be_consistent=True))
         }
 
     @staticmethod
@@ -67,7 +69,7 @@ class TimeAll(Timer):
 
     @staticmethod  # TODO: may be able to expand out the cnf and depth variables
     def algorithm_wrapper(algorithm: type_is_matching_cfg, **kwargs) -> Callable[[], bool]:
-        return lambda: algorithm(kwargs['cnf'], kwargs['cnf'], kwargs['depth'])
+        return lambda: algorithm(kwargs['cnf'], kwargs['bad_cnf'], kwargs['depth'])
 
     def add_result_to_results(self, run_index: int, algorithm_name: str, result: Union[str, float], **input_data):
         self.results[algorithm_name][input_data['depth'] - 1] += result
