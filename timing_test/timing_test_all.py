@@ -1,7 +1,7 @@
 from timing_test.timer import Timer, TimerSettings
 from timing_test.print_out import PrintOut
 import os
-from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy
+from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy, my_cyk_memo_numpy
 from implementations.pipeline import pipeline_analyzer
 from implementations.agc import main as agc
 from cfg import type_is_matching_cfg
@@ -13,6 +13,7 @@ MAX_DEPTH: int = 9
 NUMBER_OF_CFGS_TO_TEST: int = 2
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = True
+TIMEOUT: int = 15
 
 
 def main():
@@ -40,16 +41,17 @@ class TimeAll(Timer):
             NUMBER_OF_CFGS_TO_TEST = 'all'
         algorithms: Dict[str, type_is_matching_cfg] = {
             # 'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
-            # 'my_cyk_memo': my_cyk_memo.is_matching_cfg,
+            'my_cyk_memo': my_cyk_memo.is_matching_cfg,
+            'my_cyk_memo_numpy': my_cyk_memo_numpy.is_matching_cfg,
             # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
-            # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
+            'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
             'agc_implementation_random': agc.is_matching_cfg,
             'agc_implementation_depth_respecting': agc.is_matching_cfg_depth_respecting,
             'agc_implementation_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
         }
 
         super().__init__(TimerSettings(F'time_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS), gram_files,
+                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT), gram_files,
                          algorithms, *args, **kwargs)
 
     @staticmethod
@@ -70,10 +72,20 @@ class TimeAll(Timer):
         return lambda: algorithm(kwargs['cnf'], kwargs['cnf'], kwargs['depth'])
 
     def add_result_to_results(self, run_index: int, algorithm_name: str, result: Union[str, float], **input_data):
-        self.results[algorithm_name][input_data['depth'] - 1] += result
-        if run_index + 1 == self.settings.re_runs:  # turn sum to mean at the last result
-            self.results[algorithm_name][input_data['depth'] - 1] = round(
-                self.results[algorithm_name][input_data['depth'] - 1] / (self.settings.re_runs * len(self.tests)), 3)
+        if result == self.settings.timeout_key or self.results[algorithm_name][input_data['depth'] - 1] == self.settings.timeout_key:
+            self.results[algorithm_name][input_data['depth'] - 1] = self.settings.timeout_key
+        else:
+            self.results[algorithm_name][input_data['depth'] - 1] += result
+            if run_index + 1 == self.settings.re_runs:  # turn sum to mean at the last result
+                self.results[algorithm_name][input_data['depth'] - 1] = round(
+                    self.results[algorithm_name][input_data['depth'] - 1] / (self.settings.re_runs * len(self.tests)), 3)
+
+    def has_timed_out_before(self, algorithm_name: str, **input_data) -> bool:
+        if self.results[algorithm_name][input_data['depth'] - 1] == self.settings.timeout_key:
+            return True
+        if input_data['depth'] - 2 >= 0 and self.results[algorithm_name][input_data['depth'] - 2] == self.settings.timeout_key:
+            return True
+        return False
 
 
 if __name__ == '__main__':

@@ -4,6 +4,10 @@ from timeit import timeit
 import csv
 from os import path
 
+import threading
+import sys
+import _thread as thread
+
 from timing_test.print_out import PrintOut
 
 
@@ -25,6 +29,29 @@ class TimerSettings:
 
 def main():
     pass
+
+
+def exit_after(s):
+    def outer(fn):
+        def inner(*args, **kwargs):
+            timer = threading.Timer(s, quit_function)
+            timer.start()
+            try:
+                result = fn(*args, **kwargs)
+            except KeyboardInterrupt:
+                result = None
+            finally:
+                timer.cancel()
+            return result
+
+        return inner
+
+    return outer
+
+
+def quit_function():
+    sys.stderr.flush()  # Python 3 stderr is likely buffered.
+    thread.interrupt_main()  # raises KeyboardInterrupt
 
 
 class Timer:
@@ -52,8 +79,23 @@ class Timer:
                 for index, varying_input_data_for_test in self.generate_varying_input_data_for_test():
                     for algorithm_name, algorithm in self.algorithms.items():
                         testable_method = self.algorithm_wrapper(algorithm, **input_data_for_test, **varying_input_data_for_test)
-                        result = self._time(algorithm_name, testable_method)
-                        self.add_result_to_results(run_index, algorithm_name, result, **varying_input_data_for_test)
+                        if not self.has_timed_out_before(algorithm_name, **input_data_for_test, **varying_input_data_for_test):
+                            # to handle detecting timeouts run the test in a separate thread
+                            @exit_after(self.settings.timeout)
+                            def time_out_method(method):
+                                return timeit(method, number=1)
+
+                            result = time_out_method(testable_method)
+
+                            if result is None:  # Fail: test took too long
+                                self.add_result_to_results(run_index, algorithm_name, self.settings.timeout_key,
+                                                           **varying_input_data_for_test)
+                            else:  # Success: save result!
+                                self.add_result_to_results(run_index, algorithm_name, result,
+                                                           **varying_input_data_for_test)
+                        else:  # Fail: test failed in the past
+                            self.add_result_to_results(run_index, algorithm_name, self.settings.timeout_key, **varying_input_data_for_test)
+
                     self.printer.depth(2)
                 self.printer.depth(1)
             self.printer.depth(0)
@@ -85,7 +127,7 @@ class Timer:
         return True
 
     @staticmethod
-    def check_for_timeout(algorithm_name: str):
+    def has_timed_out_before(algorithm_name: str, **input_data) -> bool:
         return False
 
     def generate_header(self):
@@ -123,11 +165,6 @@ class Timer:
 
     def _is_timing_required(self, algorithm_name):
         return self.settings.re_build_table or self.is_timing_required(algorithm_name)
-
-    def _time(self, algorithm_name, method: Callable) -> Union[float, str]:
-        if self.check_for_timeout(algorithm_name):
-            return self.settings.timeout_key
-        return timeit(method, number=1)
 
     def _save_data(self):  # TODO: fix saving location
         saved = False
