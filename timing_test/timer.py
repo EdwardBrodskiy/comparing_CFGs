@@ -7,6 +7,7 @@ from os import path
 import threading
 import sys
 import _thread as thread
+import logging
 
 from timing_test.print_out import PrintOut
 
@@ -74,7 +75,7 @@ class Timer:
 
         self.printer.start_up()
         for run_index in range(self.settings.re_runs):  # this is done instead of changing the number on timeit to spread out the tests
-            for test in self.tests:
+            for test_index, test in enumerate(self.tests):
                 input_data_for_test = self.set_up(test)
                 for index, varying_input_data_for_test in self.generate_varying_input_data_for_test():
                     for algorithm_name, algorithm in self.algorithms.items():
@@ -88,11 +89,15 @@ class Timer:
                             result = time_out_method(testable_method)
 
                             if result is None:  # Fail: test took too long
+                                logging.info(f'TIMER : {algorithm_name} timed out.')
                                 self.add_result_to_results(run_index, algorithm_name, self.settings.timeout_key,
                                                            **varying_input_data_for_test)
                             else:  # Success: save result!
+                                logging.info(f'TIMER : {algorithm_name} ran for {result}.')
                                 self.add_result_to_results(run_index, algorithm_name, result,
                                                            **varying_input_data_for_test)
+                                if run_index + 1 == self.settings.re_runs and test_index + 1 == len(self.tests):
+                                    self.aggregate_results(algorithm_name, **varying_input_data_for_test)
                         else:  # Fail: test failed in the past
                             self.add_result_to_results(run_index, algorithm_name, self.settings.timeout_key, **varying_input_data_for_test)
 
@@ -116,6 +121,10 @@ class Timer:
 
     @staticmethod
     def add_result_to_results(run_index: int, algorithm_name: str, result: Union[str, float], **input_data):
+        pass
+
+    @staticmethod
+    def aggregate_results(algorithm_name: str, **input_data):
         pass
 
     @staticmethod

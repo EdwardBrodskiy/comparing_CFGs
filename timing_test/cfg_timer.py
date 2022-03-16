@@ -13,9 +13,10 @@ class CFGTimer(Timer):
             self.results[algorithm_name][input_data['depth'] - 1] = self.settings.timeout_key
         else:
             self.results[algorithm_name][input_data['depth'] - 1] += result
-            if run_index + 1 == self.settings.re_runs:  # turn sum to mean at the last result
-                self.results[algorithm_name][input_data['depth'] - 1] = round(
-                    self.results[algorithm_name][input_data['depth'] - 1] / (self.settings.re_runs * len(self.tests)), 3)
+
+    def aggregate_results(self, algorithm_name: str, **input_data):
+        self.results[algorithm_name][input_data['depth'] - 1] = round(
+            self.results[algorithm_name][input_data['depth'] - 1] / (self.settings.re_runs * len(self.tests)), 3)
 
     def has_timed_out_before(self, algorithm_name: str, **input_data) -> bool:
         if self.results[algorithm_name][input_data['depth'] - 1] == self.settings.timeout_key:

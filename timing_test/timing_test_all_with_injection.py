@@ -12,11 +12,11 @@ from tests.implementations.tools_for_testing import inject_type_1_errors
 import logging
 
 # Global test settings
-MAX_DEPTH: int = 7
+MAX_DEPTH: int = 30
 NUMBER_OF_CFGS_TO_TEST: int = 10
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = False
-TIMEOUT: int = 60
+TIMEOUT: int = 300
 
 
 def main():
@@ -53,7 +53,7 @@ class TimeAll(CFGTimer):
         }
 
         super().__init__(TimerSettings(F'time_type_1_err_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS), gram_files,
+                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, max_depth=MAX_DEPTH, timeout=TIMEOUT), gram_files,
                          algorithms, *args, **kwargs)
 
     @staticmethod
@@ -62,7 +62,7 @@ class TimeAll(CFGTimer):
         cnf = convert_to_cnf(start, cfg)
         return {
             'cnf': cnf,
-            'bad_cnf': next(inject_type_1_errors(cnf, sample_size=1, be_consistent=True))
+            'bad_cnf': next(inject_type_1_errors(cnf, sample_size=1, be_consistent=False))
         }
 
     @staticmethod  # TODO: may be able to expand out the cnf and depth variables
