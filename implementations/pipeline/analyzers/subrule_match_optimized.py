@@ -43,12 +43,12 @@ def generate_similarity_table_by_value_approach(a, b):
     iteration_order_a = generate_iteration_order(reverse_reference_a)
     iteration_order_b = generate_iteration_order(reverse_reference_b)
 
-    logging.info(f'{len(iteration_order_a)=}, {len(iteration_order_b)=}')
+    logging.debug(f'{len(iteration_order_a)=}, {len(iteration_order_b)=}')
 
     # iterate over grammar making comparisons
     change = len(a) * len(b)
     counter = 0
-    logging.info(f'{0.01 * len(a) * len(b)=}')
+    logging.debug(f'{0.01 * len(a) * len(b)=}')
     while change > 0.01 * len(a) * len(b):
         counter += 1
         change = 0
@@ -66,9 +66,9 @@ def generate_similarity_table_by_value_approach(a, b):
                             table[rule_a_index, rule_b_index] = new_score
                             table[rule_a_index, -1] = table[rule_a_index, rule_b_index]
                             table[-1, rule_b_index] = table[rule_a_index, rule_b_index]
-        logging.info(f'At iteration {counter} the change is {change}')
+        logging.debug(f'At iteration {counter} the change is {change}')
 
-    logging.info(f'number of iterations {counter}')
+    logging.debug(f'number of iterations {counter}')
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
 

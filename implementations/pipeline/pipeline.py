@@ -23,11 +23,11 @@ class Pipeline:
     def evaluate(self) -> bool:
         threshold = 1
         last_decision = True
-        logging.info('starting pipeline:')
+        logging.debug('starting pipeline:')
         for i, pipe in enumerate(self.methods):
             self.current_method_index = i
             decision, certainty = pipe.method(self._a, self._b, self._max_depth, self.data_manager)
-            logging.info(' ' * i + f'pipe {pipe.method.__name__} returned {decision} with a certainty of {certainty}')
+            logging.debug(' ' * i + f'pipe {pipe.method.__name__} returned {decision} with a certainty of {certainty}')
             if certainty >= threshold:
                 return decision
             last_decision = decision

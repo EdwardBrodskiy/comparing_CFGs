@@ -38,12 +38,12 @@ class Analyzer:
         if self._pipeline is None:
             raise Exception('Please set pipeline')
         # if either found a difference means we found a counter example
-        logging.info('Checking if words in grammar A are present in grammar B')
+        logging.debug('Checking if words in grammar A are present in grammar B')
         a_decision, a_certainty = self._a_searcher.search()
         if a_decision is False:
             return False, 1
 
-        logging.info('Checking if words in grammar B are present in grammar A')
+        logging.debug('Checking if words in grammar B are present in grammar A')
         b_decision, b_certainty = self._b_searcher.search()
         if b_decision is False:
             return False, 1
@@ -106,10 +106,13 @@ class Searcher:
         while not difference_found and len(self.heap) and computation_counter * 2 < next_method_complexity:
             current_node = self.heap[0]
 
+            # get the index of the smallest non None value for similarity out of current options
             sm_match_index = min(range(len(current_node.difference_values)),
                                  key=lambda index: current_node.difference_values[index] if current_node.difference_values[
                                                                                                 index] is not None else inf)
             smallest_match: float = current_node.difference_values[sm_match_index]
+
+            # If None was selected i.e. infinity == min this means there are no options left
             if smallest_match is None:
                 heapq.heappop(self.heap)
                 continue
@@ -130,7 +133,7 @@ class Searcher:
                             logging.info(f'tree search found counter example: {" ".join(new_string)}')
                             break
                         else:
-                            logging.info(f'checked {"".join(new_string)}')
+                            logging.debug(f'checked {"".join(new_string)}')
                         self.checked_strings.add(new_string)
                         continue  # don't add word to heap
                 # add the new string to the heap for further development

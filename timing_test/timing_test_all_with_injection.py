@@ -8,7 +8,7 @@ from implementations.agc import main as agc
 from cfg import type_is_matching_cfg
 from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
-from tests.implementations.tools_for_testing import inject_type_1_errors
+from tests.implementations.tools_for_testing import inject_type_1_errors, inject_type_2_errors, inject_type_3_errors
 import logging
 
 # Global test settings
@@ -17,6 +17,13 @@ NUMBER_OF_CFGS_TO_TEST: int = 10
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = False
 TIMEOUT: int = 300
+ERROR_TYPE: int = 2
+
+error_injectors = {
+    1: inject_type_1_errors,
+    2: inject_type_2_errors,
+    3: inject_type_3_errors,
+}
 
 
 def main():
@@ -52,9 +59,10 @@ class TimeAll(CFGTimer):
             'agc_implementation_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
         }
 
-        super().__init__(TimerSettings(F'time_type_1_err_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, max_depth=MAX_DEPTH, timeout=TIMEOUT), gram_files,
-                         algorithms, *args, **kwargs)
+        super().__init__(
+            TimerSettings(F'time_type_{ERROR_TYPE}_err_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
+                          re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, max_depth=MAX_DEPTH, timeout=TIMEOUT), gram_files,
+            algorithms, *args, **kwargs)
 
     @staticmethod
     def set_up(test: str) -> Dict[str, Any]:
@@ -62,7 +70,7 @@ class TimeAll(CFGTimer):
         cnf = convert_to_cnf(start, cfg)
         return {
             'cnf': cnf,
-            'bad_cnf': next(inject_type_1_errors(cnf, sample_size=1, be_consistent=False))
+            'bad_cnf': next(error_injectors[ERROR_TYPE](cnf, sample_size=1, be_consistent=False))
         }
 
     @staticmethod  # TODO: may be able to expand out the cnf and depth variables

@@ -1,4 +1,4 @@
-from tools import words_of_length, TerminalString, read_gram_file
+from tools import words_of_length, TerminalString, read_gram_file, convert_to_cnf, convert_broken_cnf_to_cfg_form
 from implementations.lark_testing import is_accepted, cnf_10palindrome as lark_cnf
 from typing import Iterator, Tuple, List
 from copy import deepcopy
@@ -82,19 +82,14 @@ def inject_type_1_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):
         for i in range(len(rhs)):
             if selected_indices is None or index in selected_indices:
 
-                # TODO: Temporary hack should remove rule usages instead if rule is to become empty
-                if selected_indices is not None and len(bad_cfg.rules[key]) == 1:
-                    selected_indices.add(index + 1)
-                    continue
-
-                # TODO: this is silly just copy the original again it does not need to be fast
                 temp = bad_cfg.rules[key].pop(i)
                 if type(temp) is str and alphabet_count[temp] == 1:
                     bad_cfg.alphabet.remove(temp)
+
+                bad_cfg = convert_to_cnf(*convert_broken_cnf_to_cfg_form(bad_cfg))
+
                 yield bad_cfg
-                bad_cfg.rules[key].insert(i, temp)
-                if type(temp) is str:
-                    bad_cfg.alphabet.add(temp)
+                bad_cfg = deepcopy(cfg)
             index += 1
 
 
@@ -145,9 +140,10 @@ def inject_type_2_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):
 
     for key, i, options in selected_locations:
         to_remove = rnd.choice(options)
-        temp = bad_cfg.rules[key][i].pop(to_remove)
+        bad_cfg.rules[key][i].pop(to_remove)
+        bad_cfg = convert_to_cnf(*convert_broken_cnf_to_cfg_form(bad_cfg))
         yield bad_cfg
-        bad_cfg.rules[key][i].insert(to_remove, temp)
+        bad_cfg = deepcopy(cfg)
 
 
 def inject_type_3_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):  # takes cfg in non cnf form
@@ -185,10 +181,11 @@ def inject_type_3_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):
         bad_cfg.rules[new_key] = new_rule
         bad_cfg.rules[key][i][to_change] = new_key
 
+        bad_cfg = convert_to_cnf(*convert_broken_cnf_to_cfg_form(bad_cfg))
+
         yield bad_cfg
 
-        del bad_cfg.rules[new_key]
-        bad_cfg.rules[key][i][to_change] = to_change_key
+        bad_cfg = deepcopy(cfg)
 
 
 if __name__ == '__main__':

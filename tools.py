@@ -226,7 +226,7 @@ def is_cnf(cfg: CFG) -> bool:
 
     # BIN
     for key, rhs in cfg.rules.items():
-        if any(map(lambda r: type(r) is not str and len(r) > 2, rhs)):
+        if any(map(lambda r: type(r) is not str and not 1 <= len(r) <= 2, rhs)):
             print(f'BIN : {key} -> {rhs}')
             return False
 
@@ -269,6 +269,23 @@ class NameGenerator:
                 return new_key
             modifier = str(modifier_counter)
             modifier_counter += 1
+
+
+# Converts CFG back to primitives that can be fed back into the cnf converter
+def convert_broken_cnf_to_cfg_form(cfg: CFG) -> (str, cfg_type):
+    new_cfg_rules: cfg_type = copy.deepcopy(cfg.rules)
+
+    # convert all terminals back to terminal strings
+    for key, rhs in new_cfg_rules.items():
+        for rule_index, rule in enumerate(rhs):
+            if type(rule) is str:
+                new_cfg_rules[key][rule_index] = (TerminalString(rule),)
+            else:
+                for sub_rule_index, sub_rule in enumerate(rule):
+                    if sub_rule in cfg.alphabet:
+                        new_cfg_rules[key][rule_index][sub_rule_index] = TerminalString(sub_rule)
+
+    return cfg.start, new_cfg_rules
 
 
 def get_distance_to_terminal(rules: list_cnf_type):
@@ -375,15 +392,10 @@ def generate_rhs_for_size(rhs: cfg_rhs, size) -> cfg_rhs:
 
 
 def main():
-    epsilon_test_cfg: cfg_type = {
-        'S': [['A', 'B', 'C', TerminalString('d')]],
-        'A': [['B', 'C']],
-        'B': [[TerminalString('b'), 'B'], [EpsilonString('""')]],
-        'C': [[TerminalString('c'), 'C'], [EpsilonString('""')]]
-    }
-    cnf = convert_to_cnf(*read_gram_file('.\\benchmarks\\C11Grammar1.gram'))
-    result = convert_to_cnf('S', epsilon_test_cfg)
-    print(result)
+    cnf = convert_to_cnf(*convert_broken_cnf_to_cfg_form(cnf_10palindrome))
+    print(cnf_10palindrome.rules)
+    print(cnf.rules)
+    print(cnf.start)
 
 
 if __name__ == '__main__':
