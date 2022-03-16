@@ -1,4 +1,5 @@
 from timing_test.timer import Timer, TimerSettings
+from timing_test.cfg_timer import CFGTimer
 from timing_test.print_out import PrintOut
 import os
 from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy
@@ -8,12 +9,14 @@ from cfg import type_is_matching_cfg
 from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
 from tests.implementations.tools_for_testing import inject_type_1_errors
+import logging
 
 # Global test settings
 MAX_DEPTH: int = 7
-NUMBER_OF_CFGS_TO_TEST: int = 1
+NUMBER_OF_CFGS_TO_TEST: int = 10
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = False
+TIMEOUT: int = 60
 
 
 def main():
@@ -30,7 +33,7 @@ def main():
     stats.dump_stats(filename='timing_test_all_PROFILE.prof')
 
 
-class TimeAll(Timer):
+class TimeAll(CFGTimer):
     def __init__(self, *args, **kwargs):
         os.chdir(os.path.join('..', 'benchmarks'))
         global NUMBER_OF_CFGS_TO_TEST
@@ -41,15 +44,15 @@ class TimeAll(Timer):
             NUMBER_OF_CFGS_TO_TEST = 'all'
         algorithms: Dict[str, type_is_matching_cfg] = {
             # 'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
-            # 'my_cyk_memo': my_cyk_memo.is_matching_cfg,
-            # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
-            # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
+            'my_cyk_memo': my_cyk_memo.is_matching_cfg,
+            'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
+            'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
             'agc_implementation_random': agc.is_matching_cfg,
             'agc_implementation_depth_respecting': agc.is_matching_cfg_depth_respecting,
             'agc_implementation_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
         }
 
-        super().__init__(TimerSettings(F'time_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
+        super().__init__(TimerSettings(F'time_type_1_err_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
                                        re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS), gram_files,
                          algorithms, *args, **kwargs)
 
@@ -62,21 +65,12 @@ class TimeAll(Timer):
             'bad_cnf': next(inject_type_1_errors(cnf, sample_size=1, be_consistent=True))
         }
 
-    @staticmethod
-    def generate_varying_input_data_for_test():
-        for i in range(1, MAX_DEPTH + 1):
-            yield i, {'depth': i}
-
     @staticmethod  # TODO: may be able to expand out the cnf and depth variables
     def algorithm_wrapper(algorithm: type_is_matching_cfg, **kwargs) -> Callable[[], bool]:
         return lambda: algorithm(kwargs['cnf'], kwargs['bad_cnf'], kwargs['depth'])
 
-    def add_result_to_results(self, run_index: int, algorithm_name: str, result: Union[str, float], **input_data):
-        self.results[algorithm_name][input_data['depth'] - 1] += result
-        if run_index + 1 == self.settings.re_runs:  # turn sum to mean at the last result
-            self.results[algorithm_name][input_data['depth'] - 1] = round(
-                self.results[algorithm_name][input_data['depth'] - 1] / (self.settings.re_runs * len(self.tests)), 3)
-
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='main.log', filemode='w',
+                        format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     main()

@@ -81,6 +81,13 @@ def inject_type_1_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):
     for key, rhs in cfg.rules.items():
         for i in range(len(rhs)):
             if selected_indices is None or index in selected_indices:
+
+                # TODO: Temporary hack should remove rule usages instead if rule is to become empty
+                if selected_indices is not None and len(bad_cfg.rules[key]) == 1:
+                    selected_indices.add(index + 1)
+                    continue
+
+                # TODO: this is silly just copy the original again it does not need to be fast
                 temp = bad_cfg.rules[key].pop(i)
                 if type(temp) is str and alphabet_count[temp] == 1:
                     bad_cfg.alphabet.remove(temp)

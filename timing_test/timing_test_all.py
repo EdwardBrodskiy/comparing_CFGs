@@ -9,11 +9,11 @@ from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
 
 # Global test settings
-MAX_DEPTH: int = 9
+MAX_DEPTH: int = 30
 NUMBER_OF_CFGS_TO_TEST: int = 2
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = True
-TIMEOUT: int = 15
+TIMEOUT: int = 300
 
 
 def main():
@@ -51,7 +51,7 @@ class TimeAll(Timer):
         }
 
         super().__init__(TimerSettings(F'time_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT), gram_files,
+                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH), gram_files,
                          algorithms, *args, **kwargs)
 
     @staticmethod
@@ -62,30 +62,9 @@ class TimeAll(Timer):
             'cnf': cnf,
         }
 
-    @staticmethod
-    def generate_varying_input_data_for_test():
-        for i in range(1, MAX_DEPTH + 1):
-            yield i, {'depth': i}
-
     @staticmethod  # TODO: may be able to expand out the cnf and depth variables
     def algorithm_wrapper(algorithm: type_is_matching_cfg, **kwargs) -> Callable[[], bool]:
         return lambda: algorithm(kwargs['cnf'], kwargs['cnf'], kwargs['depth'])
-
-    def add_result_to_results(self, run_index: int, algorithm_name: str, result: Union[str, float], **input_data):
-        if result == self.settings.timeout_key or self.results[algorithm_name][input_data['depth'] - 1] == self.settings.timeout_key:
-            self.results[algorithm_name][input_data['depth'] - 1] = self.settings.timeout_key
-        else:
-            self.results[algorithm_name][input_data['depth'] - 1] += result
-            if run_index + 1 == self.settings.re_runs:  # turn sum to mean at the last result
-                self.results[algorithm_name][input_data['depth'] - 1] = round(
-                    self.results[algorithm_name][input_data['depth'] - 1] / (self.settings.re_runs * len(self.tests)), 3)
-
-    def has_timed_out_before(self, algorithm_name: str, **input_data) -> bool:
-        if self.results[algorithm_name][input_data['depth'] - 1] == self.settings.timeout_key:
-            return True
-        if input_data['depth'] - 2 >= 0 and self.results[algorithm_name][input_data['depth'] - 2] == self.settings.timeout_key:
-            return True
-        return False
 
 
 if __name__ == '__main__':

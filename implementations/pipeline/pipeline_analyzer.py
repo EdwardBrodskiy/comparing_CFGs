@@ -18,8 +18,8 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
     pipeline = Pipeline(a, b, max_depth,
                         (
                             alphabet_match.method,  # TODO: are all the terminals reachable
-                            # rhs_lengths.method,
-                            # dynamic_method,
+                            rhs_lengths.method,
+                            dynamic_method,
                             subrule_match_optimized.method,
                             dynamic_method,
                             # lambda *args: numpy_is_matching_cfg(*args[:-1])
