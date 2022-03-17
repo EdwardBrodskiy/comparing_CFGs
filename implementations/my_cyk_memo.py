@@ -3,11 +3,12 @@ from cfg import convert_cnf_to_list, cnf_10palindrome, CFG
 from typing import Dict, Tuple, Set
 
 
-def parse(chars, rules, memo: Dict[Tuple, Set]) -> Set:
-    """
-    CYK parser based on: https://en.wikipedia.org/wiki/CYK_algorithm#Algorithm
-    """
+def parse(chars, rules, memo: Dict[Tuple, Set]) -> bool:
+    result = wrapped_parse(chars, rules, memo)
+    return 0 in result
 
+
+def wrapped_parse(chars, rules, memo: Dict[Tuple, Set]) -> Set:
     n = len(chars)
     chars = tuple(chars)
 
@@ -27,7 +28,7 @@ def parse(chars, rules, memo: Dict[Tuple, Set]) -> Set:
         for i in range(1, n):
             # split word in two in every possible way
             left, right = chars[:i], chars[i:]
-            left_accepted, right_accepted = parse(left, rules, memo), parse(right, rules, memo)
+            left_accepted, right_accepted = wrapped_parse(left, rules, memo), wrapped_parse(right, rules, memo)
             # find all the non-terminals that produce accepted left right pairs
             for key, rhs in enumerate(rules):
                 for rule in rhs:

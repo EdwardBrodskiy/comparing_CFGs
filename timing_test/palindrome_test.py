@@ -2,7 +2,7 @@ from timing_test.timer import Timer, TimerSettings
 from timing_test.cfg_timer import CFGTimer
 from timing_test.print_out import PrintOut
 import os
-from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy, my_cyk
+from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy, my_cyk, my_cyk_memo_numpy
 import implementations.agc.main as agc_enum
 from implementations.pipeline import pipeline_analyzer
 from cfg import type_is_matching_cfg, cnf_10palindrome
@@ -36,7 +36,7 @@ class TimePalindrome(CFGTimer):
         algorithms: Dict[str, type_is_matching_cfg] = {
             'my_cyk': my_cyk.is_matching_cfg,
             'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
-            'my_cyk_memo_numpy': my_cyk_memo.is_matching_cfg,
+            'my_cyk_memo_numpy': my_cyk_memo_numpy.is_matching_cfg,
             'my_cyk_memo': my_cyk_memo.is_matching_cfg,
             'agc_enum': agc_enum.is_matching_cfg_depth_respecting,
             'agc_enum_memo': agc_enum.is_matching_cfg_depth_respecting_memo,

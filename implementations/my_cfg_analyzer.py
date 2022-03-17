@@ -24,8 +24,8 @@ def main():
     import cProfile
     import pstats
     from tools import convert_to_cnf, read_gram_file
-    start, cfg = read_gram_file(r'..\benchmarks\C11Grammar1-1-1.gram')
-    cnf = convert_to_cnf(start, cfg)
+    cfg = read_gram_file(r'..\benchmarks\C11Grammar1-1-1.gram')
+    cnf = convert_to_cnf(cfg)
     with cProfile.Profile() as pr:
         is_matching_cfg_test(cnf, cnf, 1, generate_similarity_table_by_value_approach)
     stats = pstats.Stats(pr)

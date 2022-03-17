@@ -91,7 +91,7 @@ def main():
         start='S'
     )
 
-    a_cnf = convert_to_cnf(*read_gram_file(r'..\..\..\benchmarks\AntlrJavaGrammar.gram'))
+    a_cnf = convert_to_cnf(read_gram_file(r'..\..\..\benchmarks\AntlrJavaGrammar.gram'))
     a_cnf_list = convert_cnf_to_list(a_cnf)
     palindrome = convert_cnf_to_list(cnf_10palindrome)
     list_grammar = palindrome

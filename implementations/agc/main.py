@@ -81,8 +81,8 @@ def is_matching_cfg_depth_respecting_memo(a: CFG, b: CFG, max_depth: int):
 
 
 def main():
-    a_cnf = convert_to_cnf(*read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar.gram'))
-    b_cnf = convert_to_cnf(*read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar-1-1.gram'))
+    a_cnf = convert_to_cnf(read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar.gram'))
+    b_cnf = convert_to_cnf(read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar-1-1.gram'))
 
     print(is_matching_cfg_depth_respecting(a_cnf, a_cnf, 8))
     print(is_matching_cfg(a_cnf, a_cnf, 8))

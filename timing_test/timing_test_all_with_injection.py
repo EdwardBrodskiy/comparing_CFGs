@@ -5,25 +5,19 @@ import os
 from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy
 from implementations.pipeline import pipeline_analyzer
 from implementations.agc import main as agc
-from cfg import type_is_matching_cfg
+from cfg import type_is_matching_cfg, CFG
 from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
-from tests.implementations.tools_for_testing import inject_type_1_errors, inject_type_2_errors, inject_type_3_errors
+from tests.implementations.tools_for_testing import inject_type_1_errors, inject_type_2_errors, inject_type_3_errors, get_alphabet
 import logging
 
 # Global test settings
 MAX_DEPTH: int = 30
-NUMBER_OF_CFGS_TO_TEST: int = 10
+NUMBER_OF_CFGS_TO_TEST: int = 5
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = False
-TIMEOUT: int = 300
+TIMEOUT: int = 30
 ERROR_TYPE: int = 2
-
-error_injectors = {
-    1: inject_type_1_errors,
-    2: inject_type_2_errors,
-    3: inject_type_3_errors,
-}
 
 
 def main():
@@ -66,14 +60,20 @@ class TimeAll(CFGTimer):
 
     @staticmethod
     def set_up(test: str) -> Dict[str, Any]:
-        start, cfg = read_gram_file(test)
-        cnf = convert_to_cnf(start, cfg)
+        start, rules = read_gram_file(test)
+        cfg = CFG(rules, get_alphabet(rules), start)
+        cnf = convert_to_cnf(cfg)
+        error_injectors = {
+            1: lambda: next(inject_type_1_errors(cnf, sample_size=1, be_consistent=False)),
+            2: lambda: convert_to_cnf(next(inject_type_2_errors(cfg, sample_size=1, be_consistent=False))),  # TODO : fix cnf
+            # 3: lambda: convert_to_cnf(next(inject_type_2_errors(cfg, sample_size=1, be_consistent=False))),
+        }
         return {
             'cnf': cnf,
-            'bad_cnf': next(error_injectors[ERROR_TYPE](cnf, sample_size=1, be_consistent=False))
+            'bad_cnf': error_injectors[ERROR_TYPE]()
         }
 
-    @staticmethod  # TODO: may be able to expand out the cnf and depth variables
+    @staticmethod  # TODO: may be able to expand out the cnf and depth variables js style
     def algorithm_wrapper(algorithm: type_is_matching_cfg, **kwargs) -> Callable[[], bool]:
         return lambda: algorithm(kwargs['cnf'], kwargs['bad_cnf'], kwargs['depth'])
 

@@ -19,8 +19,8 @@ class SlowTester(unittest.TestCase):
         start2, cfg2 = read_gram_file(r'..\..\..\benchmarks\C11Grammar1.gram')
         self.cfg = CFG(cfg, get_alphabet(cfg), start)
         self.cfg2 = CFG(cfg2, get_alphabet(cfg2), start2)
-        self.cnf2 = convert_to_cnf(self.cfg2.start, self.cfg2.rules)
-        self.cnf = convert_to_cnf(self.cfg.start, self.cfg.rules)
+        self.cnf2 = convert_to_cnf(self.cfg2)
+        self.cnf = convert_to_cnf(self.cfg)
 
     # def test_is_matching_cfg_for_false_positives(self):
     #     if self.items is None:
@@ -42,14 +42,14 @@ class SlowTester(unittest.TestCase):
     #     if self.items is None:
     #         raise NotImplementedError
     #     for bad_cfg in inject_type_2_errors(self.cfg, sample_size=1):
-    #         bad_cnf = convert_to_cnf(bad_cfg.start, bad_cfg.rules)
+    #         bad_cnf = convert_to_cnf(bad_cfg)
     #         self.assertFalse(self.items.is_matching_cfg(self.cnf, bad_cnf, 12))
 
     # def test_is_matching_cfg_detect_difference_of_type_3_errors(self):
     #     if self.items is None:
     #         raise NotImplementedError
     #     for bad_cfg in inject_type_3_errors(self.cfg, sample_size=1):
-    #         bad_cnf = convert_to_cnf(bad_cfg.start, bad_cfg.rules)
+    #         bad_cnf = convert_to_cnf(bad_cfg)
     #         logging.info(f'{len(self.cnf.rules)=} {len(bad_cnf.rules)=}')
     #         self.assertFalse(self.items.is_matching_cfg(self.cnf, bad_cnf, 12))
 

@@ -39,8 +39,8 @@ def main():
     import cProfile
     import pstats
     from tools import convert_to_cnf, read_gram_file
-    a_cnf = convert_to_cnf(*read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar.gram'))
-    b_cnf = convert_to_cnf(*read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar-1-1.gram'))
+    a_cnf = convert_to_cnf(read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar.gram'))
+    b_cnf = convert_to_cnf(read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar-1-1.gram'))
 
     with cProfile.Profile() as pr:
         is_matching_cfg(a_cnf, b_cnf, 7)

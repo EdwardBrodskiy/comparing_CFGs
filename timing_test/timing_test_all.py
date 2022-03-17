@@ -1,4 +1,5 @@
-from timing_test.timer import Timer, TimerSettings
+from timing_test.timer import TimerSettings
+from timing_test.cfg_timer import CFGTimer
 from timing_test.print_out import PrintOut
 import os
 from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy, my_cyk_memo_numpy
@@ -30,7 +31,7 @@ def main():
     stats.dump_stats(filename='timing_test_all_PROFILE.prof')
 
 
-class TimeAll(Timer):
+class TimeAll(CFGTimer):
     def __init__(self, *args, **kwargs):
         os.chdir(os.path.join('..', 'benchmarks'))
         global NUMBER_OF_CFGS_TO_TEST
@@ -56,8 +57,8 @@ class TimeAll(Timer):
 
     @staticmethod
     def set_up(test: str) -> Dict[str, Any]:
-        start, cfg = read_gram_file(test)
-        cnf = convert_to_cnf(start, cfg)
+        cfg = read_gram_file(test)
+        cnf = convert_to_cnf(cfg)
         return {
             'cnf': cnf,
         }

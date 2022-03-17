@@ -1,11 +1,11 @@
 from tools import read_gram_file
+from cfg import CFG
 from cfg import cfg_type
 from typing import Iterator, Optional, Tuple
 import os
 
 
-def load_gram_files(amount: Optional[int] = None, path: str = os.path.join('.', 'benchmarks')) -> Iterator[
-    Tuple[str, Tuple[str, cfg_type]]]:
+def load_gram_files(amount: Optional[int] = None, path: str = os.path.join('.', 'benchmarks')) -> Iterator[Tuple[str, CFG]]:
     if amount is not None:
         gram_files = list(filter(lambda f: '.gram' == f[-5:], os.listdir(path)))[:amount]
     else:

@@ -1,4 +1,4 @@
-from tools import words_of_length, TerminalString, read_gram_file, convert_to_cnf, convert_broken_cnf_to_cfg_form
+from tools import words_of_length, TerminalString, EpsilonString, read_gram_file, convert_to_cnf, convert_broken_cnf_to_cfg_form
 from implementations.lark_testing import is_accepted, cnf_10palindrome as lark_cnf
 from typing import Iterator, Tuple, List
 from copy import deepcopy
@@ -86,7 +86,7 @@ def inject_type_1_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):
                 if type(temp) is str and alphabet_count[temp] == 1:
                     bad_cfg.alphabet.remove(temp)
 
-                bad_cfg = convert_to_cnf(*convert_broken_cnf_to_cfg_form(bad_cfg))
+                bad_cfg = convert_to_cnf(convert_broken_cnf_to_cfg_form(bad_cfg))
 
                 yield bad_cfg
                 bad_cfg = deepcopy(cfg)
@@ -127,7 +127,7 @@ def inject_type_2_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):
             if len(sub_rule) > 1:
                 options = []
                 for i, symbol in enumerate(sub_rule):
-                    if type(symbol) is not TerminalString:
+                    if type(symbol) is not TerminalString or type(symbol) is not EpsilonString:
                         options.append(i)
                 if len(options) > 1:
                     corruptible_locations.append((key, sub_rule_index, options))
@@ -141,7 +141,6 @@ def inject_type_2_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):
     for key, i, options in selected_locations:
         to_remove = rnd.choice(options)
         bad_cfg.rules[key][i].pop(to_remove)
-        bad_cfg = convert_to_cnf(*convert_broken_cnf_to_cfg_form(bad_cfg))
         yield bad_cfg
         bad_cfg = deepcopy(cfg)
 
@@ -181,7 +180,7 @@ def inject_type_3_errors(cfg: CFG, sample_size=10, be_consistent=True, seed=42):
         bad_cfg.rules[new_key] = new_rule
         bad_cfg.rules[key][i][to_change] = new_key
 
-        bad_cfg = convert_to_cnf(*convert_broken_cnf_to_cfg_form(bad_cfg))
+        bad_cfg = convert_to_cnf(convert_broken_cnf_to_cfg_form(bad_cfg))
 
         yield bad_cfg
 

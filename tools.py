@@ -37,7 +37,7 @@ def words_of_length(length, alphabet) -> Iterator[List[str]]:
                 yield [letter, *sub_word]  # TODO: surely this is not the best way
 
 
-def read_gram_file(name) -> (str, cfg_type):
+def read_gram_file(name) -> CFG:
     cfg: cfg_type = {}
     epsilon_key = '""'
     first = True
@@ -60,7 +60,7 @@ def read_gram_file(name) -> (str, cfg_type):
                         sub_rules[index] = sub_rule[1: -1]
 
                 cfg[key].append(sub_rules)
-
+    alphabet = set()
     for key, rhs in cfg.items():
         for rule_index, rule in enumerate(rhs):
             for sub_rule_index, sub_rule in enumerate(rule):
@@ -68,18 +68,20 @@ def read_gram_file(name) -> (str, cfg_type):
                     if sub_rule == epsilon_key:
                         cfg[key][rule_index][sub_rule_index] = EpsilonString(sub_rule)
                     else:
+                        alphabet.add(sub_rule)
                         cfg[key][rule_index][sub_rule_index] = TerminalString(sub_rule)
 
-    return start, cfg
+    return CFG(cfg, alphabet, start)
 
 
-def convert_to_cnf(start: str, cfg: cfg_type):
-    name_generator = NameGenerator(cfg)
-    cnf: cfg_type = copy.deepcopy(cfg)
+def convert_to_cnf(cfg: CFG):
+    cnf: CFG = copy.deepcopy(cfg)
+    name_generator = NameGenerator(cfg.rules)
 
     # START
-    cnf_start = name_generator.generate_extension(start)
-    cnf[cnf_start] = [[start]]  # S0 -> S
+    cnf_start = name_generator.generate_extension(cnf.start)
+    cnf.rules[cnf_start] = [[cnf.start]]  # S0 -> S
+    cnf.start = cnf_start
 
     # DEL
     # TODO: we do not have an exception for start hence we do not handle the empty word. Fix!
@@ -88,8 +90,8 @@ def convert_to_cnf(start: str, cfg: cfg_type):
     found_nullable = True
     while found_nullable:
         found_nullable = False
-        for key, rhs in cnf.items():
-            if key not in nullable and key != cnf_start:
+        for key, rhs in cnf.rules.items():
+            if key not in nullable and key != cnf.start:
                 has_sub_rule_consisting_of_epsilons_at_index = -1
                 for rule_index, rule in enumerate(rhs):
                     rule = list(filter(lambda sr: not isinstance(sr, EpsilonString), rule))
@@ -99,30 +101,30 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                         found_nullable = True
                         continue  # TODO: assuming there is only one rule made up fully of epsilons. Maybe fix?
                     # rule may have hand some stray epsilons e.g A epsilon B which is equivalent to A B
-                    cnf[key][rule_index] = rule
+                    cnf.rules[key][rule_index] = rule
                     if not found_nullable:
                         if all(map(lambda sr: sr in nullable, rule)):
                             nullable.add(key)
                             found_nullable = True
 
                 if has_sub_rule_consisting_of_epsilons_at_index != -1:
-                    del cnf[key][has_sub_rule_consisting_of_epsilons_at_index]
+                    del cnf.rules[key][has_sub_rule_consisting_of_epsilons_at_index]
 
-    for key, rhs in cnf.items():
+    for key, rhs in cnf.rules.items():
         new_sub_rules = [generate_all_non_nullable_combinations(rule, nullable) for rule in rhs]
         new_sub_rules = {sub_item for item in new_sub_rules for sub_item in item}
         rhs = {tuple(r) for r in rhs}
-        cnf[key] = [list(r) for r in (rhs | new_sub_rules)]
+        cnf.rules[key] = [list(r) for r in (rhs | new_sub_rules)]
 
     # TERM
     new_terminal_rules: cfg_type = {}
     terminal_to_key_mapping = {}
-    for key, rhs in cnf.items():  # identify existing terminals
+    for key, rhs in cnf.rules.items():  # identify existing terminals
         if len(rhs) == 1 and len(rhs[0]) == 1 and isinstance(rhs[0][0], TerminalString):
             new_terminal_rules[key] = [str(rhs[0][0])]
             terminal_to_key_mapping[rhs[0][0]] = key
 
-    for key, rhs in cnf.items():  # create new terminals
+    for key, rhs in cnf.rules.items():  # create new terminals
         for rule in rhs:
             for sub_rule in rule:
                 if type(sub_rule) is TerminalString and sub_rule not in terminal_to_key_mapping:
@@ -130,42 +132,42 @@ def convert_to_cnf(start: str, cfg: cfg_type):
                     new_terminal_rules[new_terminal_key] = [str(sub_rule)]
                     terminal_to_key_mapping[sub_rule] = new_terminal_key
 
-    for key, rhs in cnf.items():  # replace strings with terminals
+    for key, rhs in cnf.rules.items():  # replace strings with terminals
         for rule_index, rule in enumerate(rhs):
             for sub_rule_index, sub_rule in enumerate(rule):
                 if type(sub_rule) is TerminalString:
-                    cnf[key][rule_index][sub_rule_index] = terminal_to_key_mapping[str(sub_rule)]
-    cnf = cnf | new_terminal_rules
-    alphabet: Set[str] = set(map(lambda terminal_key: new_terminal_rules[terminal_key][0], new_terminal_rules))
+                    cnf.rules[key][rule_index][sub_rule_index] = terminal_to_key_mapping[str(sub_rule)]
+    cnf.rules = cnf.rules | new_terminal_rules
+    cnf.alphabet = set(map(lambda terminal_key: new_terminal_rules[terminal_key][0], new_terminal_rules))
 
     # BIN
     new_extension_rules = {}
-    for key, rhs in cnf.items():
+    for key, rhs in cnf.rules.items():
         for rule_index, rule in enumerate(rhs):
             if type(rule) is not str and len(rule) > 2:
                 extension_rule_key = name_generator.generate_extension(key)
-                cnf[key][rule_index] = [rule[0], extension_rule_key]
+                cnf.rules[key][rule_index] = [rule[0], extension_rule_key]
 
                 for i in range(1, len(rule) - 2):
                     next_extension_rule_key = name_generator.generate_extension(key)
                     new_extension_rules[extension_rule_key] = [[rule[i], next_extension_rule_key]]
                     extension_rule_key = next_extension_rule_key
                 new_extension_rules[extension_rule_key] = [rule[-2:]]
-    cnf = cnf | new_extension_rules
+    cnf.rules = cnf.rules | new_extension_rules
 
     # UNIT
     self_pointing = set()
-    for key, rhs in cnf.items():  # remove pointless loops e.g A -> A
+    for key, rhs in cnf.rules.items():  # remove pointless loops e.g A -> A
         for rule_index, rule in enumerate(rhs):
             if len(rule) == 1 and key == rule[0]:
                 self_pointing.add(key)
     for self_pointing_key in self_pointing:
-        cnf[self_pointing_key] = list(filter(([self_pointing_key]).__ne__, cnf[self_pointing_key]))
+        cnf.rules[self_pointing_key] = list(filter(([self_pointing_key]).__ne__, cnf.rules[self_pointing_key]))
 
     unit_rule_violations = {'rhs_violation_key': ['location_of_violation']}
     while len(unit_rule_violations):  # TODO: runs for ever seems to not be doing anything. Is this todo outdated?
         unit_rule_violations = {}
-        for key, rhs in cnf.items():
+        for key, rhs in cnf.rules.items():
             if key not in unit_rule_violations and key not in new_terminal_rules:  # TODO: new terminal rules have other rules in rhs
                 for rule in rhs:
                     violating_key = rule[0]
@@ -176,10 +178,10 @@ def convert_to_cnf(start: str, cfg: cfg_type):
 
         for violating_key, violation_locations in unit_rule_violations.items():
             for key in violation_locations:
-                cnf[key].remove([violating_key])
-                cnf[key] += cnf[violating_key]  # TODO: this could create duplicate operations
+                cnf.rules[key].remove([violating_key])
+                cnf.rules[key] += cnf.rules[violating_key]  # TODO: this could create duplicate operations
 
-    return CFG(start=cnf_start, rules=cnf, alphabet=alphabet)
+    return cnf
 
 
 def generate_all_non_nullable_combinations(rule, nullable):
@@ -272,20 +274,20 @@ class NameGenerator:
 
 
 # Converts CFG back to primitives that can be fed back into the cnf converter
-def convert_broken_cnf_to_cfg_form(cfg: CFG) -> (str, cfg_type):
-    new_cfg_rules: cfg_type = copy.deepcopy(cfg.rules)
+def convert_broken_cnf_to_cfg_form(cfg: CFG) -> CFG:
+    new_cfg: CFG = copy.deepcopy(cfg)
 
     # convert all terminals back to terminal strings
-    for key, rhs in new_cfg_rules.items():
+    for key, rhs in new_cfg.rules.items():
         for rule_index, rule in enumerate(rhs):
             if type(rule) is str:
-                new_cfg_rules[key][rule_index] = (TerminalString(rule),)
+                new_cfg.rules[key][rule_index] = (TerminalString(rule),)
             else:
                 for sub_rule_index, sub_rule in enumerate(rule):
                     if sub_rule in cfg.alphabet:
-                        new_cfg_rules[key][rule_index][sub_rule_index] = TerminalString(sub_rule)
+                        new_cfg.rules[key][rule_index][sub_rule_index] = TerminalString(sub_rule)
 
-    return cfg.start, new_cfg_rules
+    return new_cfg
 
 
 def get_distance_to_terminal(rules: list_cnf_type):
@@ -392,7 +394,7 @@ def generate_rhs_for_size(rhs: cfg_rhs, size) -> cfg_rhs:
 
 
 def main():
-    cnf = convert_to_cnf(*convert_broken_cnf_to_cfg_form(cnf_10palindrome))
+    cnf = convert_to_cnf(convert_broken_cnf_to_cfg_form(cnf_10palindrome))
     print(cnf_10palindrome.rules)
     print(cnf.rules)
     print(cnf.start)

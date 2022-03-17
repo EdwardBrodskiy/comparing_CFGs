@@ -22,6 +22,8 @@ if __name__ == '__main__':
         data = data[1:]
 
         plt.figure(i, figsize=(10, 10))
+        plt.gca().xaxis.set_major_locator(plt.MaxNLocator(integer=True))
         data.plot()
+        plt.grid()
         plt.title(file[:-4])
     plt.show()

@@ -130,8 +130,8 @@ def main():
     )
     results = dict()
 
-    start, cfg = read_gram_file(r'..\..\benchmarks\C11Grammar1.gram')
-    cnf = convert_to_cnf(start, cfg)
+    cfg = read_gram_file(r'..\..\benchmarks\C11Grammar1.gram')
+    cnf = convert_to_cnf(cfg)
 
     cfg = cnf  # convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
     enum = Enum(cfg, 7)

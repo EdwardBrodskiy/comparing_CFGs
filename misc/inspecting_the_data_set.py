@@ -13,10 +13,10 @@ def main():
     mapping = []
     for a_index, a_iter in enumerate(load_gram_files(amount=amount, path=path)):
         a_name, a_cfg = a_iter
-        a_cnf = convert_to_cnf(*a_cfg)
+        a_cnf = convert_to_cnf(a_cfg)
         for b_index, b_iter in enumerate(load_gram_files(amount=amount, path=path)):
             b_name, b_cfg = b_iter
-            b_cnf = convert_to_cnf(*b_cfg)
+            b_cnf = convert_to_cnf(b_cfg)
             results[a_index, b_index] = agc.is_matching_cfg_depth_respecting(a_cnf, b_cnf, 6)
             if results[a_index, b_index]:
                 print('.', end='')
