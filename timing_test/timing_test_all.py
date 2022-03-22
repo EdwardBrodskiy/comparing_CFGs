@@ -2,12 +2,13 @@ from timing_test.timer import TimerSettings
 from timing_test.cfg_timer import CFGTimer
 from timing_test.print_out import PrintOut
 import os
-from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy, my_cyk_memo_numpy
+from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_memo_numpy
 from implementations.pipeline import pipeline_analyzer
 from implementations.agc import main as agc
 from cfg import type_is_matching_cfg
 from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
+import logging
 
 # Global test settings
 MAX_DEPTH: int = 30
@@ -41,7 +42,6 @@ class TimeAll(CFGTimer):
             gram_files = list(filter(lambda f: '.gram' == f[-5:], os.listdir()))
             NUMBER_OF_CFGS_TO_TEST = 'all'
         algorithms: Dict[str, type_is_matching_cfg] = {
-            # 'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
             'my_cyk_memo': my_cyk_memo.is_matching_cfg,
             'my_cyk_memo_numpy': my_cyk_memo_numpy.is_matching_cfg,
             # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
@@ -69,4 +69,6 @@ class TimeAll(CFGTimer):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='main.log', filemode='w',
+                        format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     main()

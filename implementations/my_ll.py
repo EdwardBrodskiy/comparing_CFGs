@@ -88,7 +88,7 @@ def compute_loc(key_i: int, key: str, sub_rule_index: int, term_i: int, term: st
             table[key_i, term_i] = sub_rule_index
     else:
         for index, rule in enumerate(cfg.rules[key]):
-            if type(rule) is tuple:
+            if not isinstance(rule, str):
                 rule = rule[0]
             if rule in cfg.alphabet:
                 compute_loc(key_i, rule, index, term_i, term, depth - 1, table, cfg, rules_list)

@@ -1,21 +1,20 @@
 from timing_test.timer import Timer, TimerSettings
 from timing_test.print_out import PrintOut
 import os
-from implementations import my_cyk_memo, my_cyk_numpy, my_cyk_memo_numpy, my_ll, my_cyk
-from cfg import CFG
+from implementations import my_cyk_memo, my_cyk_numpy, my_cyk_memo_numpy, my_ll, my_cyk, lark_testing
+from cfg import CFG, cnf_10palindrome
 from typing import Dict, Callable, Any, Union
-from tools import read_gram_file, convert_to_cnf, convert_cnf_to_list, words_of_length
+from tools import read_gram_file, convert_to_cnf, convert_cnf_to_list, words_of_length, convert_broken_cnf_to_cfg_form
 import logging
-import random
+import math
 
 # Global test settings
 MAX_DEPTH: int = 30
-NUMBER_OF_CFGS_TO_TEST: int = 3
 RE_RUNS: int = 3
 USE_PAST_RESULTS: bool = True
 
 TIMEOUT: int = 60
-MAX_WORDS = 100
+MAX_WORDS = 1000
 
 
 def main():
@@ -32,23 +31,23 @@ def main():
     stats.dump_stats(filename='timing_test_all_PROFILE.prof')
 
 
-wrapped_parser = Callable[[CFG, int], bool]
+wrapped_parser = Callable[[int], None]
 
 
-def cyk_memo(cfg: CFG, max_depth: int):
-    general_cyk(cfg, max_depth, my_cyk_memo.parse, True)
+def cyk_memo(max_depth: int):
+    general_cyk(max_depth, my_cyk_memo.parse, True)
 
 
-def cyk_memo_numpy(cfg: CFG, max_depth: int):
-    general_cyk(cfg, max_depth, my_cyk_memo_numpy.parse, True)
+def cyk_memo_numpy(max_depth: int):
+    general_cyk(max_depth, my_cyk_memo_numpy.parse, True)
 
 
-def cyk_numpy(cfg: CFG, max_depth: int):
-    general_cyk(cfg, max_depth, my_cyk_numpy.parse, False)
+def cyk_numpy(max_depth: int):
+    general_cyk(max_depth, my_cyk_numpy.parse, False)
 
 
-def cyk(cfg: CFG, max_depth: int):
-    cnf = convert_to_cnf(cfg)
+def cyk(max_depth: int):
+    cnf = cnf_10palindrome
     total = 0
     while total < MAX_WORDS:
         i = 0
@@ -59,8 +58,8 @@ def cyk(cfg: CFG, max_depth: int):
         total += i
 
 
-def general_cyk(cfg: CFG, max_depth: int, parser, mem):
-    cnf = convert_to_cnf(cfg)
+def general_cyk(max_depth: int, parser, mem):
+    cnf = cnf_10palindrome
     memo = {}
     rule_set = convert_cnf_to_list(cnf)
     total = 0
@@ -77,7 +76,8 @@ def general_cyk(cfg: CFG, max_depth: int, parser, mem):
         total += i
 
 
-def ll(cfg: CFG, max_depth: int):
+def ll(max_depth: int):
+    cfg = convert_broken_cnf_to_cfg_form(cnf_10palindrome)
     data = my_ll.generate_pre_calculated_data(cfg)
     total = 0
     while total < MAX_WORDS:
@@ -89,39 +89,51 @@ def ll(cfg: CFG, max_depth: int):
         total += i
 
 
+def lark_earley(max_depth: int):
+    lark(lark_testing.cfg_10palindrome, max_depth)
+
+
+def lark_cyk(max_depth: int):
+    lark(lark_testing.cnf_10palindrome, max_depth)
+
+
+def lark(cfg, max_depth: int):
+    total = 0
+    alphabet = ['1', '0']
+    while total < MAX_WORDS:
+        i = 0
+        for i, word in enumerate(words_of_length(max_depth, alphabet)):
+            if i > MAX_WORDS:
+                return
+            word = ''.join(word)
+            lark_testing.is_accepted(cfg, word)
+        total += i
+
+
 class TimeAll(Timer):
     def __init__(self, *args, **kwargs):
         os.chdir(os.path.join('..', 'benchmarks'))
-        global NUMBER_OF_CFGS_TO_TEST
-        if NUMBER_OF_CFGS_TO_TEST != 0:
-            rnd = random.Random(42)
-            gram_files = rnd.sample(list(filter(lambda f: '.gram' == f[-5:], os.listdir())), NUMBER_OF_CFGS_TO_TEST)
-            print(gram_files)
-        else:
-            gram_files = list(filter(lambda f: '.gram' == f[-5:], os.listdir()))
-            NUMBER_OF_CFGS_TO_TEST = 'all'
+
         algorithms: Dict[str, Callable] = {
             'my_cyk_memo': cyk_memo,
             'my_cyk_numpy': cyk_numpy,
             'my_cyk_memo_numpy': cyk_memo_numpy,
             'my_cyk': cyk,
-            # 'my_ll(NOT correct should be LL grammar)': ll,
+            'lark_earley': lark_earley,
+            'lark_cyk': lark_cyk
         }
 
-        super().__init__(TimerSettings(F'parsers_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH), gram_files,
+        super().__init__(TimerSettings(F'simple_parsers', save_location=('..', 'timing_test', 'results'),
+                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH), ['10pali'],
                          algorithms, *args, **kwargs)
 
     @staticmethod
     def set_up(test: str) -> Dict[str, Any]:
-        cfg = read_gram_file(test)
-        return {
-            'cfg': cfg,
-        }
+        return {}
 
     @staticmethod  # TODO: may be able to expand out the cnf and depth variables
     def algorithm_wrapper(algorithm: wrapped_parser, **kwargs) -> Callable[[], bool]:
-        return lambda: algorithm(kwargs['cfg'], kwargs['depth'])
+        return lambda: algorithm(kwargs['depth'])
 
     def generate_varying_input_data_for_test(self):
         for i in range(1, self.settings.max_depth + 1):

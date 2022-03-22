@@ -90,16 +90,17 @@ class Timer:
 
                             if result is None:  # Fail: test took too long
                                 logging.info(f'TIMER : {algorithm_name} timed out.')
-                                self.add_result_to_results(run_index, algorithm_name, self.settings.timeout_key,
+                                self.add_result_to_results(run_index, algorithm_name, self.settings.timeout_key, **input_data_for_test,
                                                            **varying_input_data_for_test)
                             else:  # Success: save result!
-                                logging.info(f'TIMER : {algorithm_name} ran for {result}.')
-                                self.add_result_to_results(run_index, algorithm_name, result,
+                                logging.info(f'TIMER : {algorithm_name} ran for {round(result, 3)}s.')
+                                self.add_result_to_results(run_index, algorithm_name, result, **input_data_for_test,
                                                            **varying_input_data_for_test)
                                 if run_index + 1 == self.settings.re_runs and test_index + 1 == len(self.tests):
-                                    self.aggregate_results(algorithm_name, **varying_input_data_for_test)
+                                    self.aggregate_results(algorithm_name, **input_data_for_test, **varying_input_data_for_test)
                         else:  # Fail: test failed in the past
-                            self.add_result_to_results(run_index, algorithm_name, self.settings.timeout_key, **varying_input_data_for_test)
+                            self.add_result_to_results(run_index, algorithm_name, self.settings.timeout_key, **input_data_for_test,
+                                                       **varying_input_data_for_test)
 
                     self.printer.depth(2)
                 self.printer.depth(1)
