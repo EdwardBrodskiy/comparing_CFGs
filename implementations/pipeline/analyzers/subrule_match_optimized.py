@@ -48,8 +48,10 @@ def generate_similarity_table_by_value_approach(a, b):
     # iterate over grammar making comparisons
     change = len(a) * len(b)
     counter = 0
-    logging.debug(f'{0.01 * len(a) * len(b)=}')
-    while change > 0.01 * len(a) * len(b):
+    threshold = (len(a) ** 2 + len(b) ** 2) ** 0.5 * 0.1
+    logging.debug(f'{threshold=}')
+    # Comparison checks that the change is at least 10% of what could be all the 1 to 1 matches
+    while change > threshold:
         counter += 1
         change = 0
         for iteration_a in iteration_order_a:
@@ -161,12 +163,13 @@ def main():
     a_cnf = convert_to_cnf(read_gram_file(r'..\..\..\benchmarks\AntlrJavaGrammar.gram'))
     a_cnf_list = convert_cnf_to_list(a_cnf)
     palindrome = convert_cnf_to_list(cnf_10palindrome)
-    list_grammar = palindrome
+    list_grammar = a_cnf_list
 
     generate_similarity_table_by_value_approach(list_grammar, list_grammar)
 
 
 if __name__ == '__main__':
     logging.basicConfig(filename='main.log', filemode='w',
-                        format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+                        format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+    logging.getLogger().addHandler(logging.StreamHandler())
     main()
