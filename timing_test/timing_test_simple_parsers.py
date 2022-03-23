@@ -124,7 +124,8 @@ class TimeAll(Timer):
         }
 
         super().__init__(TimerSettings(F'simple_parsers', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH), ['10pali'],
+                                       use_past_results=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH),
+                         ['10pali'],
                          algorithms, *args, **kwargs)
 
     @staticmethod
@@ -132,7 +133,7 @@ class TimeAll(Timer):
         return {}
 
     @staticmethod  # TODO: may be able to expand out the cnf and depth variables
-    def algorithm_wrapper(algorithm: wrapped_parser, **kwargs) -> Callable[[], bool]:
+    def algorithm_wrapper(algorithm: wrapped_parser, **kwargs) -> Callable[[], None]:
         return lambda: algorithm(kwargs['depth'])
 
     def generate_varying_input_data_for_test(self):

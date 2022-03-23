@@ -12,7 +12,7 @@ from typing import Dict, Callable, Union, Any
 MAX_DEPTH: int = 30
 RE_RUNS: int = 3
 USE_PAST_RESULTS: bool = False
-TIMEOUT: int = 60
+TIMEOUT: int = 300
 
 
 def main():
@@ -41,11 +41,11 @@ class TimePalindrome(CFGTimer):
             'agc_enum': agc_enum.is_matching_cfg_depth_respecting,
             'agc_enum_memo': agc_enum.is_matching_cfg_depth_respecting_memo,
             # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
-            # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg
+            'pipeline_analyzer': pipeline_analyzer.is_matching_cfg
         }
 
         super().__init__(TimerSettings('palindrome_test', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH),
+                                       use_past_results=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH),
                          ['palindrome'],
                          algorithms, *args, **kwargs)
 

@@ -109,7 +109,8 @@ class TimeAll(Timer):
         }
 
         super().__init__(TimerSettings(F'parsers_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH), gram_files,
+                                       use_past_results=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH),
+                         gram_files,
                          algorithms, *args, **kwargs)
 
     @staticmethod

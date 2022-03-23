@@ -23,9 +23,15 @@ class TimerSettings:
 
     re_runs: int = 5
 
-    re_build_table: bool = False
+    use_past_results: bool = False
 
     save_location: Tuple[str, ...] = tuple(['results'])
+
+    def __str__(self):
+        past_results = ''
+        if self.use_past_results:
+            past_results = ' | combination of multiple tests'
+        return f'timeout={self.timeout}s | max depth={self.max_depth} | re runs={self.re_runs}' + past_results
 
 
 def main():
@@ -144,7 +150,7 @@ class Timer:
         return self.past_header
 
     def _load_past_results(self):
-        if not self.settings.re_build_table:
+        if self.settings.use_past_results:
             try:
                 with open(f'{self.settings.test_name}_results.csv', 'r') as file:
                     csv_reader = csv.reader(file)
@@ -152,10 +158,10 @@ class Timer:
                     for name, *results in csv_reader:
                         self.past_results[name] = results
             except FileNotFoundError:
-                self.settings.re_build_table = True
+                self.settings.use_past_results = False
 
     def _merge_past_results(self):
-        if not self.settings.re_build_table:
+        if not self.settings.use_past_results:
             for algorithm_name in self.algorithms:
                 if algorithm_name not in self.past_results:
                     self.past_results[algorithm_name] = []
@@ -174,13 +180,15 @@ class Timer:
             self.results = {algorithm_name: [0 for _ in range(self.settings.max_depth)] for algorithm_name in self.algorithms}
 
     def _is_timing_required(self, algorithm_name):
-        return self.settings.re_build_table or self.is_timing_required(algorithm_name)
+        return not self.settings.use_past_results or self.is_timing_required(algorithm_name)
 
     def _save_data(self):  # TODO: fix saving location
         saved = False
         while not saved:
             try:
                 with open(path.join(*self.settings.save_location, f'{self.settings.test_name}_results.csv'), 'w', newline='') as file:
+                    file.write(str(self.settings) + ',' * self.settings.max_depth)
+
                     csv_writer = csv.writer(file)
 
                     csv_writer.writerow(self.generate_header())

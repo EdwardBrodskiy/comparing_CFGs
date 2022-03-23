@@ -55,13 +55,12 @@ class TimeAll(CFGTimer):
 
         super().__init__(
             TimerSettings(F'time_type_{ERROR_TYPE}_err_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                          re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, max_depth=MAX_DEPTH, timeout=TIMEOUT), gram_files,
+                          use_past_results=USE_PAST_RESULTS, re_runs=RE_RUNS, max_depth=MAX_DEPTH, timeout=TIMEOUT), gram_files,
             algorithms, *args, **kwargs)
 
     @staticmethod
     def set_up(test: str) -> Dict[str, Any]:
-        start, rules = read_gram_file(test)
-        cfg = CFG(rules, get_alphabet(rules), start)
+        cfg = read_gram_file(test)
         cnf = convert_to_cnf(cfg)
         error_injectors = {
             1: lambda: next(inject_type_1_errors(cnf, sample_size=1, be_consistent=False)),

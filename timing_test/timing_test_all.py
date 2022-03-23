@@ -14,7 +14,7 @@ import logging
 MAX_DEPTH: int = 30
 NUMBER_OF_CFGS_TO_TEST: int = 2
 RE_RUNS: int = 1
-USE_PAST_RESULTS: bool = True
+USE_PAST_RESULTS: bool = False
 TIMEOUT: int = 300
 
 
@@ -51,8 +51,9 @@ class TimeAll(CFGTimer):
             'agc_implementation_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
         }
 
-        super().__init__(TimerSettings(F'time_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
-                                       re_build_table=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH), gram_files,
+        super().__init__(TimerSettings(F'time_equal_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),
+                                       use_past_results=USE_PAST_RESULTS, re_runs=RE_RUNS, timeout=TIMEOUT, max_depth=MAX_DEPTH),
+                         gram_files,
                          algorithms, *args, **kwargs)
 
     @staticmethod
