@@ -1,5 +1,5 @@
-from implementations.agc.enum import Enum
-from cfg import CFG, convert_cnf_to_list, cnf_10palindrome
+from implementations.agc.enumerator import Enum
+from cfg import CFG, convert_cnf_to_list
 from tools import convert_cnf_to_limited_word_size, convert_to_cnf, read_gram_file
 from implementations.my_cyk_numpy import parse
 from implementations.my_cyk_memo import wrapped_parse as parse_memo
@@ -84,7 +84,7 @@ def main():
     a_cnf = convert_to_cnf(read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar.gram'))
     b_cnf = convert_to_cnf(read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar-1-1.gram'))
 
-    print(is_matching_cfg_depth_respecting(a_cnf, a_cnf, 8))
+    # print(is_matching_cfg_depth_respecting(a_cnf, a_cnf, 8))
     print(is_matching_cfg(a_cnf, a_cnf, 8))
 
 

@@ -1,4 +1,4 @@
-from cfg import CFG, cfg_rhs, cnf_10palindrome, convert_cnf_to_list
+from cfg import CFG, cfg_rhs, convert_cnf_to_list
 from tools import words_of_length, read_gram_file, convert_to_cnf, convert_cnf_to_limited_word_size
 from typing import Union, Tuple
 from math import prod
@@ -23,23 +23,22 @@ class Enum:
         self.max_depth = max_depth + 1  # make it inclusive
         self.cfg = deepcopy(cfg)
         self.sort_cfg_tree_wise()
+        self.max_index = self.get_no_trees((self.cfg.start,), self.max_depth)
 
     def generate(self, index: int):
         return self.enum((self.cfg.start,), index, self.max_depth)
 
     @memory
-    def enum(self, root: Tuple[str, ...], index: int, depth=100) -> Union[Tuple[str, ...], None]:
+    def enum(self, root: Tuple[str, ...], index: int, depth) -> Union[Tuple[str, ...], None]:
         if len(root) == 1:
             key: str = root[0]
-            """
-            For a terminal a belonging to a grammar, Enum[a] is defined as {0 → leaf (a)}.
-            """
+            # For a terminal a belonging to a grammar, Enum[a] is defined as {0 → leaf (a)}.
             if key in self.cfg.alphabet:
                 if index == 0:
                     return tuple((key,))
                 return None
 
-            return self.enum(*self.choose(key, index, depth=depth - 1), depth=depth - 1)
+            return self.enum(*self.choose(key, index, depth), depth - 1)
 
         if len(root) != 2:  # root is expected to be size to as all expansions of a CNF are size 2 or 1
             raise Exception('Ensure grammar is in CNF')
@@ -52,7 +51,7 @@ class Enum:
         cartesian_expansion_coords = map_to_space(index, a_trees, b_trees)
 
         # derive enum(A)[j0] and enum(B)[j1] from enum(AB)[i]
-        sub_enums = tuple(map(lambda j, sub_rule: self.enum((sub_rule,), j, depth=depth),
+        sub_enums = tuple(map(lambda j, sub_rule: self.enum((sub_rule,), j, depth),
                               cartesian_expansion_coords, root))
 
         if not all(sub_enums):  # TODO: maybe redundant
@@ -101,21 +100,21 @@ class Enum:
                                              tuple(rule), self.max_depth))
 
     @memory
-    def get_no_trees(self, root: Tuple[str, ...], max_depth: int) -> int:
+    def get_no_trees(self, root: Tuple[str, ...], depth: int) -> int:
         if len(root) == 1:  # ['a'] or ['B']
             key: str = root[0]
             if key in self.cfg.alphabet:
                 return 1
-            if max_depth <= 1:
+            if depth <= 1:
                 return 1
             expanded: cfg_rhs = self.cfg.rules[key]
 
             sentential_forms = map(lambda rule: (rule,) if type(rule) is str else rule, expanded)
-            return sum(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form), max_depth - 1), sentential_forms))
-        if max_depth <= 1:
+            return sum(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form), depth - 1), sentential_forms))
+        if depth <= 1:
             return 0
         # root possible options : ['A'] ['A', 'B'] ['a'] ['a', 'S']
-        return prod(map(lambda sub_tree: self.get_no_trees((sub_tree,), max_depth), root))
+        return prod(map(lambda sub_tree: self.get_no_trees((sub_tree,), depth), root))
 
 
 def main():
@@ -133,17 +132,18 @@ def main():
     cfg = read_gram_file(r'..\..\benchmarks\C11Grammar1.gram')
     cnf = convert_to_cnf(cfg)
 
-    cfg = cnf  # convert_cnf_to_limited_word_size(cnf_10palindrome, 3)
-    enum = Enum(cfg, 7)
+    cfg = cnf  # convert_cnf_to_limited_word_size(cnf, 6)
+    enum = Enum(cfg, 3)
     nones = ''
-    for i in range(1000):
+    print(f'{enum.max_index=}')
+    for i in range(enum.max_index):
         result = enum.generate(i)
 
         key = ''.join(result) if result is not None else result
 
         results[key] = results[key] + i if key in results else 0
 
-        nones += ' ' + str(len(result)) if result is not None else '\n\n'
+        nones += '' + str(len(result)) if result is not None else '_'
 
     print(f'done {len(results)=}')
 
