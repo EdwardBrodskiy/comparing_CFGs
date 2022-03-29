@@ -17,7 +17,7 @@ import time
 # Global test settings
 NUMBER_OF_LANGUAGES_TO_TEST: int = 5
 TIMEOUT: int = 60
-ERROR_TYPE: int = 2
+ERROR_TYPE: int = 3
 
 
 def main():
@@ -90,9 +90,6 @@ class TableTimer(Timer):
             data[algorithm_column] = [0 for _ in self.row_values]
 
         self.results = pd.DataFrame(data=data, columns=['grammar', *algorithm_columns])
-
-        with open(os.path.join(*self.settings.save_location, f'{self.settings.test_name}_results.csv'), 'w', newline='') as file:
-            file.write(self.results.to_csv(index=False))
 
     def _save_data(self):
         saved = False

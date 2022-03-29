@@ -11,11 +11,14 @@ def match_rhs_lengths(a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataMana
 
     for rule_a_index, rhs_a in enumerate(list_rules_a):
         for rule_b_index, rhs_b in enumerate(list_rules_b):
-            match = min(len(rhs_a), len(rhs_b)) / max(len(rhs_a), len(rhs_b))
+            try:
+                match = min(len(rhs_a), len(rhs_b)) / max(len(rhs_a), len(rhs_b))
+            except ZeroDivisionError:
+                match = 1
             table[rule_a_index, rule_b_index] = match
 
     pipeline.tables[method.key_word] = table
-    np.savetxt("rhs_lengths.csv", table, delimiter=",")
+    # np.savetxt(r"comparisons\rhs_lengths.csv", table, delimiter=",")
     return True, 0
 
 

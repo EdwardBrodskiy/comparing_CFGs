@@ -1,9 +1,9 @@
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Iterator
 import heapq
 from dataclasses import dataclass, field
 import logging
 from math import inf
-
+import itertools
 from cfg import CFG
 from implementations.pipeline.pipeline_tools import PipelineDataManager, PipelineMethodData
 from implementations.my_cyk_numpy import parse
@@ -28,53 +28,69 @@ class Analyzer:
         self._a_searcher, self._b_searcher = None, None
         self._max_depth = max_depth
         self._pipeline = None
+        self._checked_words = set()
 
     def set_pipeline(self, pipeline: PipelineDataManager):
         self._pipeline = pipeline
-        self._a_searcher = Searcher(self._a, self._b, self._max_depth, pipeline, True)
-        self._b_searcher = Searcher(self._a, self._b, self._max_depth, pipeline, False)
+
+        a_rule_set, b_rule_set = self._pipeline.list_rules
+
+        self._a_searcher = Searcher(a_rule_set, self._max_depth, pipeline, True)
+        self._b_searcher = Searcher(b_rule_set, self._max_depth, pipeline, False)
 
     def symmetric_tree_search(self, *args, **kwargs) -> Tuple[bool, float]:
         if self._pipeline is None:
             raise Exception('Please set pipeline')
-        # if either found a difference means we found a counter example
-        logging.debug('Checking if words in grammar A are present in grammar B')
-        a_decision, a_certainty = self._a_searcher.search()
-        if a_decision is False:
-            return False, 1
 
-        logging.debug('Checking if words in grammar B are present in grammar A')
-        b_decision, b_certainty = self._b_searcher.search()
-        if b_decision is False:
-            return False, 1
+        a_rule_set, b_rule_set = self._pipeline.list_rules
+
+        # if either found a difference means we found a counter example
+        for word_a, word_b, in itertools.zip_longest(self._a_searcher.search(), self._b_searcher.search()):
+            # if the words are the same then they must be in both grammars so no parsing is required hence continue
+            logging.debug(f'{len(self._a_searcher.heap)=} {len(self._b_searcher.heap)=}')
+            if word_a == word_b:
+                self._checked_words.add(word_a)
+                continue
+            # check word a in grammar B
+            if word_a is not None and word_a not in self._checked_words:
+                if parse(word_a, b_rule_set):
+                    return False, 1
+                self._checked_words.add(word_a)
+            # check word b in grammar A
+            if word_b is not None and word_b not in self._checked_words:
+                if parse(word_b, a_rule_set):
+                    return False, 1
+                self._checked_words.add(word_b)
 
         # if both are certain of equivalence (both have completed an exhaustive search)
-        if a_certainty == 1 and b_certainty == 1:
+        if self._a_searcher.certainty == 1 and self._b_searcher.certainty == 1:
             return True, 1
         # check is not complete and no difference is found (certainty calculation is currently redundant but is there for future proofing)
-        return True, (a_certainty + b_certainty) / 2
+        return True, (self._a_searcher.certainty + self._b_searcher.certainty) / 2
 
 
 class Searcher:
-    def __init__(self, a: CFG, b: CFG, max_depth: int, pipeline: PipelineDataManager, use_a_as_base):
+    def __init__(self, rule_set, max_depth: int, pipeline: PipelineDataManager, use_a_as_base):
         self.max_depth = max_depth
         self.pipeline = pipeline
         self.use_a_as_base = use_a_as_base
 
         self.memory_key = method.key_word + str(use_a_as_base)
-        if self.use_a_as_base:
-            self.a_rule_set, self.b_rule_set = pipeline.list_rules
-            self.proximity_to_terminal, _ = pipeline.terminal_distances
-        else:
-            self.b_rule_set, self.a_rule_set = pipeline.list_rules
-            _, self.proximity_to_terminal = pipeline.terminal_distances
+
+        self.rule_set = rule_set
 
         self.checked_strings = {(0,)}  # keeps track of "string"s that were already looked at including ones that were removed from the heap
 
         # the heap is used to determine which should be the next Node to look at based on the lowest similarity
         self.heap: Optional[List[Node]] = None
 
-    def search(self) -> Tuple[bool, float]:
+        self._certainty: int = 0
+
+    @property
+    def certainty(self):
+        return self._certainty
+
+    def search(self) -> Iterator[List[str]]:
         # which algorithms table output we prefer to use in descending order
         priority_list = [subrule_match.method.key_word, subrule_match_optimized.method.key_word, rhs_lengths.method.key_word]
         # decide what table to use
@@ -94,16 +110,17 @@ class Searcher:
         # get the best similarity value for each rule in A out of all the rules in b
         max_list = table.max(axis=0)
 
-        combined_weight = max_list * (self.proximity_to_terminal * 10)
+        combined_weight = max_list
 
         # the heap is used to determine which should be the next Node to look at based on the lowest similarity
         if self.heap is None:  # start with S
-            self.heap = [Node(table[0, 0], table[0, 0], (0,), (0,), self.get_similarity_values(combined_weight, (0,)))]
+            self.heap = [Node(table[0, 0], table[0, 0], (), (0,), self.get_similarity_values(combined_weight, (0,)))]
 
         difference_found = False
         computation_counter = 0
-        next_method_complexity = self.pipeline.get_next_method_complexity()
-        while not difference_found and len(self.heap) and computation_counter * 2 < next_method_complexity:
+        # next_method_complexity = self.pipeline.get_next_method_complexity()
+        while not difference_found and len(self.heap):
+
             current_node = self.heap[0]
 
             # get the index of the smallest non None value for similarity out of current options
@@ -116,7 +133,7 @@ class Searcher:
             if smallest_match is None:
                 heapq.heappop(self.heap)
                 continue
-            rhs = self.a_rule_set[current_node.string[sm_match_index]]
+            rhs = self.rule_set[current_node.string[sm_match_index]]
             current_node.difference_values[sm_match_index] = None  # Mark as path traversed
             for sub_rule in rhs:
                 # insert sub_rule into string
@@ -127,14 +144,8 @@ class Searcher:
                     new_string = current_node.string[:sm_match_index] + (sub_rule,) + current_node.string[sm_match_index + 1:]
                     if all(map(lambda x: type(x) is str, new_string)):  # if all terminals index.e. final string
                         computation_counter += len(new_string) ** 2
-                        # TODO: can save words checked so that cfgb does not check them again
-                        if not parse(new_string, self.b_rule_set):  # check if rule set B accepts the found string
-                            difference_found = True
-                            logging.info(f'tree search found counter example: {" ".join(new_string)}')
-                            break
-                        else:
-                            logging.debug(f'checked {"".join(new_string)}')
                         self.checked_strings.add(new_string)
+                        yield new_string
                         continue  # don't add word to heap
                 # add the new string to the heap for further development
                 if len(new_string) <= self.max_depth:  # TODO: that may be one too deep
@@ -142,16 +153,17 @@ class Searcher:
                         similarity = current_node.similarity + smallest_match
                         number_of_terminals = len(tuple(filter(lambda x: type(x) is str, new_string))) + 1
                         computation_counter += len(new_string)
-                        heapq.heappush(self.heap, Node(similarity / number_of_terminals, similarity,
+                        heapq.heappush(self.heap, Node(similarity / (number_of_terminals * len(new_string)), similarity,
                                                        (*current_node.used_rules, current_node.string[sm_match_index]), new_string,
                                                        self.get_similarity_values(combined_weight, new_string)))
                         self.checked_strings.add(new_string)
-        if difference_found:
-            return False, 1
-        elif len(self.heap) == 0:
-            return True, 1
-        self.pipeline.data[self.memory_key] = self.checked_strings, self.heap
-        return True, certainty
+
+        if len(self.heap) == 0:
+            self._certainty = 1
+        else:
+            # TODO: check if this is still needed.
+            self.pipeline.data[self.memory_key] = self.checked_strings, self.heap
+            self._certainty = certainty
 
     @staticmethod
     def get_similarity_values(weightings, string):

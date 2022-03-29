@@ -5,7 +5,7 @@ import os
 locations = {
     'here': '.',
     'pipeline': r'..\implementations\pipeline',
-    'analyzers': r'..\implementations\pipeline\analyzers'
+    'analyzers': r'..\implementations\pipeline\analyzers\comparisons'
 }
 
 where = 'analyzers'

@@ -214,8 +214,10 @@ def mod_get_match_score_ls(table, larger_rule, smaller_rule, cheat):
         for rhs_rule_b in smaller_rule:
             match = mod_get_rhs_rule_match_score(table, rhs_rule_a, rhs_rule_b, cheat)
             matches[index] = max(match, matches[index])
-
-    return sum(matches) / len(matches)
+    try:
+        return sum(matches) / len(matches)
+    except ZeroDivisionError:
+        return 0
 
 
 def mod_get_rhs_rule_match_score(table, rule_a, rule_b, cheat) -> float:

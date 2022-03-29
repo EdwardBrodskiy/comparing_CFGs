@@ -3,6 +3,7 @@ import numpy as np
 import logging
 
 from cfg import cfg_rhs, CFG
+from tools import convert_cnf_to_list
 
 from implementations.pipeline.pipeline_tools import PipelineDataManager, PipelineMethodData
 
@@ -48,7 +49,7 @@ def generate_similarity_table_by_value_approach(a, b):
     # iterate over grammar making comparisons
     change = len(a) * len(b)
     counter = 0
-    threshold = (len(a) ** 2 + len(b) ** 2) ** 0.5 * 0.1
+    threshold = (len(a) ** 2 + len(b) ** 2) ** 0.5 * 0.2
     logging.debug(f'{threshold=}')
     # Comparison checks that the change is at least 10% of what could be all the 1 to 1 matches
     while change > threshold:
@@ -74,7 +75,6 @@ def generate_similarity_table_by_value_approach(a, b):
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
 
-    np.savetxt("subrule_match_optimized.csv", table, delimiter=",")
     return table[:-1, :-1]
 
 
@@ -147,29 +147,84 @@ def get_rhs_rule_match_score(table, rule_a, rule_b, cheat) -> float:
     return 0
 
 
+def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+    a_cnf_list = convert_cnf_to_list(a)
+    b_cnf_list = convert_cnf_to_list(b)
+
+    table_aa = generate_similarity_table_by_value_approach(a_cnf_list, a_cnf_list)
+    np.savetxt(r"comparisons\table_a.csv", table_aa, delimiter=",")
+    table_bb = generate_similarity_table_by_value_approach(b_cnf_list, b_cnf_list)
+    np.savetxt(r"comparisons\b.csv", table_bb, delimiter=",")
+    table_ab = generate_similarity_table_by_value_approach(a_cnf_list, b_cnf_list)
+    np.savetxt(r"comparisons\ab.csv", table_ab, delimiter=",")
+    return table_ab[0, 0] * 2 / (table_aa[0, 0] + table_bb[0, 0])
+
+
+class PersistentMatcher:
+    def __init__(self, a: CFG):
+        self.a_cnf_list = convert_cnf_to_list(a)
+        self.table_aa = generate_similarity_table_by_value_approach(self.a_cnf_list, self.a_cnf_list)
+
+    def get_match_score_with(self, b: CFG):
+        b_cnf_list = convert_cnf_to_list(b)
+        table_bb = generate_similarity_table_by_value_approach(b_cnf_list, b_cnf_list)
+        table_ab = generate_similarity_table_by_value_approach(self.a_cnf_list, b_cnf_list)
+        return table_ab[0, 0] * 2 / (self.table_aa[0, 0] + table_bb[0, 0])
+
+
 def main():
-    from tools import convert_to_cnf, read_gram_file, convert_cnf_to_list
-    from cfg import cnf_10palindrome
-    test_grammar = CFG(
-        rules={
-            'S': [['A', 'B'], ['B', 'B']],
-            'A': ['a', ['A', 'B']],
-            'B': ['b']
-        },
-        alphabet={'a', 'b'},
-        start='S'
-    )
+    from tools import convert_to_cnf, read_gram_file
+    import os
+    import pandas as pd
 
-    a_cnf = convert_to_cnf(read_gram_file(r'..\..\..\benchmarks\AntlrJavaGrammar.gram'))
-    a_cnf_list = convert_cnf_to_list(a_cnf)
-    palindrome = convert_cnf_to_list(cnf_10palindrome)
-    list_grammar = a_cnf_list
+    error_type = 1
 
-    generate_similarity_table_by_value_approach(list_grammar, list_grammar)
+    os.chdir(os.path.join('..', '..', '..', 'benchmarks'))
+
+    gram_files = filter(lambda f: '.gram' == f[-5:], os.listdir())
+
+    gram_files = map(lambda f: f[:-5], gram_files)
+    tests = list(filter(lambda f: '-' not in f, gram_files))
+
+    data = {
+        'grammar': tests,
+        'original': [0 for _ in tests]
+    }
+
+    modifications = list(map(lambda x: str(x), range(1, 6)))
+    for modification in modifications:
+        data[modification] = [0 for _ in tests]
+
+    results = pd.DataFrame(data=data)
+
+    for test in tests:
+        original = convert_to_cnf(read_gram_file(test + '.gram'))
+        matcher = PersistentMatcher(original)
+        result = matcher.table_aa[0, 0]
+        results.loc[results['grammar'] == test, 'original'] += matcher.table_aa[0, 0]
+        print(f'Starting: {test=} original A to A {result=}')
+        for modification in modifications:
+            modified = convert_to_cnf(read_gram_file(f'{test}-{error_type}-{modification}.gram'))
+            result = matcher.get_match_score_with(modified)
+            results.loc[results['grammar'] == test, modification] = result
+            print(f'COMPLETED: {modification=} {result=}')
+
+    os.chdir(os.path.join('..', 'implementations', 'pipeline', 'analyzers'))
+
+    saved = False
+    pd.set_option('display.max_columns', 20)
+    print('\n   Results:\n', results)
+    while not saved:
+        try:
+            with open(os.path.join('tables', f'error_type_{error_type}_results.csv'), 'w', newline='') as file:
+                file.write(results.to_csv(index=False))
+            saved = True
+        except PermissionError:
+            input('Permission Denied PRESS ENTER TO TRY AGAIN')
 
 
 if __name__ == '__main__':
     logging.basicConfig(filename='main.log', filemode='w',
                         format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
-    logging.getLogger().addHandler(logging.StreamHandler())
+    # logging.getLogger().addHandler(logging.StreamHandler())
     main()

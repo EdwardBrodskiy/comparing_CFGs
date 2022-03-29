@@ -41,7 +41,7 @@ def generate_similarity_table_by_value_approach(a, b):
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
 
-    np.savetxt("subrule_match_old.csv", table, delimiter=",")
+    # np.savetxt(r"comparisons\subrule_match_old.csv", table, delimiter=",")
 
     return table
 
