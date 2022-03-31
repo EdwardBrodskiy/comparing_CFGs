@@ -2,17 +2,15 @@ from timing_test.timer import Timer, TimerSettings
 from timing_test.cfg_timer import CFGTimer
 from timing_test.print_out import PrintOut
 import os
-from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_numpy, my_cyk, my_cyk_memo_numpy
-import implementations.agc.main as agc_enum
-from implementations.pipeline import pipeline_analyzer
-from cfg import type_is_matching_cfg, cnf_10palindrome
-from typing import Dict, Callable, Union, Any
+from implementations import lark_testing, my_cyk_memo, my_cyk_numpy, my_cyk, my_cyk_memo_numpy, nltk_testing
+from cfg import cnf_10palindrome
+from typing import Dict, Callable
 
 # Global test settings
 MAX_DEPTH: int = 30
-RE_RUNS: int = 3
+RE_RUNS: int = 5
 USE_PAST_RESULTS: bool = False
-TIMEOUT: int = 300
+TIMEOUT: int = 60
 
 
 def main():
@@ -29,19 +27,34 @@ def main():
     stats.dump_stats(filename='timing_test_all_PROFILE.prof')
 
 
+def cyk(max_depth: int):
+    return my_cyk.is_matching_cfg(cnf_10palindrome, cnf_10palindrome, max_depth=max_depth)
+
+
+def cyk_numpy(max_depth: int):
+    return my_cyk_numpy.is_matching_cfg(cnf_10palindrome, cnf_10palindrome, max_depth=max_depth)
+
+
+def cyk_memo_numpy(max_depth: int):
+    return my_cyk_memo_numpy.is_matching_cfg(cnf_10palindrome, cnf_10palindrome, max_depth=max_depth)
+
+
+def cyk_memo(max_depth: int):
+    return my_cyk_memo.is_matching_cfg(cnf_10palindrome, cnf_10palindrome, max_depth=max_depth)
+
+
 class TimePalindrome(CFGTimer):
     def __init__(self, *args, **kwargs):
         os.chdir(os.path.join('..', 'benchmarks'))
 
-        algorithms: Dict[str, type_is_matching_cfg] = {
-            'my_cyk': my_cyk.is_matching_cfg,
-            'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
-            'my_cyk_memo_numpy': my_cyk_memo_numpy.is_matching_cfg,
-            'my_cyk_memo': my_cyk_memo.is_matching_cfg,
-            'agc_enum': agc_enum.is_matching_cfg_depth_respecting,
-            'agc_enum_memo': agc_enum.is_matching_cfg_depth_respecting_memo,
-            # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
-            'pipeline_analyzer': pipeline_analyzer.is_matching_cfg
+        algorithms: Dict[str, Callable[[int], bool]] = {
+            'nltk_recursive_descent': nltk_testing.is_matching_cfg_wrapper_recursive_decent,
+            'lark_earley': lark_testing.is_matching_cfg_wrapper_10palindrome_earley,
+            'lark_cyk': lark_testing.is_matching_cfg_wrapper_10palindrome_cyk,
+            'my_cyk': cyk,
+            'my_cyk_numpy': cyk_numpy,
+            'my_cyk_memo_numpy': cyk_memo_numpy,
+            'my_cyk_memo': cyk_memo,
         }
 
         super().__init__(TimerSettings('palindrome_test', save_location=('..', 'timing_test', 'results'),
@@ -49,15 +62,9 @@ class TimePalindrome(CFGTimer):
                          ['palindrome'],
                          algorithms, *args, **kwargs)
 
-    @staticmethod
-    def set_up(test: str) -> Dict[str, Any]:
-        return {
-            'cnf': cnf_10palindrome,
-        }
-
     @staticmethod  # TODO: may be able to expand out the cnf and depth variables
-    def algorithm_wrapper(algorithm: type_is_matching_cfg, **kwargs) -> Callable[[], bool]:
-        return lambda: algorithm(kwargs['cnf'], kwargs['cnf'], kwargs['depth'])
+    def algorithm_wrapper(algorithm: Callable[[int], bool], **kwargs) -> Callable[[], bool]:
+        return lambda: algorithm(kwargs['depth'])
 
 
 if __name__ == '__main__':
