@@ -5,6 +5,7 @@ import os
 from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_memo_numpy
 from implementations.pipeline import pipeline_analyzer
 from implementations.agc import main as agc
+from implementations.agc import multi as agc_multi
 from cfg import type_is_matching_cfg
 from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
@@ -12,10 +13,10 @@ import logging
 
 # Global test settings
 MAX_DEPTH: int = 30
-NUMBER_OF_CFGS_TO_TEST: int = 2
+NUMBER_OF_CFGS_TO_TEST: int = 1
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = False
-TIMEOUT: int = 300
+TIMEOUT: int = 120
 
 
 def main():
@@ -42,13 +43,15 @@ class TimeAll(CFGTimer):
             gram_files = list(filter(lambda f: '.gram' == f[-5:], os.listdir()))
             NUMBER_OF_CFGS_TO_TEST = 'all'
         algorithms: Dict[str, type_is_matching_cfg] = {
-            'my_cyk_memo': my_cyk_memo.is_matching_cfg,
-            'my_cyk_memo_numpy': my_cyk_memo_numpy.is_matching_cfg,
+            # 'my_cyk_memo': my_cyk_memo.is_matching_cfg,
+            # 'my_cyk_memo_numpy': my_cyk_memo_numpy.is_matching_cfg,
             # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
-            'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
-            'agc_implementation_random': agc.is_matching_cfg,
-            'agc_implementation_depth_respecting': agc.is_matching_cfg_depth_respecting,
-            'agc_implementation_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
+            # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
+            # 'agc_implementation_random': agc.is_matching_cfg,
+            # 'agc_depth_respecting': agc.is_matching_cfg_depth_respecting,
+            'agc_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
+            'agc_depth_multi_threaded': agc_multi.is_matching_cfg_multiprocess_1,
+            'agc_enum_multi_threaded': agc_multi.is_matching_cfg_multiprocess_2,
         }
 
         super().__init__(TimerSettings(F'time_equal_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),

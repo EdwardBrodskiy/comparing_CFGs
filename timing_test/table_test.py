@@ -10,14 +10,14 @@ from timing_test.print_out import PrintOut
 
 from implementations.pipeline import pipeline_analyzer
 from implementations.agc import main as agc
+from implementations.agc import multi as agc_multi
 
-import random
-import time
+import logging
 
 # Global test settings
 NUMBER_OF_LANGUAGES_TO_TEST: int = 5
-TIMEOUT: int = 60
-ERROR_TYPE: int = 3
+TIMEOUT: int = 1
+ERROR_TYPE: int = 1
 
 
 def main():
@@ -38,8 +38,9 @@ class TableTimer(Timer):
         self.row_values = tests
         algorithms: Dict[str, type_is_matching_cfg] = {
             # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
-            # 'agc_implementation_depth_respecting': agc.is_matching_cfg_depth_respecting,
-            'agc_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
+            # 'agc_enumerator': agc.is_matching_cfg_depth_respecting,
+            'agc_enumerator_memo': agc.is_matching_cfg_depth_respecting_memo,
+            # 'agc_enumerator_memo_threaded': agc_multi.is_matching_cfg_multiprocess_2
         }
 
         super().__init__(
@@ -48,7 +49,7 @@ class TableTimer(Timer):
             algorithms, *args, **kwargs)
 
     def generate_varying_input_data_for_test(self):
-        for i in range(10):
+        for i in range(NUMBER_OF_LANGUAGES_TO_TEST):
             yield i, {'grammar_index': i}
 
     @staticmethod
@@ -107,4 +108,6 @@ class TableTimer(Timer):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='main.log', filemode='w',
+                        format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     main()

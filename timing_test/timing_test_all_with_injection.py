@@ -13,10 +13,10 @@ import logging
 
 # Global test settings
 MAX_DEPTH: int = 30
-NUMBER_OF_CFGS_TO_TEST: int = 5
+NUMBER_OF_CFGS_TO_TEST: int = 1
 RE_RUNS: int = 1
 USE_PAST_RESULTS: bool = False
-TIMEOUT: int = 30
+TIMEOUT: int = 120
 ERROR_TYPE: int = 2
 
 
@@ -45,12 +45,13 @@ class TimeAll(CFGTimer):
             NUMBER_OF_CFGS_TO_TEST = 'all'
         algorithms: Dict[str, type_is_matching_cfg] = {
             # 'my_cyk_numpy': my_cyk_numpy.is_matching_cfg,
-            'my_cyk_memo': my_cyk_memo.is_matching_cfg,
-            'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
-            'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
-            'agc_implementation_random': agc.is_matching_cfg,
+            # 'my_cyk_memo': my_cyk_memo.is_matching_cfg,
+            # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
+            # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
+            # 'agc_implementation_random': agc.is_matching_cfg,
             'agc_implementation_depth_respecting': agc.is_matching_cfg_depth_respecting,
             'agc_implementation_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
+            'agc_implementation_depth_respecting_memo_threaded': agc.is_matching_cfg_depth_respecting_memo_threaded,
         }
 
         super().__init__(

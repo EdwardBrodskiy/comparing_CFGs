@@ -23,13 +23,13 @@ class Enum:
         self.max_depth = max_depth + 1  # make it inclusive
         self.cfg = deepcopy(cfg)
         self.sort_cfg_tree_wise()
-        self.max_index = self.get_no_trees((self.cfg.start,), self.max_depth)
+        self.max_index = self.get_no_trees((self.cfg.start,))
 
     def generate(self, index: int):
-        return self.enum((self.cfg.start,), index, self.max_depth)
+        return self.enum((self.cfg.start,), index)
 
     @memory
-    def enum(self, root: Tuple[str, ...], index: int, depth) -> Union[Tuple[str, ...], None]:
+    def enum(self, root: Tuple[str, ...], index: int) -> Union[Tuple[str, ...], None]:
         if len(root) == 1:
             key: str = root[0]
             # For a terminal a belonging to a grammar, Enum[a] is defined as {0 → leaf (a)}.
@@ -38,28 +38,28 @@ class Enum:
                     return tuple((key,))
                 return None
 
-            return self.enum(*self.choose(key, index, depth), depth - 1)
+            return self.enum(*self.choose(key, index))
 
         if len(root) != 2:  # root is expected to be size to as all expansions of a CNF are size 2 or 1
             raise Exception('Ensure grammar is in CNF')
 
         # get the index space required for A and B in AB
-        a_trees, b_trees = self.get_no_trees((root[0],), depth), self.get_no_trees((root[1],), depth)
+        a_trees, b_trees = self.get_no_trees((root[0],)), self.get_no_trees((root[1],))
         if a_trees * b_trees <= index:
             return None  # index is past all possible derivations
 
         cartesian_expansion_coords = map_to_space(index, a_trees, b_trees)
 
         # derive enum(A)[j0] and enum(B)[j1] from enum(AB)[i]
-        sub_enums = tuple(map(lambda j, sub_rule: self.enum((sub_rule,), j, depth),
-                              cartesian_expansion_coords, root))
+        a_enum = self.enum((root[0],), cartesian_expansion_coords[0])
+        b_enum = self.enum((root[1],), cartesian_expansion_coords[1])
 
-        if not all(sub_enums):  # TODO: maybe redundant
+        if a_enum is None or b_enum is None:  # TODO: maybe redundant
             return None
 
-        return tuple(item for sublist in sub_enums for item in sublist)
+        return a_enum + b_enum
 
-    def choose(self, key: str, index: int, depth: int) -> Tuple[Tuple[str, ...], int]:
+    def choose(self, key: str, index: int) -> Tuple[Tuple[str, ...], int]:
         # '#t' is used to denote the number of parse trees belonging to the right-hand-sides calculated by function 'get_no_trees'
 
         # extract all sentential forms which are the rhs of the given key
@@ -68,8 +68,9 @@ class Enum:
         n = len(sentential_forms)
 
         # let b0 = 0, and b1, · · · , bn = #t(α0), · · · , #t(αn−1)
+        # TODO : does the redundant function call effect performance
         trees: Tuple[int, ...] = (
-            0, *list(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form), depth), sentential_forms)))
+            0, *list(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form)), sentential_forms)))
 
         # wrap helper to better fit original definition
         def i(bound):
@@ -95,26 +96,22 @@ class Enum:
     def sort_cfg_tree_wise(self):
         for key, rhs in self.cfg.rules.items():
             self.cfg.rules[key] = sorted(rhs,
-                                         key=lambda rule: self.get_no_trees((rule,), self.max_depth) if type(
+                                         key=lambda rule: self.get_no_trees((rule,)) if type(
                                              rule) is str else self.get_no_trees(
-                                             tuple(rule), self.max_depth))
+                                             tuple(rule)))
 
     @memory
-    def get_no_trees(self, root: Tuple[str, ...], depth: int) -> int:
+    def get_no_trees(self, root: Tuple[str, ...]) -> int:  # TODO: depth is not needed for memory on limited grammars
         if len(root) == 1:  # ['a'] or ['B']
             key: str = root[0]
             if key in self.cfg.alphabet:
                 return 1
-            if depth <= 1:
-                return 1
             expanded: cfg_rhs = self.cfg.rules[key]
 
             sentential_forms = map(lambda rule: (rule,) if type(rule) is str else rule, expanded)
-            return sum(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form), depth - 1), sentential_forms))
-        if depth <= 1:
-            return 0
+            return sum(map(lambda sentential_form: self.get_no_trees(tuple(sentential_form)), sentential_forms))
         # root possible options : ['A'] ['A', 'B'] ['a'] ['a', 'S']
-        return prod(map(lambda sub_tree: self.get_no_trees((sub_tree,), depth), root))
+        return prod(map(lambda sub_tree: self.get_no_trees((sub_tree,)), root))
 
 
 def main():
