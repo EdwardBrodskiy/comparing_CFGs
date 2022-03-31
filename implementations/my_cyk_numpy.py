@@ -22,17 +22,17 @@ def parse(chars, rules):
                     break
 
     # fill the rest of the table
-    for span in range(1, n):  # starting at the row after the terminals
-        for span_start in range(n - span):  # In other words column
-            for partition in range(span):  # Iterator for selecting combinations of squares for the left and right sides
+    for row in range(1, n):  # starting at the row after the terminals
+        for column_start in range(n - row):  # In other words column
+            for partition in range(row):  # Iterator for selecting combinations of squares for the left and right sides
                 # check all the rules Ra -> Rb Rc
                 for key, rule_set in enumerate(rules):
                     for rhs in rule_set:
                         if type(rhs) is tuple:
-                            left_side = table[partition, span_start, rhs[0]]
-                            right_side = table[span - partition - 1, span_start + partition + 1, rhs[1]]
+                            left_side = table[partition, column_start, rhs[0]]
+                            right_side = table[row - partition - 1, column_start + partition + 1, rhs[1]]
                             if left_side and right_side:
-                                table[span, span_start, key] = 1
+                                table[row, column_start, key] = 1
                                 # TODO: check if rule_a break here helps
     return table[-1, 0, 0] == 1
 

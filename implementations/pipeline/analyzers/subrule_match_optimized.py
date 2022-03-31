@@ -55,10 +55,13 @@ def generate_similarity_table_by_value_approach(a, b):
     while change > threshold:
         counter += 1
         change = 0
+        # we only check between matching iterations for the purpose of optimization and assume that rules with a different distance to a
+        # terminal are likely different
         for iteration_a in iteration_order_a:
             for iteration_b in iteration_order_b:
                 for rule_a_index in iteration_a:
                     for rule_b_index in iteration_b:
+                        # the last row and column track the maximum for that column and row i.e. best match
                         if not (table[-1, rule_b_index] > .9 or table[rule_a_index, -1] > .9):
                             rhs_a = a[rule_a_index]
                             rhs_b = b[rule_b_index]

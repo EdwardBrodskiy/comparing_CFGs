@@ -44,10 +44,18 @@ class Analyzer:
 
         a_rule_set, b_rule_set = self._pipeline.list_rules
 
+        RUNNING_LENGTH = []
         # if either found a difference means we found a counter example
         for word_a, word_b, in itertools.zip_longest(self._a_searcher.search(), self._b_searcher.search()):
             # if the words are the same then they must be in both grammars so no parsing is required hence continue
-            logging.debug(f'{len(self._a_searcher.heap)=} {len(self._b_searcher.heap)=}')
+
+            RUNNING_LENGTH.append((len(word_a) + len(word_b)) / 2)
+            if not len(RUNNING_LENGTH) % 10:
+                logging.debug(f'''words found: {len(RUNNING_LENGTH)}
+running average length is {round(sum(RUNNING_LENGTH[-10:]) / 10, 2)} 
+the total average is {round(sum(RUNNING_LENGTH) / len(RUNNING_LENGTH), 2)}
+                               ''')
+                logging.debug(f'{len(self._a_searcher.heap)=} {len(self._b_searcher.heap)=}')
             if word_a == word_b:
                 self._checked_words.add(word_a)
                 continue
@@ -146,14 +154,16 @@ class Searcher:
                         computation_counter += len(new_string) ** 2
                         self.checked_strings.add(new_string)
                         yield new_string
+
                         continue  # don't add word to heap
                 # add the new string to the heap for further development
                 if len(new_string) <= self.max_depth:  # TODO: that may be one too deep
                     if new_string not in self.checked_strings:
-                        similarity = current_node.similarity + smallest_match
+                        new_similarity = current_node.similarity + smallest_match
                         number_of_terminals = len(tuple(filter(lambda x: type(x) is str, new_string))) + 1
                         computation_counter += len(new_string)
-                        heapq.heappush(self.heap, Node(similarity / (number_of_terminals * len(new_string)), similarity,
+                        new_priority = new_similarity / (number_of_terminals * len(new_string))
+                        heapq.heappush(self.heap, Node(new_priority, new_similarity,
                                                        (*current_node.used_rules, current_node.string[sm_match_index]), new_string,
                                                        self.get_similarity_values(combined_weight, new_string)))
                         self.checked_strings.add(new_string)
