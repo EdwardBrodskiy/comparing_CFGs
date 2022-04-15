@@ -18,7 +18,7 @@ def wrapped_parse(chars, rules, memo: Dict[Tuple, Set]) -> Set:
     accepted = set()
 
     if n == 1:  # check rules that lead to this terminal
-        for key, rhs in enumerate(rules):
+        for key, rhs in enumerate(rules):  # TODO: we can split the terminal rules and the non-terminal rules will make both searches faster
             for rule in rhs:
                 if type(rule) is str:
                     if chars[0] == rule:
@@ -54,7 +54,29 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
 
 
 def main():
-    pass
+    from tools import convert_to_cnf, read_gram_file
+    memo = {}
+
+    rule_set = convert_cnf_to_list(convert_to_cnf(read_gram_file(r'..\benchmarks\AntlrJavaGrammar.gram')))
+
+    word = (
+        '_Static_assert', '(', 'StringLiteral', ',', 'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral',
+        'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral',
+        'StringLiteral',
+        'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral', 'StringLiteral',
+        'StringLiteral',
+        'StringLiteral', 'StringLiteral', 'StringLiteral', ')', ';')
+    word2 = (
+        'import', 'static', 'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER',
+        '.',
+        'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER', '.', 'IDENTIFIER', '.',
+        '*', ';')
+    import cProfile
+    import pstats
+    with cProfile.Profile() as pr:
+        print(parse(word, rule_set, memo))
+    stats = pstats.Stats(pr)
+    stats.dump_stats(filename='main.prof')
 
 
 if __name__ == '__main__':
