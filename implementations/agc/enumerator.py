@@ -18,9 +18,8 @@ def memory(f):
 
 
 class Enum:
-    def __init__(self, cfg: CFG, max_depth):
+    def __init__(self, cfg: CFG):
         self.memo = {}
-        self.max_depth = max_depth + 1  # make it inclusive
         self.cfg = deepcopy(cfg)
         self.sort_cfg_tree_wise()
         self.max_index = self.get_no_trees((self.cfg.start,))
@@ -115,6 +114,7 @@ class Enum:
 
 
 def main():
+    from tools import convert_cnf_to_limited_word_size
     agc_cfg = CFG(
         rules={
             'S': [['A', ], ['B', 'A']],
@@ -124,38 +124,31 @@ def main():
         start='S',
         alphabet={'a', 'b'}
     )
-    results = dict()
+    results = []
 
-    cfg = read_gram_file(r'..\..\benchmarks\C11Grammar1.gram')
-    cnf = convert_to_cnf(cfg)
+    cfg = read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar.gram')
+    cnf = convert_cnf_to_limited_word_size(convert_to_cnf(cfg), 10)
 
-    cfg = cnf  # convert_cnf_to_limited_word_size(cnf, 6)
-    enum = Enum(cfg, 3)
+    enum = Enum(cnf)
     nones = ''
     print(f'{enum.max_index=}')
     for i in range(enum.max_index):
-        result = enum.generate(i)
-
-        key = ''.join(result) if result is not None else result
-
-        results[key] = results[key] + i if key in results else 0
-
-        nones += '' + str(len(result)) if result is not None else '_'
+        results.append(enum.generate(i))
 
     print(f'done {len(results)=}')
 
     print(nones)
 
     # print(f'Sample \n{results}')
-    rules = convert_cnf_to_list(cfg)
+    # rules = convert_cnf_to_list(cfg)
 
-    max_length = max(map(lambda x: len(x) if x is not None else 0, results.keys()))
-    print(f'{max_length=}')
-    for depth in range(max_length + 1):
-        print(f'checking length {depth}')
-        for word in words_of_length(depth, cfg.alphabet):
-            if ''.join(word) not in results and parse(word, rules):
-                print(f'missed: {"".join(word)}')
+    # max_length = max(map(lambda x: len(x) if x is not None else 0, results.keys()))
+    # print(f'{max_length=}')
+    # for depth in range(max_length + 1):
+    #     print(f'checking length {depth}')
+    #     for word in words_of_length(depth, cfg.alphabet):
+    #         if ''.join(word) not in results and parse(word, rules):
+    #             print(f'missed: {"".join(word)}')
 
 
 if __name__ == '__main__':

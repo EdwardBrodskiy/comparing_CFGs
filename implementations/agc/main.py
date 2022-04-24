@@ -21,7 +21,7 @@ def check_words_of_length(a: CFG, b: CFG, a_list, b_list, length: int) -> bool:
 
     index = 0
     words = (['init', ], ['init', ])
-    a_enum, b_enum = Enum(a_limited, length + 2), Enum(b_limited, length + 2)
+    a_enum, b_enum = Enum(a_limited), Enum(b_limited)
 
     memo_a, memo_b = {}, {}
 

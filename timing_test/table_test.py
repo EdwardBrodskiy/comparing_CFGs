@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 from tools import read_gram_file, convert_to_cnf
-from cfg import type_is_matching_cfg
+from cfg import type_is_matching_cfg, CFG
 from timing_test.print_out import PrintOut
 
 from implementations.pipeline import pipeline_analyzer
@@ -13,10 +13,12 @@ from implementations.agc import main as agc
 from implementations.agc import multi as agc_multi
 
 import logging
+import time
+from timeit import timeit
 
 # Global test settings
 NUMBER_OF_LANGUAGES_TO_TEST: int = 5
-TIMEOUT: int = 1
+TIMEOUT: int = 60
 ERROR_TYPE: int = 1
 
 
@@ -25,6 +27,13 @@ def main():
         printer=PrintOut(key={'|': 'completed a test cycle', '-': 'completed all tests of a given grammar',
                               '.': 'completed a modified grammar for all algorithms'}))
     timing_test_time_all.run()
+
+
+def multiprocessing_is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+    try:
+        return agc_multi.is_matching_cfg(a, b, max_depth, timeout=TIMEOUT, is_main=lambda: __name__ == '__main__')
+    except TimeoutError:
+        return True
 
 
 class TableTimer(Timer):
@@ -39,8 +48,8 @@ class TableTimer(Timer):
         algorithms: Dict[str, type_is_matching_cfg] = {
             # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
             # 'agc_enumerator': agc.is_matching_cfg_depth_respecting,
-            'agc_enumerator_memo': agc.is_matching_cfg_depth_respecting_memo,
-            # 'agc_enumerator_memo_threaded': agc_multi.is_matching_cfg_multiprocess_2
+            # 'agc_enumerator_memo': agc.is_matching_cfg_depth_respecting_memo,
+            'agc_enumerator_multiprocessing': multiprocessing_is_matching_cfg
         }
 
         super().__init__(
@@ -50,7 +59,7 @@ class TableTimer(Timer):
 
     def generate_varying_input_data_for_test(self):
         for i in range(NUMBER_OF_LANGUAGES_TO_TEST):
-            yield i, {'grammar_index': i}
+            yield {'grammar_index': i}
 
     @staticmethod
     def set_up(test: str) -> Dict[str, Any]:
@@ -62,11 +71,17 @@ class TableTimer(Timer):
             'modified': modified
         }
 
+    def timeout_wrapper(self):  # timeouts must be handled by the method returning true if a result is not found in time
+        def no_timeout(method):
+            return timeit(method, number=1)
+
+        return no_timeout
+
     def algorithm_wrapper(self, algorithm: type_is_matching_cfg, **kwargs) -> Callable[[], bool]:
         return lambda: algorithm(kwargs['original'], kwargs['modified'][kwargs['grammar_index']], self.settings.max_depth)
 
     def add_result_to_results(self, run_index: int, algorithm_name: str, result: Union[str, float], **input_data):
-        if result == self.settings.timeout_key:
+        if result == self.settings.timeout_key or result >= TIMEOUT:
             pass
         else:
             self.results.loc[self.results['grammar'] == input_data['name'], f'{algorithm_name}-time'] += result
