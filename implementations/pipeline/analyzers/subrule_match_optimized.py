@@ -49,7 +49,7 @@ def generate_similarity_table_by_value_approach(a, b):
     # iterate over grammar making comparisons
     change = len(a) * len(b)
     counter = 0
-    threshold = (len(a) ** 2 + len(b) ** 2) ** 0.5 * 0.2
+    threshold = (len(a) + len(b)) / 2 * 0.1
     logging.debug(f'{threshold=}')
     # Comparison checks that the change is at least 10% of what could be all the 1 to 1 matches
     while change > threshold:
@@ -70,13 +70,17 @@ def generate_similarity_table_by_value_approach(a, b):
                             change += abs(new_score - table[rule_a_index, rule_b_index])
 
                             table[rule_a_index, rule_b_index] = new_score
-                            table[rule_a_index, -1] = table[rule_a_index, rule_b_index]
-                            table[-1, rule_b_index] = table[rule_a_index, rule_b_index]
+                            if table[rule_a_index, -1] < table[rule_a_index, rule_b_index]:
+                                table[rule_a_index, -1] = table[rule_a_index, rule_b_index]
+                            if table[-1, rule_b_index] < table[rule_a_index, rule_b_index]:
+                                table[-1, rule_b_index] = table[rule_a_index, rule_b_index]
         logging.debug(f'At iteration {counter} the change is {change}')
 
     logging.debug(f'number of iterations {counter}')
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
+
+    np.savetxt(r"comparisons\subrule_match_optimized.csv", table, delimiter=",")
 
     return table[:-1, :-1]
 
@@ -226,8 +230,45 @@ def main():
             input('Permission Denied PRESS ENTER TO TRY AGAIN')
 
 
+def main2():
+    from tools import convert_to_cnf, read_gram_file, convert_cnf_to_list
+    from cfg import cnf_10palindrome
+    test_grammar = CFG(
+        rules={
+            # start
+            'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
+            # base
+            'D': [('X', 'A'), '1', '0'],
+            # alterone
+            'A': [('D', 'X')],
+            # alterzero
+            'B': [('D', 'Y')],
+            # one
+            'X': ['1'],
+            # zero
+            'Y': ['0']
+        },
+        alphabet={'1', '0'}
+    )
+
+    palindrome = convert_cnf_to_list(cnf_10palindrome)
+    bad_pali = convert_cnf_to_list(test_grammar)
+
+    generate_similarity_table_by_value_approach(palindrome, bad_pali)
+
+
+def main3():
+    from tools import convert_to_cnf, read_gram_file, convert_cnf_to_list
+    from cfg import cnf_10palindrome
+
+    a_cnf = convert_cnf_to_list(convert_to_cnf(read_gram_file(r'..\..\..\benchmarks\AntlrJavaGrammar.gram')))
+    b_cnf = convert_cnf_to_list(convert_to_cnf(read_gram_file(r'..\..\..\benchmarks\AntlrJavaGrammar-1-1.gram')))
+
+    generate_similarity_table_by_value_approach(a_cnf, b_cnf)
+
+
 if __name__ == '__main__':
     logging.basicConfig(filename='main.log', filemode='w',
                         format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
-    # logging.getLogger().addHandler(logging.StreamHandler())
-    main()
+    logging.getLogger().addHandler(logging.StreamHandler())
+    main3()

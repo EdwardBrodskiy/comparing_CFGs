@@ -43,7 +43,7 @@ def main():
     b_cnf = convert_to_cnf(read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar-1-1.gram'))
 
     with cProfile.Profile() as pr:
-        is_matching_cfg(a_cnf, b_cnf, 7)
+        is_matching_cfg(a_cnf, b_cnf, 30)
     stats = pstats.Stats(pr)
     stats.dump_stats(filename='pipeline.prof')
 

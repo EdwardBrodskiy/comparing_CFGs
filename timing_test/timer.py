@@ -83,14 +83,12 @@ class Timer:
         for run_index in range(self.settings.re_runs):  # this is done instead of changing the number on timeit to spread out the tests
             for test_index, test in enumerate(self.tests):
                 input_data_for_test = self.set_up(test)
-                for index, varying_input_data_for_test in self.generate_varying_input_data_for_test():
+                for index, varying_input_data_for_test in enumerate(self.generate_varying_input_data_for_test()):
                     for algorithm_name, algorithm in self.algorithms.items():
                         testable_method = self.algorithm_wrapper(algorithm, **input_data_for_test, **varying_input_data_for_test)
                         if not self.has_timed_out_before(algorithm_name, **input_data_for_test, **varying_input_data_for_test):
                             # to handle detecting timeouts run the test in a separate thread
-                            @exit_after(self.settings.timeout)
-                            def time_out_method(method):
-                                return timeit(method, number=1)
+                            time_out_method = self.timeout_wrapper()
 
                             result = time_out_method(testable_method)
 
@@ -122,9 +120,9 @@ class Timer:
         return {}
 
     @staticmethod
-    def generate_varying_input_data_for_test() -> Iterator[Tuple[int, Dict[str, Any]]]:
+    def generate_varying_input_data_for_test() -> Iterator[Dict[str, Any]]:
         for i in range(1, 3):
-            yield i, {'depth': i}
+            yield {'depth': i}
 
     @staticmethod
     def add_result_to_results(run_index: int, algorithm_name: str, result: Union[str, float], **input_data):
@@ -133,6 +131,13 @@ class Timer:
     @staticmethod
     def aggregate_results(algorithm_name: str, **input_data):
         pass
+
+    def timeout_wrapper(self):
+        @exit_after(self.settings.timeout)
+        def time_out_method(method):
+            return timeit(method, number=1)
+
+        return time_out_method
 
     @staticmethod
     def algorithm_wrapper(algorithm: Callable, **kwargs) -> Callable:

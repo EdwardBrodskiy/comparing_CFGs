@@ -32,7 +32,7 @@ def generate_similarity_table_by_value_approach(a, b):
     Approach solution by continuously re calculating the similarity table starting with everything at 0
     """
     table = np.zeros([len(a), len(b)], dtype=np.float16)
-    for _ in range(1):  # TODO: change this to check for how much the change happened
+    for _ in range(100):  # TODO: change this to check for how much the change happened
         for rule_a_index in range(1, len(a)):
             for rule_b_index in range(1, len(b)):
                 rhs_a = a[rule_a_index]
@@ -41,7 +41,7 @@ def generate_similarity_table_by_value_approach(a, b):
 
     table[0, 0] = get_match_score(table, a[0], b[0], True)
 
-    # np.savetxt(r"comparisons\subrule_match_old.csv", table, delimiter=",")
+    np.savetxt(r"comparisons\subrule_match.csv", table, delimiter=",")
 
     return table
 
@@ -79,24 +79,30 @@ def get_rhs_rule_match_score(table, rule_a, rule_b, cheat) -> float:
 
 
 def main():
-    from tools import convert_to_cnf, read_gram_file, convert_cnf_to_list
+    from tools import convert_cnf_to_list
     from cfg import cnf_10palindrome
     test_grammar = CFG(
         rules={
-            'S': [['A', 'B'], ['B', 'B']],
-            'A': ['a', ['A', 'B']],
-            'B': ['b']
+            # start
+            'S': [('X', 'A'), ('Y', 'B'), '1', '0'],
+            # base
+            'D': [('X', 'A'), '1', '0'],
+            # alterone
+            'A': [('D', 'X')],
+            # alterzero
+            'B': [('D', 'Y')],
+            # one
+            'X': ['1'],
+            # zero
+            'Y': ['0']
         },
-        alphabet={'a', 'b'},
-        start='S'
+        alphabet={'1', '0'}
     )
 
-    a_cnf = convert_to_cnf(read_gram_file(r'..\..\..\benchmarks\AntlrJavaGrammar.gram'))
-    a_cnf_list = convert_cnf_to_list(a_cnf)
     palindrome = convert_cnf_to_list(cnf_10palindrome)
-    list_grammar = palindrome
+    bad_pali = convert_cnf_to_list(test_grammar)
 
-    generate_similarity_table_by_value_approach(list_grammar, list_grammar)
+    generate_similarity_table_by_value_approach(palindrome, bad_pali)
 
 
 if __name__ == '__main__':
