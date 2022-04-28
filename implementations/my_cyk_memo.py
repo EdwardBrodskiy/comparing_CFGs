@@ -40,7 +40,9 @@ def wrapped_parse(chars, rules, memo: Dict[Tuple, Set]) -> Set:
     return accepted
 
 
-def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+def is_matching_cfg(a: CFG, b: CFG, max_depth: int, counterexamples: Set = None):
+    if counterexamples is None:
+        counterexamples = {}
     memo_a = {}
     memo_b = {}
 
@@ -49,6 +51,7 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
     for depth in range(max_depth + 1):
         for word in words_of_length(depth, a.alphabet):
             if parse(word, a_rule_set, memo_a) != parse(word, b_rule_set, memo_b):
+                counterexamples.add(tuple(word))
                 return False
     return True
 

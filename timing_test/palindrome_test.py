@@ -2,7 +2,7 @@ from timing_test.timer import Timer, TimerSettings
 from timing_test.cfg_timer import CFGTimer
 from timing_test.print_out import PrintOut
 import os
-from implementations import lark_testing, my_cyk_memo, my_cyk_numpy, my_cyk, my_cyk_memo_numpy, nltk_testing
+from implementations import lark_testing, my_cyk_memo, my_cyk_numpy, my_cyk, my_cyk_memo_numpy, nltk_testing, sequencing as seq
 from cfg import cnf_10palindrome
 from typing import Dict, Callable
 
@@ -43,6 +43,10 @@ def cyk_memo(max_depth: int):
     return my_cyk_memo.is_matching_cfg(cnf_10palindrome, cnf_10palindrome, max_depth=max_depth)
 
 
+def sequencing(max_depth: int):
+    return seq.is_matching_cfg(cnf_10palindrome, cnf_10palindrome, max_depth=max_depth)
+
+
 class TimePalindrome(CFGTimer):
     def __init__(self, *args, **kwargs):
         os.chdir(os.path.join('..', 'benchmarks'))
@@ -55,6 +59,7 @@ class TimePalindrome(CFGTimer):
             'my_cyk_numpy': cyk_numpy,
             'my_cyk_memo_numpy': cyk_memo_numpy,
             'my_cyk_memo': cyk_memo,
+            'sequencing': sequencing,
         }
 
         super().__init__(TimerSettings('palindrome_test', save_location=('..', 'timing_test', 'results'),
