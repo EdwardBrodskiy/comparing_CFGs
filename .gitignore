@@ -6,3 +6,4 @@ venv/
 *.csv
 
 __pycache__/
+/timing_test/table_results/

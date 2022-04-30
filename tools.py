@@ -178,7 +178,8 @@ def convert_to_cnf(cfg: CFG):
 
         for violating_key, violation_locations in unit_rule_violations.items():
             for key in violation_locations:
-                cnf.rules[key].remove([violating_key])
+                # remove all instances of violation
+                cnf.rules[key] = list(filter(lambda rl: rl != [violating_key], cnf.rules[key]))
                 cnf.rules[key] += cnf.rules[violating_key]  # TODO: this could create duplicate operations
 
     return cnf
@@ -366,13 +367,13 @@ def convert_cnf_to_limited_word_size(cnf: CFG, size: int):
                 to_remove.append(key)
 
         # remove keys marked empty in the prior stage
-        for key in to_remove:  # TODO: we do not deal with a grammar with an empty language
+        for key in to_remove:
             if key != new_start:
                 changes = True
                 del new_rules[key]
             else:
                 # the start variable was about to be deleted return a grammar with an empty language
-                return CFG(rules={'S': [['S', 'S']]}, start='S', alphabet=set())
+                return CFG(rules={'S': ['Grammar for this length is empty']}, start='S', alphabet={'Grammar for this length is empty'})
 
     return CFG(rules=new_rules, start=new_start, alphabet=cnf.alphabet.copy())
 

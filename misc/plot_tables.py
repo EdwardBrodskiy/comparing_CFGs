@@ -5,11 +5,11 @@ import os
 
 locations = {
     'here': '.',
-    'tests': r'..\timing_test',
+    'tests': r'..\timing_test\table_results',
     'analyzers': r'..\implementations\pipeline\analyzers\tables'
 }
 
-where = 'analyzers'
+where = 'tests'
 
 if __name__ == '__main__':
     files = list(filter(lambda f: '.csv' == f[-4:], os.listdir(locations[where])))

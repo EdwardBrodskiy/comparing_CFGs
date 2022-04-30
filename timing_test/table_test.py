@@ -1,4 +1,4 @@
-from timing_test.timer import Timer, TimerSettings
+from timing_test.timer import Timer, TimerSettings, exit_after
 from typing import Union, Dict, Any, Callable
 import os
 import pandas as pd
@@ -17,9 +17,10 @@ import time
 from timeit import timeit
 
 # Global test settings
-NUMBER_OF_LANGUAGES_TO_TEST: int = 5
-TIMEOUT: int = 60
+NUMBER_OF_LANGUAGES_TO_TEST: int = 10
+TIMEOUT: int = 90
 ERROR_TYPE: int = 1
+RE_RUNS = 3
 
 
 def main():
@@ -36,6 +37,11 @@ def multiprocessing_is_matching_cfg(a: CFG, b: CFG, max_depth: int):
         return True
 
 
+@exit_after(TIMEOUT)
+def agc_is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+    return agc.is_matching_cfg(a, b, max_depth)
+
+
 class TableTimer(Timer):
 
     def __init__(self, *args, **kwargs):
@@ -47,14 +53,13 @@ class TableTimer(Timer):
         self.row_values = tests
         algorithms: Dict[str, type_is_matching_cfg] = {
             # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
-            # 'agc_enumerator': agc.is_matching_cfg_depth_respecting,
-            # 'agc_enumerator_memo': agc.is_matching_cfg_depth_respecting_memo,
-            'agc_enumerator_multiprocessing': multiprocessing_is_matching_cfg
+            'agc_enum': agc_is_matching_cfg,
+            'agc_enum_multiprocessing': multiprocessing_is_matching_cfg
         }
 
         super().__init__(
-            TimerSettings(F'table_err_{ERROR_TYPE}_timeout_{TIMEOUT}', save_location=('..', 'timing_test'),
-                          use_past_results=False, re_runs=1, max_depth=30, timeout=TIMEOUT), tests,
+            TimerSettings(F'table_err_{ERROR_TYPE}_timeout_{TIMEOUT}', save_location=('..', 'timing_test', 'table_results'),
+                          use_past_results=False, re_runs=RE_RUNS, max_depth=30, timeout=TIMEOUT), tests,
             algorithms, *args, **kwargs)
 
     def generate_varying_input_data_for_test(self):
@@ -111,6 +116,7 @@ class TableTimer(Timer):
         saved = False
         for algorithm in self.algorithms:
             self.results[f'{algorithm}-time'] /= self.results[f'{algorithm}-disproved']
+            self.results[f'{algorithm}-disproved'] /= self.settings.re_runs
         pd.set_option('display.max_columns', 20)
         print('\n   Results:\n', self.results)
         while not saved:

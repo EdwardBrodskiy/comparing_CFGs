@@ -127,7 +127,7 @@ def main():
     results = []
 
     cfg = read_gram_file(r'..\..\benchmarks\AntlrJavaGrammar.gram')
-    cnf = convert_cnf_to_limited_word_size(convert_to_cnf(cfg), 10)
+    cnf = convert_cnf_to_limited_word_size(convert_to_cnf(cfg), 30)
 
     enum = Enum(cnf)
     nones = ''
