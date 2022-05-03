@@ -49,9 +49,7 @@ class TimeAll(CFGTimer):
             # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
             # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
             # 'agc_implementation_random': agc.is_matching_cfg,
-            'agc_implementation_depth_respecting': agc.is_matching_cfg_depth_respecting,
-            'agc_implementation_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
-            'agc_implementation_depth_respecting_memo_threaded': agc.is_matching_cfg_depth_respecting_memo_threaded,
+            'agc_implementation_depth_respecting_memo': agc.is_matching_cfg,
         }
 
         super().__init__(

@@ -19,7 +19,7 @@ from timeit import timeit
 # Global test settings
 NUMBER_OF_LANGUAGES_TO_TEST: int = 10
 TIMEOUT: int = 90
-ERROR_TYPE: int = 1
+ERROR_TYPE: int = 3
 RE_RUNS = 3
 
 

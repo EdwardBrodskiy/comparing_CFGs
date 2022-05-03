@@ -6,10 +6,11 @@ from implementations import my_cfg_analyzer, my_cyk_memo, my_cyk_memo_numpy
 from implementations.pipeline import pipeline_analyzer
 from implementations.agc import main as agc
 from implementations.agc import multi as agc_multi
-from cfg import type_is_matching_cfg
+from cfg import type_is_matching_cfg, CFG
 from typing import Dict, Callable, Union, Any
 from tools import read_gram_file, convert_to_cnf
 import logging
+import time
 
 # Global test settings
 MAX_DEPTH: int = 30
@@ -33,6 +34,14 @@ def main():
     stats.dump_stats(filename='timing_test_all_PROFILE.prof')
 
 
+def multiprocessing_is_matching_cfg(a: CFG, b: CFG, max_depth: int):
+    try:
+        return agc_multi.is_matching_cfg(a, b, max_depth, timeout=TIMEOUT, is_main=lambda: __name__ == '__main__')
+    except TimeoutError:
+        time.sleep(1)
+        return True
+
+
 class TimeAll(CFGTimer):
     def __init__(self, *args, **kwargs):
         os.chdir(os.path.join('..', 'benchmarks'))
@@ -47,11 +56,8 @@ class TimeAll(CFGTimer):
             # 'my_cyk_memo_numpy': my_cyk_memo_numpy.is_matching_cfg,
             # 'my_cfg_analyzer': my_cfg_analyzer.is_matching_cfg,
             # 'pipeline_analyzer': pipeline_analyzer.is_matching_cfg,
-            # 'agc_implementation_random': agc.is_matching_cfg,
-            # 'agc_depth_respecting': agc.is_matching_cfg_depth_respecting,
-            'agc_depth_respecting_memo': agc.is_matching_cfg_depth_respecting_memo,
-            'agc_depth_multi_threaded': agc_multi.is_matching_cfg_multiprocess_1,
-            'agc_enum_multi_threaded': agc_multi.is_matching_cfg_multiprocess_2,
+            'agc': agc.is_matching_cfg,
+            # 'agc_enum_multiprocessing': multiprocessing_is_matching_cfg,
         }
 
         super().__init__(TimerSettings(F'time_equal_{NUMBER_OF_CFGS_TO_TEST}', save_location=('..', 'timing_test', 'results'),

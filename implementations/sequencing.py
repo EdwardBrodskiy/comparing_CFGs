@@ -33,7 +33,6 @@ def sub_sequence(cnf: list_cnf_type, state: State, max_depth):
         return expand_all(cnf, new_state, 0, max_depth)
     if skipped:
         return []
-    # print(' '.join(state.word))
     return [state]
 
 

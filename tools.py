@@ -338,6 +338,7 @@ def convert_cnf_to_limited_word_size(cnf: CFG, size: int):
     # TODO: this is a shoddy implementation you can instead just generate the required keys starting with the start
     new_rules: cfg_type = {}
     new_start: str = cnf.start
+    a_start_was_created = False
     # create all size respecting rules
     for key, rhs in cnf.rules.items():
         for i in range(size):
@@ -347,6 +348,10 @@ def convert_cnf_to_limited_word_size(cnf: CFG, size: int):
                 new_rules[new_key] = new_rhs
                 if key == cnf.start:
                     new_start = new_key
+                    a_start_was_created = True
+
+    if not a_start_was_created:
+        return CFG(rules={'S': ['Grammar for this length is empty']}, start='S', alphabet={'Grammar for this length is empty'})
 
     # cleanup stage removing keys with empty right-hand-sides and rules with undefined non-terminals
     changes = True  # used to track if anything was removed

@@ -18,7 +18,6 @@ def is_matching_cfg(a: CFG, b: CFG, max_depth: int):
 
 def check_words_of_length(a: CFG, b: CFG, a_list, b_list, length: int) -> bool:
     a_limited, b_limited = convert_cnf_to_limited_word_size(a, length), convert_cnf_to_limited_word_size(b, length)
-    # print(length)
     index = 0
     words = (['init', ], ['init', ])
     a_enum, b_enum = Enum(a_limited), Enum(b_limited)
@@ -30,7 +29,6 @@ def check_words_of_length(a: CFG, b: CFG, a_list, b_list, length: int) -> bool:
     while words[0] is not None or words[1] is not None:
         words = (a_enum.generate(index), b_enum.generate(index))
         if words[0] != words[1]:
-            # logging.debug(f'Checked for this length {index}.\nChecking words:\n{" ".join(words[0])}\n{" ".join(words[1])}')
             if words[0] not in generated_words and not parse(words[0], b_list, memo_b):
                 return False
             else:
@@ -39,7 +37,6 @@ def check_words_of_length(a: CFG, b: CFG, a_list, b_list, length: int) -> bool:
                 return False
             else:
                 generated_words.add(words[1])
-
         index += 1
 
     return True
