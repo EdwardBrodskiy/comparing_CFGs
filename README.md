@@ -1,6 +1,6 @@
-# comparing_CFGs
+# Context-Free Grammar Equivalence
 
-Queen Mary University of London 3rd year project. The goal of this project is to develop new and more efficient algorithms for comparing Context Free Grammars (CFGs).
+Establishing the equivalence of two Context-Free Grammars is defined by equating their respective outputs. This definition of equivalence expands into a complex problem due to the unbounded nature of the outputs that need to be compared. Yet the structure stemming from Context-Free Grammars allows for more sophisticated algorithms to be developed. This project focuses on developing new algorithms as well as producing open-source implementations for some existing algorithms.
 
 ## Overview
 
